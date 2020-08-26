@@ -8,11 +8,11 @@
 %options case-insensitive
 %%
 "//".*                          /* ignore comment*/
-"/*".*                          /* ignore c-style comment*/
+"/*"[^"*/"]* "*/"                         /* ignore c-style comment*/
 \s+                             /* skip whitespace */
-\r                              /* skip retorno de carro */
-\n                              /* skip salto linea */
-\t                              /* skip tabulacion */
+\\r                              /* skip retorno de carro */
+\\n                              /* skip salto linea */
+\\t                              /* skip tabulacion */
 "null"                          return 'NULLTOKEN'
 "true"                          return 'TRUETOKEN'
 "false"                         return 'FALSETOKEN'
@@ -34,21 +34,44 @@
 "While"                         return 'WHILE'
 "else"                          return 'ELSE'
 "for"                           return 'FOR'
-"of"                            return 'OF'
-"in"                            return 'IN'
+"of"                            return 'OFTOKEN'
+"in"                            return 'INTOKEN'
 
 "Push"                          return 'PUSH'
 "Pop"                           return 'POP'
 "Length"                        return 'LENGTH'
 
+"||"                            return 'OR'
+"&&"                           return 'AND'
+"!"                           return 'NOT'
+
+"=="                            return 'EQQ'
+"!="                            return 'NOEQQ'
+">="                            return 'MAQ'
+"<="                            return 'MIQ'
+">"                             return 'MA'
+"<"                             return 'MI'
+
+"++"                            return "PLUSPLUS"
+"--"                            return "MINSMINS"
+
+"+"                             return '+'
+"-"                             return '-'
+"*"                             return '*'
+"/"                             return '/'
+"^"                             return "^"
+"%"                             return "%"
+
+
+
 
 [a-zA-Z_\$][a-zA-Z0-9_\$]*      return 'IDENT'
 [0-9]+("."[0-9]+)?\b            return 'NUMBER';
-\"[^\"]*\"				        { yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }
+\"[^\"]*\"				              { yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }
 \´[^\´]*\´                      { yytext = yytext.substr(1,yyleng-2); return 'CADENA1'; }
 \'[^\']*\'                      { yytext = yytext.substr(1,yyleng-2); return 'CADENA2'; }
 
-'/'                             return '/'
+
 '/='                            return 'DIVEQUAL'
 '='                             return '='
 ';'                             return ';'
@@ -106,11 +129,18 @@ Statement
     | Control_statements
     | Native_statements
     | Block_statements
+    | If_statements
     | Iteration_statements
     | Break_statements
     | Continue_statements
     | Switch_statements
+    | Expr_statements
     | Empty_statements
+;
+
+Expr_statements
+    : ExprNB ';'
+    | ExprNB error
 ;
 
 Empty_statements
@@ -119,18 +149,27 @@ Empty_statements
 
 Block_statements
     : OPENBRACE CLOSEBRACE
-    | OPENBRACE Source CLOSEBRACE
+    | OPENBRACE Source1 CLOSEBRACE
 ;
 
 
 Declaration_statements
-    : TypeV IDENT '=' PrimExpresions ';'
-    | TypeV IDENT '=' PrimExpresions error
+    : TypeV ValStatement ';'
+    | TypeV ValStatement error
 ;
 
 Assignation_statements
-    : IDENT '=' PrimExpresions ';'
-    | IDENT '=' PrimExpresions error
+    : IDENT initialNo ';'
+    | IDENT initialNo error
+;
+
+ValStatement
+    : IDENT
+    | IDENT initialNo
+;
+
+initialNo
+    : '=' AssignmentExpr
 ;
 
 Function_Expr
@@ -156,10 +195,14 @@ Iteration_statements
     | DO Statement WHILE '(' Expr ')' error
     | WHILE '(' Expr ')' Statement
     | FOR '(' ExprNoInOpt ';' ExprOpt ';' ExprOpt ')' Statement
-    | FOR '(' VAR IDENT '=' ';' ExprOpt ';' ExprOpt ')' Statement
+    | FOR '(' ExprNo ';' ExprOpt ';' ExprOpt ')' Statement
     | FOR '(' LeftHandSideExpr INTOKEN Expr ')' Statement
     | FOR '(' VAR IDENT INTOKEN Expr ')' Statement
-    | FOR '(' VAR IDENT InitializerNoIn INTOKEN Expr ')' Statement
+    | FOR '(' LeftHandSideExpr OFTOKEN Expr ')' Statement
+    | FOR '(' VAR IDENT OFTOKEN Expr ')' Statement
+;
+ExprNo
+    : TypeV IDENT initialNo
 ;
 
 ExprOpt
@@ -170,6 +213,15 @@ ExprOpt
 ExprNoInOpt
     :
     | ExprNoIn
+;
+
+ExprNoIn
+    : AssignmentExprNoIn
+;
+
+AssignmentExprNoIn
+    : ConditionalExpr
+    | LeftHandSideExpr '=' AssignmentExprNoIn
 ;
 
 Continue_statements
@@ -227,7 +279,6 @@ ParameterList
     | Parameters
 ;
 
-
 Parameters
     : Parameter
     | EOF
@@ -247,14 +298,6 @@ TypeV
     | LET
     | CONST
     | TYPE
-;
-
-PrimExpresions
-    : Literal
-    | IDENT
-    | ArrayLiteral
-    | NativeArray
-    | Expr
 ;
 
 ArrayLiteral
@@ -294,8 +337,262 @@ Literal
 ;
 
 Expr
-    : ArichmeticExpr
-    | RelationalExpr
-    | LogicalExpr
-    | TernaryExpr
+    : AssignmentExpr
+;
+
+ConditionalExpr
+    : LORExpr
+    | LORExpr '?' AssignmentExpr ':' AssignmentExpr
+;
+
+AssignmentExpr
+    : ConditionalExpr
+;
+
+LORExpr
+    : LANDExpr
+    | LORExpr OR LANDExpr
+;
+
+LANDExpr
+    : LNOTExpr
+    | LANDExpr AND LNOTExpr
+;
+
+LNOTExpr
+    : REQExpr
+    | NOT REQExpr
+;
+
+REQExpr
+    : RNOTQExpr
+    | REQExpr EQQ RNOTQExpr
+;
+
+RNOTQExpr
+    : RMAYEQExpr
+    | RNOTQExpr NOEQQ RMAYEQExpr
+;
+
+RMAYEQExpr
+    : RMINEQExpr
+    | RMAYEQExpr MAQ RMINEQExpr
+;
+
+RMINEQExpr
+    : RMAYExpr
+    | RMINEQExpr MIQ RMAYExpr
+;
+
+RMAYExpr
+    : RMINExpr
+    | RMAYExpr MA RMINExpr
+;
+
+RMINExpr
+    : AADDExpr
+    | RMINExpr MI AADDExpr
+;
+
+AADDExpr
+    : AADDExpr '+' AMULTExpr
+    | AADDExpr '-' AMULTExpr
+    | AMULTExpr
+;
+
+AMULTExpr
+    : AMULTExpr '*' APOTExpr
+    | AMULTExpr '/' APOTExpr
+    | APOTExpr
+;
+
+APOTExpr
+    : APOTExpr '^' UnaryExpr
+    | APOTExpr '%' UnaryExpr
+    | UnaryExpr
+;
+
+UnaryExpr
+    : UnaryExprC
+    | PostFixExpr
+;
+
+UnaryExprC
+    : '-' UnaryExpr
+    | PLUSPLUS UnaryExpr
+    | MINSMINS UnaryExpr
+;
+
+PostFixExpr
+    : LeftHandSideExpr
+    | LeftHandSideExpr PLUSPLUS
+    | LeftHandSideExpr MINSMINS
+;
+
+LeftHandSideExpr
+    : MemberExpr
+    | CallExpr
+;
+
+MemberExpr
+    : PrimaryExpr
+    | FunctionExpr
+    | MemberExpr '[' Expr ']'
+    | MemberExpr '.' IDENT
+;
+
+CallExpr
+    : MemberExpr Arguments
+    | CallExpr Arguments
+    | CallExpr '[' Expr ']'
+    | CallExpr '.' IDENT
+;
+
+Arguments
+    : '(' ')'
+    | '(' ArgumentList ')'
+    ;
+
+ArgumentList
+    : AssignmentExpr
+    | ArgumentList ',' AssignmentExpr
+;
+
+PrimaryExpr
+    : PrimaryExprNoBrace
+    | OPENBRACE CLOSEBRACE
+    | OPENBRACE PropertyList CLOSEBRACE
+    | OPENBRACE PropertyList ',' CLOSEBRACE
+    ;
+
+PrimaryExprNoBrace
+    : Expr
+    | Literal
+    | ArrayLiteral
+    | NativeArray
+    | IDENT
+    | '(' Expr ')'
+;
+
+Property
+    : IDENT ':' AssignmentExpr
+    | IDENT IDENT '(' ')' OPENBRACE FunctionBody CLOSEBRACE
+    | IDENT IDENT '(' FormalParameterList ')' OPENBRACE FunctionBody CLOSEBRACE
+;
+
+PropertyList
+    : Property
+    | PropertyList ',' Property
+;
+
+
+ExprNB
+    : AssignmentExprNB
+;
+
+ConditionalExprNB
+    : LORExprNB
+    | LORExprNB '?' AssignmentExprNB ':' AssignmentExprNB
+;
+
+AssignmentExprNB
+    : ConditionalExprNB
+;
+
+LORExprNB
+    : LANDExprNB
+    | LORExprNB OR LANDExprNB
+;
+
+LANDExprNB
+    : LNOTExprNB
+    | LANDExprNB AND LNOTExprNB
+;
+
+LNOTExprNB
+    : REQExprNB
+    | NOT REQExprNB
+;
+
+REQExprNB
+    : RNOTQExprNB
+    | REQExprNB EQQ RNOTQExprNB
+;
+
+RNOTQExprNB
+    : RMAYEQExprNB
+    | RNOTQExprNB NOEQQ RMAYEQExprNB
+;
+
+RMAYEQExprNB
+    : RMINEQExprNB
+    | RMAYEQExprNB MAQ RMINEQExprNB
+;
+
+RMINEQExprNB
+    : RMAYExprNB
+    | RMINEQExprNB MIQ RMAYExprNB
+;
+
+RMAYExprNB
+    : RMINExprNB
+    | RMAYExprNB MA RMINExprNB
+;
+
+RMINExprNB
+    : AADDExprNB
+    | RMINExprNB MI AADDExprNB
+;
+
+AADDExprNB
+    : AADDExprNB '+' AMULTExprNB
+    | AADDExprNB '-' AMULTExprNB
+    | AMULTExprNB
+;
+
+AMULTExprNB
+    : AMULTExprNB '*' APOTExprNB
+    | AMULTExprNB '/' APOTExprNB
+    | APOTExprNB
+;
+
+APOTExprNB
+    : APOTExprNB '^' UnaryExprNB
+    | APOTExprNB '%' UnaryExprNB
+    | UnaryExprNB
+;
+
+UnaryExprNB
+    : UnaryExprNBC
+    | PostFixExprNB
+;
+
+UnaryExprNBC
+    : '-' UnaryExprNB
+    | PLUSPLUS UnaryExprNB
+    | MINSMINS UnaryExprNB
+;
+
+PostFixExprNB
+    : LeftHandSideExprNB
+    | LeftHandSideExprNB PLUSPLUS
+    | LeftHandSideExprNB MINSMINS
+;
+
+LeftHandSideExprNB
+    : MemberExprNB
+    | CallExprNB
+;
+
+MemberExprNB
+    : PrimaryExprNoBrace
+    | MemberExprNB '[' Expr ']'
+    | MemberExprNB '.' IDENT
+;
+
+CallExprNB
+    : MemberExprNB Arguments
+    | CallExprNB Arguments
+    | CallExprNB '[' Expr ']'
+    | CallExprNB '.' IDENT
 ;
