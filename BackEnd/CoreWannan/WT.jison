@@ -26,6 +26,10 @@
 "void"                          return 'VOID'
 "type"                          return 'TYPE'
 
+'console'                       return 'CONSOLE'
+'log'                           return 'LOG'
+'graficar_ts'                   return 'GRAHPTS'
+
 "case"                          return 'CASE'
 "switch"                        return 'SWITCH'
 "function"                      return 'FUNCTION'
@@ -42,8 +46,8 @@
 "Length"                        return 'LENGTH'
 
 "||"                            return 'OR'
-"&&"                           return 'AND'
-"!"                           return 'NOT'
+"&&"                            return 'AND'
+"!"                             return 'NOT'
 
 "=="                            return 'EQQ'
 "!="                            return 'NOEQQ'
@@ -136,6 +140,11 @@ Statement
     | Switch_statements
     | Expr_statements
     | Empty_statements
+;
+
+Native_statements
+    : CONSOLE '.' LOG '(' Expr ')' ';'
+    | GRAHPTS '(' ')' ';'
 ;
 
 Expr_statements
