@@ -1,4 +1,14 @@
 
+%left OR
+%left AND
+%left DIF IG
+%left MENIGU MAYIGU MENQUE MAYQUE
+%left MAS MENOS AUTOSUM
+%left POR DIVIDIDO
+%left POT MOD
+%right NOT
+%left UMENOS
+
 Literal
     : NULLTOKEN
     | TRUETOKEN

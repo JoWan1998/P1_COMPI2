@@ -86,7 +86,6 @@
 \'[^\']*\'                      { yytext = yytext.substr(1,yyleng-2); return 'CADENA2'; }
 
 
-'/='                            return 'DIVEQUAL'
 '='                             return '='
 ';'                             return ';'
 ':'                             return ':'

@@ -86,7 +86,6 @@
 \'[^\']*\'                      { yytext = yytext.substr(1,yyleng-2); return 'CADENA2'; }
 
 
-'/='                            return 'DIVEQUAL'
 '='                             return '='
 ';'                             return ';'
 ':'                             return ':'
@@ -200,6 +199,15 @@ CallExprNoIn
     | '.' IDENT
     | '.' LENGTH
     | ArrList
+;
+
+ArrList
+    : Arr ArrList
+    | Arr
+;
+
+Arr
+    : '[' Expr ']'
 ;
 
 
@@ -367,8 +375,12 @@ Type
 ;
 
 ArrayList
-    : Array ArrayList
+    : Array ArrayList1
+;
+ArrayList1
+    : Array ArrayList1
     | Array
+    | EOF
 ;
 
 Array
@@ -422,7 +434,7 @@ PrimaryExprNoBrace
     | ArrayLiteral
     | IDENT
     | '(' Expr ')'
-    ;
+;
 
 ArrayLiteral
     : '[' ']'
@@ -432,7 +444,7 @@ ArrayLiteral
 ElementList
     : AssignmentExpr
     | ElementList ',' AssignmentExpr
-    ;
+;
 
 
 MemberExpr
@@ -440,7 +452,7 @@ MemberExpr
     | FunctionExpr
     | MemberExpr '[' Expr ']'
     | MemberExpr '.' IDENT
-    ;
+;
 
 MemberExprNoBF
     : PrimaryExprNoBrace
