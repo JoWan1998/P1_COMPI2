@@ -530,117 +530,117 @@ MultiplicativeExprNoBF
     | MultiplicativeExprNoBF '%' UnaryExpr
     ;
 
-AdditiveExpr
+AdicionExpr
     : MultiplicativeExpr
-    | AdditiveExpr '+' MultiplicativeExpr
-    | AdditiveExpr '-' MultiplicativeExpr
+    | AdicionExpr '+' MultiplicativeExpr
+    | AdicionExpr '-' MultiplicativeExpr
     ;
 
-AdditiveExprNoBF
+AdicionExprNoBF
     : MultiplicativeExprNoBF
-    | AdditiveExprNoBF '+' MultiplicativeExpr
-    | AdditiveExprNoBF '-' MultiplicativeExpr
+    | AdicionExprNoBF '+' MultiplicativeExpr
+    | AdicionExprNoBF '-' MultiplicativeExpr
     ;
 
-RelationalExpr
-    : AdditiveExpr
-    | RelationalExpr '<' AdditiveExpr
-    | RelationalExpr '>' AdditiveExpr
+RelacionalExpr
+    : AdicionExpr
+    | RelacionalExpr '<' AdicionExpr
+    | RelacionalExpr '>' AdicionExpr
     ;
 
-RelationalExprNoIn
-    : AdditiveExpr
-    | RelationalExprNoIn '<' AdditiveExpr
-    | RelationalExprNoIn '>' AdditiveExpr
+RelacionalExprNoIn
+    : AdicionExpr
+    | RelacionalExprNoIn '<' AdicionExpr
+    | RelacionalExprNoIn '>' AdicionExpr
     ;
 
-RelationalExprNoBF
-    : AdditiveExprNoBF
-    | RelationalExprNoBF '<' AdditiveExprNoBF
-    | RelationalExprNoBF '>' AdditiveExprNoBF
+RelacionalExprNoBF
+    : AdicionExprNoBF
+    | RelacionalExprNoBF '<' AdicionExprNoBF
+    | RelacionalExprNoBF '>' AdicionExprNoBF
     ;
 
-EqualityExpr
-    : RelationalExpr
-    | EqualityExpr EQQ RelationalExpr
-    | EqualityExpr NOEQQ RelationalExpr
-    | EqualityExpr MAQ RelationalExpr
-    | EqualityExpr MIQ RelationalExpr
+IgualdadExpr
+    : RelacionalExpr
+    | IgualdadExpr EQQ RelacionalExpr
+    | IgualdadExpr NOEQQ RelacionalExpr
+    | IgualdadExpr MAQ RelacionalExpr
+    | IgualdadExpr MIQ RelacionalExpr
     ;
 
-EqualityExprNoIn
-    : RelationalExprNoIn
-    | EqualityExprNoIn EQQ RelationalExprNoIn
-    | EqualityExprNoIn NOEQQ RelationalExprNoIn
-    | EqualityExprNoIn MAQ RelationalExprNoIn
-    | EqualityExprNoIn MIQ RelationalExprNoIn
+IgualdadExprNoIn
+    : RelacionalExprNoIn
+    | IgualdadExprNoIn EQQ RelacionalExprNoIn
+    | IgualdadExprNoIn NOEQQ RelacionalExprNoIn
+    | IgualdadExprNoIn MAQ RelacionalExprNoIn
+    | IgualdadExprNoIn MIQ RelacionalExprNoIn
     ;
 
-EqualityExprNoBF
-    : RelationalExprNoBF
-    | EqualityExprNoBF EQQ RelationalExpr
-    | EqualityExprNoBF NOEQQ RelationalExpr
-    | EqualityExprNoBF MAQ RelationalExpr
-    | EqualityExprNoBF MIQ RelationalExpr
+IgualdadExprNoBF
+    : RelacionalExprNoBF
+    | IgualdadExprNoBF EQQ RelacionalExpr
+    | IgualdadExprNoBF NOEQQ RelacionalExpr
+    | IgualdadExprNoBF MAQ RelacionalExpr
+    | IgualdadExprNoBF MIQ RelacionalExpr
     ;
 
 
-LogicalANDExpr
-    : EqualityExpr
-    | LogicalANDExpr AND EqualityExpr
+LogicaYYExpr
+    : IgualdadExpr
+    | LogicaYYExpr AND IgualdadExpr
     ;
 
-LogicalANDExprNoIn
-    : EqualityExprNoIn
-    | LogicalANDExprNoIn AND EqualityExprNoIn
+LogicaYYExprNoIn
+    : IgualdadExprNoIn
+    | LogicaYYExprNoIn AND IgualdadExprNoIn
     ;
 
-LogicalANDExprNoBF
-    : EqualityExprNoBF
-    | LogicalANDExprNoBF AND EqualityExprNoBF
+LogicaYYExprNoBF
+    : IgualdadExprNoBF
+    | LogicaYYExprNoBF AND IgualdadExprNoBF
     ;
 
-LogicalORExpr
-    : LogicalANDExpr
-    | LogicalORExpr OR LogicalANDExpr
+LogicaOOExpr
+    : LogicaYYExpr
+    | LogicaOOExpr OR LogicaYYExpr
     ;
 
-LogicalORExprNoIn
-    : LogicalANDExprNoIn
-    | LogicalORExprNoIn OR LogicalANDExprNoIn
+LogicaOOExprNoIn
+    : LogicaYYExprNoIn
+    | LogicaOOExprNoIn OR LogicaYYExprNoIn
     ;
 
-LogicalORExprNoBF
-    : LogicalANDExprNoBF
-    | LogicalORExprNoBF OR LogicalANDExpr
+LogicaOOExprNoBF
+    : LogicaYYExprNoBF
+    | LogicaOOExprNoBF OR LogicaYYExpr
     ;
 
-ConditionalExpr
-    : LogicalORExpr
-    | LogicalORExpr '?' AssignmentExpr ':' AssignmentExpr
+CondicionTernariaExpr
+    : LogicaOOExpr
+    | LogicaOOExpr '?' AssignmentExpr ':' AssignmentExpr
     ;
 
-ConditionalExprNoIn
-    : LogicalORExprNoIn
-    | LogicalORExprNoIn '?' AssignmentExprNoIn ':' AssignmentExprNoIn
+CondicionTernariaExprNoIn
+    : LogicaOOExprNoIn
+    | LogicaOOExprNoIn '?' AssignmentExprNoIn ':' AssignmentExprNoIn
     ;
 
-ConditionalExprNoBF
-    : LogicalORExprNoBF
-    | LogicalORExprNoBF '?' AssignmentExpr ':' AssignmentExpr
+CondicionTernariaExprNoBF
+    : LogicaOOExprNoBF
+    | LogicaOOExprNoBF '?' AssignmentExpr ':' AssignmentExpr
     ;
 
 AssignmentExpr
-    : ConditionalExpr
+    : CondicionTernariaExpr
     | LeftHandSideExpr AssignmentOperator AssignmentExpr
     ;
 
 AssignmentExprNoIn
-    : ConditionalExprNoIn
+    : CondicionTernariaExprNoIn
     | LeftHandSideExpr AssignmentOperator AssignmentExprNoIn
     ;
 
 AssignmentExprNoBF
-    : ConditionalExprNoBF
+    : CondicionTernariaExprNoBF
     | LeftHandSideExprNoBF AssignmentOperator AssignmentExpr
     ;
