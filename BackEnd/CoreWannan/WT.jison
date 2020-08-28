@@ -64,19 +64,15 @@
 "&&"                            return 'AND'
 "!"                             return '!'
 
-"++"                            return "PLUSPLUS"
-"--"                            return "MINSMINS"
+"++"                            return 'PLUSPLUS'
+"--"                            return 'MINSMINS'
+"**"                             return 'POTENCIA'
 
 "+"                             return '+'
 "-"                             return '-'
 "*"                             return '*'
 "/"                             return '/'
-"^"                             return "^"
-"%"                             return "%"
-
-
-
-
+"%"                             return '%'
 
 
 [a-zA-Z_\$][a-zA-Z0-9_\$]*      return 'IDENT'
@@ -97,6 +93,7 @@
 ']'                             return ']'
 '{'                             return 'OPENBRACE'
 '}'                             return 'CLOSEBRACE'
+'?'                             return '?'
 
 <<EOF>>                         return 'EOF';
 .                               { console.error('Error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column+';'); }
@@ -107,7 +104,7 @@
 
 %left '+' '-'
 %left '*' '/'
-%left '^'
+%left POTENCIA
 %left UMINUS
 
 
@@ -538,7 +535,7 @@ MultiplicativeExpr
     : UnaryExpr
     | MultiplicativeExpr '*' UnaryExpr
     | MultiplicativeExpr '/' UnaryExpr
-    | MultiplicativeExpr '^' UnaryExpr
+    | MultiplicativeExpr POTENCIA UnaryExpr
     | MultiplicativeExpr '%' UnaryExpr
     ;
 
@@ -546,7 +543,7 @@ MultiplicativeExprNoBF
     : UnaryExprNoBF
     | MultiplicativeExprNoBF '*' UnaryExpr
     | MultiplicativeExprNoBF '/' UnaryExpr
-    | MultiplicativeExprNoBF '^' UnaryExpr
+    | MultiplicativeExprNoBF POTENCIA UnaryExpr
     | MultiplicativeExprNoBF '%' UnaryExpr
     ;
 
