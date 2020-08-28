@@ -232,6 +232,10 @@ FunctionExpr
     | FUNCTION '(' ParameterList ')' OPENBRACE Source1 CLOSEBRACE
     | FUNCTION IDENT '(' ')' OPENBRACE Source1 CLOSEBRACE
     | FUNCTION IDENT '(' ParameterList ')' OPENBRACE Source1 CLOSEBRACE
+    | FUNCTION '(' ')' OPENBRACE  CLOSEBRACE
+    | FUNCTION '(' ParameterList ')' OPENBRACE Source1 CLOSEBRACE
+    | FUNCTION IDENT '(' ')' OPENBRACE  CLOSEBRACE
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE  CLOSEBRACE
 ;
 
 Function_statements
@@ -239,6 +243,10 @@ Function_statements
     | FUNCTION IDENT '(' ParameterList ')' OPENBRACE Source1 CLOSEBRACE
     | FUNCTION IDENT '(' ')' ':' Type OPENBRACE Source1 CLOSEBRACE
     | FUNCTION IDENT '(' ParameterList ')' ':' Type OPENBRACE Source1 CLOSEBRACE
+    | FUNCTION IDENT '(' ')' OPENBRACE  CLOSEBRACE
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE  CLOSEBRACE
+    | FUNCTION IDENT '(' ')' ':' Type OPENBRACE  CLOSEBRACE
+    | FUNCTION IDENT '(' ParameterList ')' ':' Type OPENBRACE  CLOSEBRACE
 ;
 
 Continue_statements

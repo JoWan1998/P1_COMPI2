@@ -40,21 +40,29 @@
 "for"                           return 'FOR'
 "of"                            return 'OFTOKEN'
 "in"                            return 'INTOKEN'
+"return"                        return 'RETURN'
 
 "Push"                          return 'PUSH'
 "Pop"                           return 'POP'
 "Length"                        return 'LENGTH'
 
-"||"                            return 'OR'
-"&&"                            return 'AND'
-"!"                             return 'NOT'
+"+="                            return '+='
+"-="                            return '-='
+"/="                            return '/='
+"*="                            return '*='
+"^="                            return '^='
+"%="                            return '%='
 
 "=="                            return 'EQQ'
 "!="                            return 'NOEQQ'
 ">="                            return 'MAQ'
 "<="                            return 'MIQ'
-">"                             return 'MA'
-"<"                             return 'MI'
+">"                             return '>'
+"<"                             return '<'
+
+"||"                            return 'OR'
+"&&"                            return 'AND'
+"!"                             return '!'
 
 "++"                            return "PLUSPLUS"
 "--"                            return "MINSMINS"
@@ -69,10 +77,12 @@
 
 
 
+
+
 [a-zA-Z_\$][a-zA-Z0-9_\$]*      return 'IDENT'
 [0-9]+("."[0-9]+)?\b            return 'NUMBER';
 \"[^\"]*\"				              { yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }
-\´[^\´]*\´                      { yytext = yytext.substr(1,yyleng-2); return 'CADENA1'; }
+\`[^\`]*\`                      { yytext = yytext.substr(1,yyleng-2); return 'CADENA1'; }
 \'[^\']*\'                      { yytext = yytext.substr(1,yyleng-2); return 'CADENA2'; }
 
 
@@ -121,13 +131,14 @@ Source
 ;
 
 Source1
-    : Statement
+    :  Statement
     |  Statement Source1
-    | EOF
+    |  EOF
 ;
 
 Statement
     : Declaration_statements
+    | Expr_statements
     | Assignation_statements
     | Function_statements
     | Control_statements
@@ -135,37 +146,43 @@ Statement
     | Block_statements
     | If_statements
     | Iteration_statements
+    | Return_statements
     | Break_statements
     | Continue_statements
     | Switch_statements
-    | Expr_statements
     | Empty_statements
 ;
 
-SourceF
-    :  StatementF
-    |  StatementF SourceF
-    | EOF
+
+Source1_1
+    :  Statement
+    |  Statement Source1_1
+    |  EOF
 ;
 
-StatementF
+Statement_1
     : Declaration_statements
+    | Expr_statements
     | Assignation_statements
     | Control_statements
     | Native_statements
-    | Block_statementsF
+    | Block_statements
     | If_statements
     | Iteration_statements
+    | Return_statements
     | Break_statements
     | Continue_statements
     | Switch_statements
-    | Expr_statements
     | Empty_statements
 ;
+
+
 
 Native_statements
     : CONSOLE '.' LOG '(' Expr ')' ';'
     | GRAHPTS '(' ')' ';'
+    | CONSOLE '.' LOG '(' Expr ')' error
+    | GRAHPTS '(' ')' error
 ;
 
 Expr_statements
@@ -179,82 +196,80 @@ Empty_statements
 
 Block_statements
     : OPENBRACE CLOSEBRACE
-    | OPENBRACE Source1 CLOSEBRACE
-;
-Block_statementsF
-    : OPENBRACE CLOSEBRACE
-    | OPENBRACE Source1 CLOSEBRACE
+    | OPENBRACE Source1_1 CLOSEBRACE
 ;
 
+
 Declaration_statements
-    : TypeV ValStatement ';'
-    | TypeV ValStatement error
+    : Type ValStatementL ':' Type initialNo ';'
+    | Type ValStatementL initialNo ';'
+    | Type ValStatementL initialNo error
+    | IDENT Arguments
 ;
 
 Assignation_statements
-    : IDENT initialNo ';'
+    : IDENT CallExprNoIn initialNo ';'
+    | IDENT CallExprNoIn initialNo error
+    | IDENT initialNo ';'
     | IDENT initialNo error
+;
+
+CallExprNoIn
+    : MemberExpr
+    | CallExprNoIn Arguments
+    | CallExprNoIn ArrList
+    | CallExprNoIn '.' IDENT
+    | CallExprNoIn '.' LENGTH
+    | '.' IDENT
+    | '.' LENGTH
+    | ArrList
+;
+
+
+ValStatementL
+    : ValStatement ',' ValStatementL
+    | ValStatement
 ;
 
 ValStatement
     : IDENT
-    | IDENT initialNo
+    | IDENT ArrayList
 ;
 
 initialNo
-    : '=' AssignmentExpr
+    : AssignmentOperator AssignmentExpr
 ;
 
-Function_Expr
+AssignmentOperator
+    : '='
+    | '+='
+    | '-='
+    | '*='
+    | '/='
+    | '^='
+    | '%='
+;
+
+FunctionExpr
     : FUNCTION '(' ')' OPENBRACE Source1 CLOSEBRACE
-    | FUNCTION '(' ParameterList ')' OPENBRACE SourceF CLOSEBRACE
-    | FUNCTION IDENT '(' ')' OPENBRACE SourceF CLOSEBRACE
-    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE SourceF CLOSEBRACE
+    | FUNCTION '(' ParameterList ')' OPENBRACE Source1_1 CLOSEBRACE
+    | FUNCTION IDENT '(' ')' OPENBRACE Source1_1 CLOSEBRACE
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE Source1_1 CLOSEBRACE
+    | FUNCTION '(' ')' OPENBRACE  CLOSEBRACE
+    | FUNCTION '(' ParameterList ')' OPENBRACE  CLOSEBRACE
+    | FUNCTION IDENT '(' ')' OPENBRACE  CLOSEBRACE
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE  CLOSEBRACE
 ;
 
 Function_statements
-    : FUNCTION IDENT '(' ')' OPENBRACE SourceF CLOSEBRACE
-    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE SourceF CLOSEBRACE
-    | FUNCTION IDENT '(' ')' ':' TypeV OPENBRACE SourceF CLOSEBRACE
-    | FUNCTION IDENT '(' ParameterList ')' ':' TypeV OPENBRACE SourceF CLOSEBRACE
-;
-
-If_statements
-    : IF '(' Expr ')' Statement %prec IF_WITHOUT_ELSE
-    | IF '(' Expr ')' Statement ELSE Statement
-;
-Iteration_statements
-    : DO Statement WHILE '(' Expr ')' ';'
-    | DO Statement WHILE '(' Expr ')' error
-    | WHILE '(' Expr ')' Statement
-    | FOR '(' ExprNoInOpt ';' ExprOpt ';' ExprOpt ')' Statement
-    | FOR '(' ExprNo ';' ExprOpt ';' ExprOpt ')' Statement
-    | FOR '(' LeftHandSideExpr INTOKEN Expr ')' Statement
-    | FOR '(' VAR IDENT INTOKEN Expr ')' Statement
-    | FOR '(' LeftHandSideExpr OFTOKEN Expr ')' Statement
-    | FOR '(' VAR IDENT OFTOKEN Expr ')' Statement
-;
-ExprNo
-    : TypeV IDENT initialNo
-;
-
-ExprOpt
-    :
-    | Expr
-;
-
-ExprNoInOpt
-    :
-    | ExprNoIn
-;
-
-ExprNoIn
-    : AssignmentExprNoIn
-;
-
-AssignmentExprNoIn
-    : ConditionalExpr
-    | LeftHandSideExpr '=' AssignmentExprNoIn
+    : FUNCTION IDENT '(' ')' OPENBRACE Source1 CLOSEBRACE
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE Source1_1 CLOSEBRACE
+    | FUNCTION IDENT '(' ')' ':' Type OPENBRACE Source1_1 CLOSEBRACE
+    | FUNCTION IDENT '(' ParameterList ')' ':' Type OPENBRACE Source1_1 CLOSEBRACE
+    | FUNCTION IDENT '(' ')' OPENBRACE  CLOSEBRACE
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE  CLOSEBRACE
+    | FUNCTION IDENT '(' ')' ':' Type OPENBRACE  CLOSEBRACE
+    | FUNCTION IDENT '(' ParameterList ')' ':' Type OPENBRACE  CLOSEBRACE
 ;
 
 Continue_statements
@@ -307,13 +322,53 @@ DefaultClause
     | DEFAULT ':' SourceElements
 ;
 
+If_statements
+    : IF '(' Expr ')' Statement %prec IF_WITHOUT_ELSE
+    | IF '(' Expr ')' Statement ELSE Statement
+;
+Iteration_statements
+    : DO Statement WHILE '(' Expr ')' ';'
+    | DO Statement WHILE '(' Expr ')' error
+    | WHILE '(' Expr ')' Statement
+    | FOR '(' ExprNoInOpt ';' ExprOpt ';' ExprOpt ')' Statement
+    | FOR '(' TypeV IDENT initialNo ';' ExprOpt ';' ExprOpt ')' Statement
+    | FOR '(' LeftHandSideExpr INTOKEN Expr ')' Statement
+    | FOR '(' TypeV IDENT INTOKEN Expr ')' Statement
+    | FOR '(' TypeV IDENT initialNo INTOKEN Expr ')' Statement
+;
+
+ExprOpt
+    :
+    | Expr
+    ;
+
+ExprNoInOpt
+    :
+    | ExprNoIn
+    ;
+
+Expr
+    : AssignmentExpr
+    | Expr ',' AssignmentExpr
+;
+
+ExprNoIn
+    : AssignmentExprNoIn
+    | ExprNoIn ',' AssignmentExprNoIn
+;
+
+ExprNB
+    : AssignmentExprNoBF
+    | ExprNB ',' AssignmentExpr
+;
+
 ParameterList
     : Parameter ',' ParameterList
     | Parameter
 ;
 
 Parameter
-    : IDENT ':' TypeV
+    : IDENT ':' Type
     | IDENT
 ;
 
@@ -323,36 +378,38 @@ TypeV
     | BOOLEAN
     | VOID
     | VAR
-    | LET
     | CONST
     | TYPE
     | IDENT
+    | LET
+;
+
+Type
+    : TypeV ArrayList
+    | TypeV
+;
+
+ArrayList
+    : Array ArrayList
+    | Array
+;
+
+Array
+    : '[' ']'
 ;
 
 ArrayLiteral
-    : '[' ']'
+    : Array
     | '[' Elements ']'
 ;
 
 Elements
-    : Element Elements1
-;
-
-Elements1
-    : ',' Element Elements1
-    | EOF
+    : Element ',' Elements
+    | Element
 ;
 
 Element
-    : Literal
-    | IDENT
-    | Expr
-;
-
-NativeArray
-    : IDENT '.' POP '(' Element ')'
-    | IDENT '.' PUSH '(' ')'
-    | IDENT '.' LENGTH
+    : Expr
 ;
 
 Literal
@@ -365,117 +422,77 @@ Literal
     | CADENA2
 ;
 
-Expr
+Property
+    : IDENT ':' AssignmentExpr
+    | STRING ':' AssignmentExpr
+    | NUMBER ':' AssignmentExpr
+    ;
+
+PropertyList
+    : Property
+    | PropertyList ',' Property
+    ;
+
+PrimaryExpr
+    : PrimaryExprNoBrace
+    | OPENBRACE CLOSEBRACE
+    | OPENBRACE PropertyList CLOSEBRACE
+    | OPENBRACE PropertyList ',' CLOSEBRACE
+;
+
+PrimaryExprNoBrace
+    : Literal
+    | ArrayLiteral
+    | IDENT
+    | '(' Expr ')'
+    ;
+
+ArrayLiteral
+    : '[' ']'
+    | '[' ElementList ']'
+;
+
+ElementList
     : AssignmentExpr
-;
+    | ElementList ',' AssignmentExpr
+    ;
 
-ConditionalExpr
-    : LORExpr
-    | LORExpr '?' AssignmentExpr ':' AssignmentExpr
-;
-
-AssignmentExpr
-    : ConditionalExpr
-;
-
-LORExpr
-    : LANDExpr
-    | LORExpr OR LANDExpr
-;
-
-LANDExpr
-    : LNOTExpr
-    | LANDExpr AND LNOTExpr
-;
-
-LNOTExpr
-    : REQExpr
-    | NOT REQExpr
-;
-
-REQExpr
-    : RNOTQExpr
-    | REQExpr EQQ RNOTQExpr
-;
-
-RNOTQExpr
-    : RMAYEQExpr
-    | RNOTQExpr NOEQQ RMAYEQExpr
-;
-
-RMAYEQExpr
-    : RMINEQExpr
-    | RMAYEQExpr MAQ RMINEQExpr
-;
-
-RMINEQExpr
-    : RMAYExpr
-    | RMINEQExpr MIQ RMAYExpr
-;
-
-RMAYExpr
-    : RMINExpr
-    | RMAYExpr MA RMINExpr
-;
-
-RMINExpr
-    : AADDExpr
-    | RMINExpr MI AADDExpr
-;
-
-AADDExpr
-    : AADDExpr '+' AMULTExpr
-    | AADDExpr '-' AMULTExpr
-    | AMULTExpr
-;
-
-AMULTExpr
-    : AMULTExpr '*' APOTExpr
-    | AMULTExpr '/' APOTExpr
-    | APOTExpr
-;
-
-APOTExpr
-    : APOTExpr '^' UnaryExpr
-    | APOTExpr '%' UnaryExpr
-    | UnaryExpr
-;
-
-UnaryExpr
-    : UnaryExprC
-    | PostFixExpr
-;
-
-UnaryExprC
-    : '-' UnaryExpr
-    | PLUSPLUS UnaryExpr
-    | MINSMINS UnaryExpr
-;
-
-PostFixExpr
-    : LeftHandSideExpr
-    | LeftHandSideExpr PLUSPLUS
-    | LeftHandSideExpr MINSMINS
-;
-
-LeftHandSideExpr
-    : MemberExpr
-    | CallExpr
-;
 
 MemberExpr
     : PrimaryExpr
     | FunctionExpr
     | MemberExpr '[' Expr ']'
     | MemberExpr '.' IDENT
-;
+    ;
+
+MemberExprNoBF
+    : PrimaryExprNoBrace
+    | MemberExprNoBF '[' Expr ']'
+    | MemberExprNoBF '.' IDENT
+    ;
+
 
 CallExpr
-    : MemberExpr Arguments
+    : IDENT
+    | MemberExpr Arguments
     | CallExpr Arguments
     | CallExpr '[' Expr ']'
     | CallExpr '.' IDENT
-;
+    | CallExpr '.' POP '(' Element ')'
+    | CallExpr '.' PUSH '(' ')'
+    | CallExpr '.' LENGTH
+    ;
+
+CallExprNoBF
+    : IDENT
+    | MemberExprNoBF Arguments
+    | CallExprNoBF Arguments
+    | CallExprNoBF '[' Expr ']'
+    | CallExprNoBF '.' IDENT
+    | CallExprNoBF '.' POP '(' Element ')'
+    | CallExprNoBF '.' PUSH '(' ')'
+    | CallExprNoBF '.' LENGTH
+    ;
 
 Arguments
     : '(' ')'
@@ -485,143 +502,176 @@ Arguments
 ArgumentList
     : AssignmentExpr
     | ArgumentList ',' AssignmentExpr
-;
-
-PrimaryExpr
-    : PrimaryExprNoBrace
-    | OPENBRACE CLOSEBRACE
-    | OPENBRACE PropertyList CLOSEBRACE
-    | OPENBRACE PropertyList ',' CLOSEBRACE
     ;
 
-PrimaryExprNoBrace
-    : Expr
-    | Literal
-    | ArrayLiteral
-    | NativeArray
-    | IDENT
-    | '(' Expr ')'
-;
+LeftHandSideExpr
+    : MemberExpr
+    | CallExpr
+    ;
 
-Property
-    : IDENT ':' AssignmentExpr
-    | IDENT IDENT '(' ')' OPENBRACE FunctionBody CLOSEBRACE
-    | IDENT IDENT '(' FormalParameterList ')' OPENBRACE FunctionBody CLOSEBRACE
-;
+LeftHandSideExprNoBF
+    : MemberExpr
+    | CallExprNoBF
+    ;
 
-PropertyList
-    : Property
-    | PropertyList ',' Property
-;
+PostfixExpr
+    : LeftHandSideExpr
+    | LeftHandSideExpr PLUSPLUS
+    | LeftHandSideExpr MINSMINS
+    ;
+
+PostfixExprNoBF
+    : LeftHandSideExprNoBF
+    | LeftHandSideExprNoBF PLUSPLUS
+    | LeftHandSideExprNoBF MINSMINS
+    ;
+
+UnaryExprCommon
+    : PLUSPLUS UnaryExpr
+    | MINSMINS UnaryExpr
+    | '+' UnaryExpr
+    | '-' UnaryExpr
+    | '~' UnaryExpr
+    | '!' UnaryExpr
+    ;
+
+UnaryExpr
+    : PostfixExpr
+    | UnaryExprCommon
+    ;
+
+UnaryExprNoBF
+    : PostfixExprNoBF
+    | UnaryExprCommon
+    ;
+
+MultiplicativeExpr
+    : UnaryExpr
+    | MultiplicativeExpr '*' UnaryExpr
+    | MultiplicativeExpr '/' UnaryExpr
+    | MultiplicativeExpr '^' UnaryExpr
+    | MultiplicativeExpr '%' UnaryExpr
+    ;
+
+MultiplicativeExprNoBF
+    : UnaryExprNoBF
+    | MultiplicativeExprNoBF '*' UnaryExpr
+    | MultiplicativeExprNoBF '/' UnaryExpr
+    | MultiplicativeExprNoBF '^' UnaryExpr
+    | MultiplicativeExprNoBF '%' UnaryExpr
+    ;
+
+AdicionExpr
+    : MultiplicativeExpr
+    | AdicionExpr '+' MultiplicativeExpr
+    | AdicionExpr '-' MultiplicativeExpr
+    ;
+
+AdicionExprNoBF
+    : MultiplicativeExprNoBF
+    | AdicionExprNoBF '+' MultiplicativeExpr
+    | AdicionExprNoBF '-' MultiplicativeExpr
+    ;
+
+RelacionalExpr
+    : AdicionExpr
+    | RelacionalExpr '<' AdicionExpr
+    | RelacionalExpr '>' AdicionExpr
+    ;
+
+RelacionalExprNoIn
+    : AdicionExpr
+    | RelacionalExprNoIn '<' AdicionExpr
+    | RelacionalExprNoIn '>' AdicionExpr
+    ;
+
+RelacionalExprNoBF
+    : AdicionExprNoBF
+    | RelacionalExprNoBF '<' AdicionExprNoBF
+    | RelacionalExprNoBF '>' AdicionExprNoBF
+    ;
+
+IgualdadExpr
+    : RelacionalExpr
+    | IgualdadExpr EQQ RelacionalExpr
+    | IgualdadExpr NOEQQ RelacionalExpr
+    | IgualdadExpr MAQ RelacionalExpr
+    | IgualdadExpr MIQ RelacionalExpr
+    ;
+
+IgualdadExprNoIn
+    : RelacionalExprNoIn
+    | IgualdadExprNoIn EQQ RelacionalExprNoIn
+    | IgualdadExprNoIn NOEQQ RelacionalExprNoIn
+    | IgualdadExprNoIn MAQ RelacionalExprNoIn
+    | IgualdadExprNoIn MIQ RelacionalExprNoIn
+    ;
+
+IgualdadExprNoBF
+    : RelacionalExprNoBF
+    | IgualdadExprNoBF EQQ RelacionalExpr
+    | IgualdadExprNoBF NOEQQ RelacionalExpr
+    | IgualdadExprNoBF MAQ RelacionalExpr
+    | IgualdadExprNoBF MIQ RelacionalExpr
+    ;
 
 
-ExprNB
-    : AssignmentExprNB
-;
+LogicaYYExpr
+    : IgualdadExpr
+    | LogicaYYExpr AND IgualdadExpr
+    ;
 
-ConditionalExprNB
-    : LORExprNB
-    | LORExprNB '?' AssignmentExprNB ':' AssignmentExprNB
-;
+LogicaYYExprNoIn
+    : IgualdadExprNoIn
+    | LogicaYYExprNoIn AND IgualdadExprNoIn
+    ;
 
-AssignmentExprNB
-    : ConditionalExprNB
-;
+LogicaYYExprNoBF
+    : IgualdadExprNoBF
+    | LogicaYYExprNoBF AND IgualdadExprNoBF
+    ;
 
-LORExprNB
-    : LANDExprNB
-    | LORExprNB OR LANDExprNB
-;
+LogicaOOExpr
+    : LogicaYYExpr
+    | LogicaOOExpr OR LogicaYYExpr
+    ;
 
-LANDExprNB
-    : LNOTExprNB
-    | LANDExprNB AND LNOTExprNB
-;
+LogicaOOExprNoIn
+    : LogicaYYExprNoIn
+    | LogicaOOExprNoIn OR LogicaYYExprNoIn
+    ;
 
-LNOTExprNB
-    : REQExprNB
-    | NOT REQExprNB
-;
+LogicaOOExprNoBF
+    : LogicaYYExprNoBF
+    | LogicaOOExprNoBF OR LogicaYYExpr
+    ;
 
-REQExprNB
-    : RNOTQExprNB
-    | REQExprNB EQQ RNOTQExprNB
-;
+CondicionTernariaExpr
+    : LogicaOOExpr
+    | LogicaOOExpr '?' AssignmentExpr ':' AssignmentExpr
+    ;
 
-RNOTQExprNB
-    : RMAYEQExprNB
-    | RNOTQExprNB NOEQQ RMAYEQExprNB
-;
+CondicionTernariaExprNoIn
+    : LogicaOOExprNoIn
+    | LogicaOOExprNoIn '?' AssignmentExprNoIn ':' AssignmentExprNoIn
+    ;
 
-RMAYEQExprNB
-    : RMINEQExprNB
-    | RMAYEQExprNB MAQ RMINEQExprNB
-;
+CondicionTernariaExprNoBF
+    : LogicaOOExprNoBF
+    | LogicaOOExprNoBF '?' AssignmentExpr ':' AssignmentExpr
+    ;
 
-RMINEQExprNB
-    : RMAYExprNB
-    | RMINEQExprNB MIQ RMAYExprNB
-;
+AssignmentExpr
+    : CondicionTernariaExpr
+    | LeftHandSideExpr AssignmentOperator AssignmentExpr
+    ;
 
-RMAYExprNB
-    : RMINExprNB
-    | RMAYExprNB MA RMINExprNB
-;
+AssignmentExprNoIn
+    : CondicionTernariaExprNoIn
+    | LeftHandSideExpr AssignmentOperator AssignmentExprNoIn
+    ;
 
-RMINExprNB
-    : AADDExprNB
-    | RMINExprNB MI AADDExprNB
-;
-
-AADDExprNB
-    : AADDExprNB '+' AMULTExprNB
-    | AADDExprNB '-' AMULTExprNB
-    | AMULTExprNB
-;
-
-AMULTExprNB
-    : AMULTExprNB '*' APOTExprNB
-    | AMULTExprNB '/' APOTExprNB
-    | APOTExprNB
-;
-
-APOTExprNB
-    : APOTExprNB '^' UnaryExprNB
-    | APOTExprNB '%' UnaryExprNB
-    | UnaryExprNB
-;
-
-UnaryExprNB
-    : UnaryExprNBC
-    | PostFixExprNB
-;
-
-UnaryExprNBC
-    : '-' UnaryExprNB
-    | PLUSPLUS UnaryExprNB
-    | MINSMINS UnaryExprNB
-;
-
-PostFixExprNB
-    : LeftHandSideExprNB
-    | LeftHandSideExprNB PLUSPLUS
-    | LeftHandSideExprNB MINSMINS
-;
-
-LeftHandSideExprNB
-    : MemberExprNB
-    | CallExprNB
-;
-
-MemberExprNB
-    : PrimaryExprNoBrace
-    | MemberExprNB '[' Expr ']'
-    | MemberExprNB '.' IDENT
-;
-
-CallExprNB
-    : MemberExprNB Arguments
-    | CallExprNB Arguments
-    | CallExprNB '[' Expr ']'
-    | CallExprNB '.' IDENT
-;
+AssignmentExprNoBF
+    : CondicionTernariaExprNoBF
+    | LeftHandSideExprNoBF AssignmentOperator AssignmentExpr
+    ;
