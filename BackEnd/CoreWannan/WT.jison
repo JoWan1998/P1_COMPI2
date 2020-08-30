@@ -118,41 +118,107 @@
 // ANALISIS SINTACTICO
 
 S
-    : Source
+    : Source { $$ = '{\"codigo\":['+$1+']}';}
     | EOF
 ;
 
 Source
     : Statement Source1
+    {
+      if($2 == null)
+      {
+        $$ = $1;
+      }
+      else
+      {
+        $$ = $1+','+$2;
+      }
+    }
 ;
 
 Source1
     :  Statement
+      {
+        $$ = $1;
+      }
     |  Statement Source1
+      {
+        if($2 == null)
+        {
+          $$ = $1;
+        }
+        else
+        {
+          $$ = $1+','+$2;
+        }
+      }
     |  EOF
+      {
+        $$ = null;
+      }
 ;
 
 Statement
     : Declaration_statements
+      {
+        $$ = $1;
+      }
     | Expr_statements
+      {
+        $$ = $1;
+      }
     | Assignation_statements
+      {
+        $$ = $1;
+      }
     | Function_statements
-    | Control_statements
+      {
+        $$ = $1;
+      }
     | Native_statements
+      {
+        $$ = $1;
+      }
     | Block_statements
+      {
+        $$ = $1;
+      }
     | If_statements
+      {
+        $$ = $1;
+      }
     | Iteration_statements
+      {
+        $$ = $1;
+      }
     | Return_statements
+      {
+        $$ = $1;
+      }
     | Break_statements
+      {
+        $$ = $1;
+      }
     | Continue_statements
+      {
+        $$ = $1;
+      }
     | Switch_statements
+      {
+        $$ = $1;
+      }
     | Empty_statements
+      {
+        $$ = $1;
+      }
 ;
-
 
 
 Native_statements
     : CONSOLE '.' LOG '(' Expr ')' ';'
+      {
+        $$ = "{\"statement\":\"console.log\"}"
+      }
     | GRAHPTS '(' ')' ';'
     | CONSOLE '.' LOG '(' Expr ')' error
     | GRAHPTS '(' ')' error
