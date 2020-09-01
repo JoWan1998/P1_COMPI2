@@ -1,5 +1,5 @@
 ///<reference path="Statements.ts"/>
-class Strings extends statement
+class arrays extends statement
 {
     StateCode: number;
     type: TypeStatement;

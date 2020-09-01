@@ -1,3 +1,9 @@
+/*
+        UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
+        JOSE ORLANDO WANNAN ESCOBAR - 201612331
+        GUATEMALA
+ */
+
 abstract class statement
 {
     abstract type: TypeStatement;
@@ -5,6 +11,11 @@ abstract class statement
     abstract execute(): any[2];
     abstract traduction():string;
     abstract grahp():string;
+}
+enum TypeSym
+{
+    'Variable',
+    'Funcion'
 }
 enum TypeStatement
 {
