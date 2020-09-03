@@ -252,7 +252,17 @@ Assignation_statements
     | IDENT initialNo ';'
     | IDENT initialNo error
 ;
+CallExprNoIn
+    : CallExprNoIn Arguments
+    | CallExprNoIn ArrList
+    | CallExprNoIn '.' IDENT
+    | CallExprNoIn '.' LENGTH
+    | '.' IDENT
+    | '.' LENGTH
+    | ArrList
+;
 
+/*
 CallExprNoIn
     : MemberExpr
     | CallExprNoIn Arguments
@@ -263,7 +273,7 @@ CallExprNoIn
     | '.' LENGTH
     | ArrList
 ;
-
+*/
 ArrList
     : Arr ArrList
     | Arr

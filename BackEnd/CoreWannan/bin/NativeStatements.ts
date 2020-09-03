@@ -20,9 +20,11 @@ class NativeStatement extends statement
     execute(): any[2] {
         if(this.instruction == Native.console)
         {
+            if(this.Expression == null)return [-1,null];
             let value = this.Expression.execute();
-            if(value[1]==0) this.StateCode = 0;
-
+            if(value[0]<0) return [-1,null];
+            //this.htmlYouWantToAdd = "<p><b>value[1]</b></p>";
+            this.StateCode = 1;
         }
         return [this.StateCode,null];
     }

@@ -14,6 +14,7 @@
     1 -> sin errores
     2 -> sin errores, break
     3 -> sin errores, continue
+    4 -> sin errores, return
  */
 
 class tablasimbolos
