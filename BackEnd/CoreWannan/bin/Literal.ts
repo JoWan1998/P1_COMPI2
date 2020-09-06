@@ -87,6 +87,7 @@ class Cadena3 extends statement
     value: any;
 
     execute(): any {
+        return[1,""];
     }
 
     grahp(): string {
@@ -98,3 +99,5 @@ class Cadena3 extends statement
     }
 
 }
+
+export {Strings as String}

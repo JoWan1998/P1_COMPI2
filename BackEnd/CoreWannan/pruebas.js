@@ -1,6 +1,5 @@
 var fs = require('fs');
-var parser = require('./WT');
-
+var parser = require('./WE');
 
 
 fs.readFile('./Entrada2.txt', (err, data) => {
