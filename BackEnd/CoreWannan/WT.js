@@ -84,10 +84,10 @@ performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* actio
 var $0 = $$.length - 1;
 switch (yystate) {
 case 1:
- this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"S\":['+$$[$0]+']}'; console.log(this.$);
+ this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"S\":['+$$[$0]+']}'; return this.$;
 break;
 case 2:
- this.$ = '{}';
+ this.$ = '{}'; return this.$;
 break;
 case 3:
 
@@ -129,7 +129,7 @@ case 24: case 28:
             this.$ = $$[$0-1];
         
 break;
-case 26: case 79: case 81: case 96: case 155:
+case 26: case 79: case 81: case 96: case 138: case 155:
 
         this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
     
@@ -141,17 +141,17 @@ case 27:
 break;
 case 29:
 
-            this.$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"declaration\",\"type\":['+$$[$0-2]+'], \"Values\":['+$$[$0-1]+']}';
+            this.$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"declaration\",\"type\":['+$$[$0-2]+'], \"values\":['+$$[$0-1]+']}';
         
 break;
 case 31:
 
-             this.$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"CallFunction\",\"name\":\"'+$$[$0-1]+'\", \"Parameters\":['+$$[$0]+']}';
+             this.$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"CallFunction\",\"name\":\"'+$$[$0-1]+'\", \"parameters\":['+$$[$0]+']}';
         
 break;
 case 32:
 
-             this.$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"asignation\",\"variable\":\"'+$$[$0-3]+'\",\"Params\":['+$$[$0-2]+'],\"ValExpression\":['+$$[$0-1]+']}';
+             this.$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"asignation\",\"variable\":\"'+$$[$0-3]+'\",\"params\":['+$$[$0-2]+'],\"ValExpression\":['+$$[$0-1]+']}';
         
 break;
 case 33: case 35: case 83: case 85: case 102:
@@ -161,42 +161,42 @@ case 33: case 35: case 83: case 85: case 102:
 break;
 case 34:
 
-            this.$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"asignation\",\"variable\":\"'+$$[$0-2]+'\",\"Params\":[],\"ValExpression\":['+$$[$0-1]+']}';
+            this.$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"asignation\",\"variable\":\"'+$$[$0-2]+'\",\"params\":[],\"ValExpression\":['+$$[$0-1]+']}';
         
 break;
 case 36:
 
-            this.$ = $$[$0-1] + ',{\"statement\":\"Argument\",\"Value\":['+$$[$0]+']}';
+            this.$ = $$[$0-1] + ',{\"statement\":\"Argument\",\"value\":['+$$[$0]+']}';
         
 break;
 case 37:
 
-            this.$ = $$[$0-1] + ',{\"statement\":\"ArrayList\",\"Value\":['+$$[$0]+']}';
+            this.$ = $$[$0-1] + ',{\"statement\":\"ArrayList\",\"value\":['+$$[$0]+']}';
         
 break;
 case 38:
 
-            this.$ = $$[$0-2] + ',{\"statement\":\"Object\",\"Value\":['+$$[$0]+']}';
+            this.$ = $$[$0-2] + ',{\"statement\":\"Object\",\"value\":['+$$[$0]+']}';
         
 break;
 case 39:
 
-            this.$ = $$[$0-2] + ',{\"statement\":\"NativeArrayLength\",\"Value\":[]}';
+            this.$ = $$[$0-2] + ',{\"statement\":\"NativeArrayLength\",\"value\":[]}';
         
 break;
 case 40:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"Object\",\"Value\":['+$$[$0]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"Object\",\"value\":['+$$[$0]+']}';
         
 break;
 case 41:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"NativeArrayLength\",\"Value\":[]}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"NativeArrayLength\",\"value\":[]}';
         
 break;
 case 42:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"ArrayList\",\"Value\":['+$$[$0]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"ArrayList\",\"value\":['+$$[$0]+']}';
         
 break;
 case 43:
@@ -211,7 +211,7 @@ case 44: case 47:
 break;
 case 45:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"MatrizPosition\",\"Value\":['+$$[$0-1]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"MatrizPosition\",\"value\":['+$$[$0-1]+']}';
         
 break;
 case 46:
@@ -221,32 +221,32 @@ case 46:
 break;
 case 48:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":['+$$[$0-1]+'],\"name\":\"'+$$[$0-3]+'\,\"ValExpression\":['+$$[$0]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":['+$$[$0-1]+'],\"name\":\"'+$$[$0-3]+'\",\"ValExpression\":['+$$[$0]+']}';
         
 break;
 case 49:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":[],\"name\":\"'+$$[$0-1]+'\,\"ValExpression\":['+$$[$0]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":[],\"name\":\"'+$$[$0-1]+'\",\"ValExpression\":['+$$[$0]+']}';
         
 break;
 case 50:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":['+$$[$0-1]+'],\"name\":\"'+$$[$0-4]+'\,\"ValExpression\":['+$$[$0]+'],\"ArrayLength\":['+$$[$0-3]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":['+$$[$0-1]+'],\"name\":\"'+$$[$0-4]+'\",\"ValExpression\":['+$$[$0]+'],\"ArrayLength\":['+$$[$0-3]+']}';
         
 break;
 case 51:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":[],\"name\":\"'+$$[$0-2]+'\,\"ValExpression\":['+$$[$0]+'],\"ArrayLength\":['+$$[$0-1]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":[],\"name\":\"'+$$[$0-2]+'\",\"ValExpression\":['+$$[$0]+'],\"ArrayLength\":['+$$[$0-1]+']}';
         
 break;
 case 52:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":['+$$[$0-2]+'],\"tipo\":['+$$[$0-4]+'],\"name\":\"'+$$[$0-4]+'\,\"ValExpression\":['+$$[$0-1]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":['+$$[$0-2]+'],\"tipo\":['+$$[$0-4]+'],\"name\":\"'+$$[$0-3]+'\",\"ValExpression\":['+$$[$0]+']}';
         
 break;
 case 53:
 
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":[],\"tipo\":['+$$[$0-2]+'],\"name\":\"'+$$[$0-2]+'\,\"ValExpression\":['+$$[$0-1]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":[],\"tipo\":['+$$[$0-2]+'],\"name\":\"'+$$[$0-1]+'\",\"ValExpression\":['+$$[$0]+']}';
         
 break;
 case 54:
@@ -351,7 +351,7 @@ case 84:
 break;
 case 86:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"switch\",\"Expression\":['+$$[$0-2]+'],\"Values\":['+$$[$0]+']}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"switch\",\"Expression\":['+$$[$0-2]+'],\"values\":['+$$[$0]+']}';
     
 break;
 case 87: case 164: case 189:
@@ -364,7 +364,7 @@ case 88:
         this.$ = $$[$0-3] +',\n'+$$[$0-2]+',\n'+$$[$0-1];
     
 break;
-case 90: case 93: case 111: case 113: case 114: case 116: case 118: case 121: case 140: case 145: case 146: case 156: case 158: case 161: case 162: case 165: case 167: case 168: case 171: case 190: case 192: case 193: case 195: case 196: case 199: case 207: case 208: case 209: case 210: case 211: case 216: case 221: case 224: case 227: case 230: case 233: case 236: case 246: case 251: case 253: case 257: case 261: case 263:
+case 90: case 93: case 111: case 113: case 114: case 116: case 118: case 121: case 137: case 140: case 145: case 146: case 156: case 158: case 161: case 162: case 165: case 167: case 168: case 171: case 190: case 192: case 193: case 195: case 196: case 199: case 207: case 208: case 209: case 210: case 211: case 216: case 221: case 224: case 227: case 230: case 233: case 236: case 246: case 251: case 253: case 257: case 261: case 263:
 
         this.$ = $$[$0];
     
@@ -421,27 +421,27 @@ case 103:
 break;
 case 104: case 105:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"for\",\"ExpresionInitial\":['+$$[$0-6]+'],\"ExpressionValue\":['+$$[$0-4]+'],\"ExpressionFinal\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"for\",\"ExpresionInitial\":['+$$[$0-6]+'],\"Expressionvalue\":['+$$[$0-4]+'],\"ExpressionFinal\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
     
 break;
 case 106:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"forin\",\"ExpresionInitial\":['+$$[$0-4]+'],\"ExpressionValue\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"forin\",\"ExpresionInitial\":['+$$[$0-4]+'],\"Expressionvalue\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
     
 break;
 case 107:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"forin\",\"ExpresionInitial\":[{\"tipo\":['+$$[$0-5]+'],\"name\":\"'+$$[$0-4]+'\"}],\"ExpressionValue\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"forin\",\"ExpresionInitial\":[{\"tipo\":['+$$[$0-5]+'],\"name\":\"'+$$[$0-4]+'\"}],\"Expressionvalue\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
     
 break;
 case 108:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"forof\",\"ExpresionInitial\":['+$$[$0-4]+'],\"ExpressionValue\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"forof\",\"ExpresionInitial\":['+$$[$0-4]+'],\"Expressionvalue\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
     
 break;
 case 109:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"forof\",\"ExpresionInitial\":[{\"tipo\":['+$$[$0-5]+'],\"name\":\"'+$$[$0-4]+'\"}],\"ExpressionValue\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"forof\",\"ExpresionInitial\":[{\"tipo\":['+$$[$0-5]+'],\"name\":\"'+$$[$0-4]+'\"}],\"Expressionvalue\":['+$$[$0-2]+'],\"body\":['+$$[$0]+']}';
     
 break;
 case 115: case 117: case 119:
@@ -511,32 +511,17 @@ case 132:
 break;
 case 133:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"tipo\":['+$$[$0-1]+'],\"size\":\"'+$$[$0]+'\"}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"tipo\":['+$$[$0-1]+'],\"size\":['+$$[$0]+']}';
     
 break;
 case 134:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"tipo\":['+$$[$0]+'],\"size\":\"\"}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"tipo\":['+$$[$0]+'],\"size\":[]}';
     
 break;
-case 135:
+case 135: case 136:
 
-        this.$ = $$[$0-1]+$$[$0];
-    
-break;
-case 136:
-
-        this.$ = 1+$$[$0];
-    
-break;
-case 137:
-
-        this.$ = 1;
-    
-break;
-case 138:
-
-        this.$ = 0;
+        this.$ = $$[$0-1]+',\n'+$$[$0];
     
 break;
 case 139:
@@ -659,19 +644,14 @@ case 194: case 255: case 259: case 265: case 267: case 269: case 271:
         this.$ =$$[$0];
     
 break;
-case 197:
+case 197: case 200:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement\",\"padre\":['+$$[$0-1]+']}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement\",\"padre\":['+$$[$0-1]+']}';
     
 break;
 case 198: case 201:
 
         this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement\",\"padre\":['+$$[$0-1]+']}';
-    
-break;
-case 200:
-
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement\",\"padre\":['+$$[$0-1]+']}';
     
 break;
 case 202:
@@ -726,7 +706,7 @@ case 252: case 254: case 256: case 258: case 260: case 262:
 break;
 case 264: case 266: case 268:
 
-        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"ternario\",\"ValueExpression\":['+$$[$0-4]+'],\"Expression1\":['+$$[$0-2]+'],\"Expression2\":['+$$[$0]+']}';
+        this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"ternario\",\"valueExpression\":['+$$[$0-4]+'],\"Expression1\":['+$$[$0-2]+'],\"Expression2\":['+$$[$0]+']}';
     
 break;
 case 270: case 272: case 274:
