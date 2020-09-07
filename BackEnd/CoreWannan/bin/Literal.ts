@@ -99,5 +99,3 @@ class Cadena3 extends statement
     }
 
 }
-
-export {Strings as String}
