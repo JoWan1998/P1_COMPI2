@@ -15,8 +15,8 @@ class expression extends statement
         super();
     }
 
-    execute(): any[2] {
-        return (this.Expresion != null)?this.Expresion.execute():[-1,null];
+    execute(tablasimbolo): any[2] {
+        return (this.Expresion != null)?this.Expresion.execute(tablasimbolo):[-1,null];
     }
 
     grahp(): string {
@@ -38,14 +38,14 @@ class ArichmeticExpression extends statement
     value:any;
     linea:number;
 
-    execute(): any[2]
+    execute(tablasimbolo): any[2]
     {
         this.StateCode = -1;
         this.value = null;
         try
         {
-            let izq = (this.Expression1!=null)?this.Expression1.execute():[1,null];
-            let der = (this.Expression2!=null)?this.Expression2.execute():[1,null];
+            let izq = (this.Expression1!=null)?this.Expression1.execute(tablasimbolo):[-1,null];
+            let der = (this.Expression2!=null)?this.Expression2.execute(tablasimbolo):[-1,null];
             if(izq[0]==1&&der[0]==1)
             {
                 switch (this.Function)
@@ -159,14 +159,14 @@ class LogialExpression extends statement
     linea:number;
     value:any;
 
-    execute(): any[2]
+    execute(tablasimbolo): any[2]
     {
         this.StateCode = -1;
         this.value = null;
         try
         {
-            let izq = (this.Expression1!=null)?this.Expression1.execute():[1,null];
-            let der = (this.Expression2!=null)?this.Expression2.execute():[1,null];
+            let izq = (this.Expression1!=null)?this.Expression1.execute(tablasimbolo):[-1,null];
+            let der = (this.Expression2!=null)?this.Expression2.execute(tablasimbolo):[-1,null];
             if(izq[0]==1&&der[0]==1)
             {
                 switch (this.Function)
@@ -185,6 +185,19 @@ class LogialExpression extends statement
                             this.StateCode = 1;
                         }
                         break;
+                    case LogicalExpr.NOT:
+                        if(izq[1] instanceof Boolean)
+                        {
+                            this.value = !izq[1];
+                            this.StateCode = 1;
+                        }
+                        break;
+                }
+            }
+            else if(izq[0]==1)
+            {
+                switch (this.Function)
+                {
                     case LogicalExpr.NOT:
                         if(izq[1] instanceof Boolean)
                         {
@@ -232,14 +245,14 @@ class RelationalExpression extends statement
     value: any;
     linea:number;
 
-    execute(): any[2]
+    execute(tablasimbolo): any[2]
     {
         this.StateCode = -1;
         this.value = null;
         try
         {
-            let izq = (this.Expression1!=null)?this.Expression1.execute():[1,null];
-            let der = (this.Expression2!=null)?this.Expression2.execute():[1,null];
+            let izq = (this.Expression1!=null)?this.Expression1.execute(tablasimbolo):[1,null];
+            let der = (this.Expression2!=null)?this.Expression2.execute(tablasimbolo):[1,null];
             if(izq[0]==1&&der[0]==1)
             {
                 switch (this.Function)

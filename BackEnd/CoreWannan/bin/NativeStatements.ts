@@ -17,11 +17,11 @@ class NativeStatement extends statement
         this.type = typeS
     }
 
-    execute(): any[2] {
+    execute(tablasimbolo): any[2] {
         if(this.instruction == Native.console)
         {
             if(this.Expression == null)return [-1,null];
-            let value = this.Expression.execute();
+            let value = this.Expression.execute(tablasimbolo);
             if(value[0]<0) return [-1,null];
             //this.htmlYouWantToAdd = "<p><b>value[1]</b></p>";
             this.StateCode = 1;

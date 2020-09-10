@@ -20,14 +20,14 @@ class IfStatement extends statement
         this.bodyElse = cuerpo2;
     }
 
-    execute(): any {
-        let valInitial = this.ValueExpression.execute();
+    execute(tablasimbolo): any {
+        let valInitial = this.ValueExpression.execute(tablasimbolo);
         if(valInitial[0]<0) return [-1,null];
         if(valInitial[1])
         {
             for(let statement0 of this.body)
             {
-                let value = statement0.execute();
+                let value = statement0.execute(tablasimbolo);
                 switch (value[0])
                 {
                     case -2: //-> error instanciar variable
@@ -53,11 +53,11 @@ class IfStatement extends statement
         }
         else
         {
-            if(this.bodyElse!= undefined && this.bodyElse!=null)
+            if(this.bodyElse != undefined)
             {
                 for(let statement0 of this.bodyElse)
                 {
-                    let value = statement0.execute();
+                    let value = statement0.execute(tablasimbolo);
                     switch (value[0])
                     {
                         case -2: //-> error instanciar variable
@@ -110,19 +110,19 @@ class OperatorTernario extends statement
         this.ValueExpression = Val;
     }
 
-    execute(): any {
-        let valInitial = this.ValueExpression.execute();
+    execute(tablasimbolo): any {
+        let valInitial = this.ValueExpression.execute(tablasimbolo);
         if(valInitial[0]<0) return [-1,null];
         if(valInitial[1])
         {
-            let val1 = this.Expression1.execute();
+            let val1 = this.Expression1.execute(tablasimbolo);
             if(val1[1]<0) return [-1,null];
             this.StateCode = 1;
             this.value = val1[1];
         }
         else
         {
-            let val2 = this.Expression2.execute();
+            let val2 = this.Expression2.execute(tablasimbolo);
             if(val2[1]<0) return [-1,null];
             this.StateCode = 1;
             this.value = val2[1];
@@ -137,7 +137,4 @@ class OperatorTernario extends statement
     traduction(): string {
         return "";
     }
-
-
-
 }

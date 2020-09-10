@@ -1,3 +1,4 @@
+///<reference path="TablaSimbolos.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -8,7 +9,7 @@ abstract class statement
 {
     abstract type: TypeStatement;
     abstract StateCode: number;
-    abstract execute(): any[2];
+    abstract execute(tablasimbolo:tablasimbolos): any[2];
     abstract traduction():string;
     abstract grahp():string;
 }
@@ -86,4 +87,14 @@ enum NativeArray
     Push,
     Pop,
     Length
+}
+enum typeAssigment
+{
+    igual,
+    suma,
+    resta,
+    multiplicacion,
+    potencia,
+    modulo,
+    division
 }

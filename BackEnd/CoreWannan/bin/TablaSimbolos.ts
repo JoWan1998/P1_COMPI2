@@ -89,6 +89,26 @@ class tablasimbolos
         }
 
     }
+    getType(name:string)
+    {
+        try
+        {
+            for(let simbolo of this.simbolos)
+            {
+                if (simbolo instanceof sym)
+                {
+                    if (simbolo.name == name)
+                    {
+                        return simbolo.tipo;
+                    }
+                }
+            }
+            return null;
+        }
+        catch (e) {
+            return null;
+        }
+    }
     insert(name:string, value:any, tipo:TypeStatement)
     {
         try
