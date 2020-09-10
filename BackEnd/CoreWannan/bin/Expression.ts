@@ -9,6 +9,7 @@ class expression extends statement
 {
     StateCode: number;
     type: TypeStatement;
+    valueType:TypeValue;
     Expresion: statement;
     linea:number;
     constructor() {

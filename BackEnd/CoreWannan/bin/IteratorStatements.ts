@@ -1,4 +1,5 @@
 ///<reference path="Statements.ts"/>
+///<reference path="Expression.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -290,64 +291,23 @@ class ForStatements3 extends statement
 {
     StateCode: number;
     type: TypeStatement;
-    condicion:statement;
-    postIterator:statement;
-    valueInitial:string;
+    Expression:statement;
+    identificador:string;
     body:statement[];
     value: any;
 
     execute(tablasimbolo): any[2]
     {
-        let initial = tablasimbolo.get(this.valueInitial);
-        if(initial!=null)
+        if(this.Expression.type == TypeStatement.ExpresionStatement)
         {
-            let state = true;
-            while(state)
+            let vals = <expression> this.Expression;
+            switch (vals.valueType)
             {
-                let internalState = 0;
-                let condicion = this.condicion.execute(tablasimbolo);
-                if(condicion[0]<0) return [-1,null]
-                if(condicion[1])
-                {
-                    for(let statement1 of this.body)
-                    {
-                        let value = statement1.execute(tablasimbolo);
-                        switch (value[0])
-                        {
-                            case -2: //-> error instanciar variable
-                                return [-2,null];
-                            case -1: //-> error
-                                return[-1,null];
-                            case 0: //-> finalizado
-                                this.StateCode = 0;
-                                this.value = value[1];
-                                break;
-                            case 1: //-> sin errores
-                                this.StateCode = 1;
-                                this.value = value[1];
-                                break;
-                            case 2: //-> sin errores, break
-                                internalState = 2;
-                                break;
-                            case 3: //-> sin errores, continue
-                                internalState = 3;
-                                break;
-                            case 4: //-> sin errores, return
-                                return [4,value[1]];
-                        }
-                        if(internalState==3 || internalState == 2) break;
+                case TypeValue.Array:
 
-                    }
-                    if(internalState==3) continue;
-                    if(internalState==2) break;
-                    let post = this.postIterator.execute(tablasimbolo);
-                    if (post[0] < 0) return [-1, null];
-                }
-                else
-                {
-                    break;
-                }
+                case TypeValue.variable:
             }
+            return [-1,null];
         }
         return [-1,null];
     }

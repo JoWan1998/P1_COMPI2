@@ -79,7 +79,8 @@ enum TypeValue
     String,
     Number,
     Object,
-    Array
+    Array,
+    variable
 }
 enum NativeArray
 {
