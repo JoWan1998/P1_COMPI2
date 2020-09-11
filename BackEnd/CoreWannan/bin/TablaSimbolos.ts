@@ -5,6 +5,8 @@
  */
 
 ///<reference path="Statements.ts"/>
+///<reference path="Type.ts"/>
+///<reference path="Array.ts"/>
 
 /*
     simbologia de estados
@@ -45,7 +47,7 @@ class tablasimbolos
     }
 
 
-    update(name:string,new_value:any):number
+    update(name:string,new_value:any,atributo?:string,posicion?:any):any
     {
         try
         {
@@ -55,20 +57,32 @@ class tablasimbolos
                 {
                     if (simbolo.name == name)
                     {
-                        simbolo.update(new_value);
-                        return 1;
+                        if(simbolo.tipoValue == TypeValue.type)
+                        {
+                            return simbolo.update(new_value,atributo,undefined);
+                        }
+                        else if(simbolo.tipoValue == TypeValue.Array)
+                        {
+                            return simbolo.update(new_value,undefined,posicion);
+                        }
+                        else
+                        {
+                            return simbolo.update(new_value,undefined,undefined);
+                        }
+
                     }
                 }
             }
+            return [-1,null];
         }
         catch (e)
         {
-            return -1;
+            return [-1,null];
         }
 
     }
     //metodo el cual a diferencia de otros al no tener una ejecucion correcta devuelve null
-    get(name:string): any
+    get(name:string,atributo?:string,posicion?:any): any
     {
         try
         {
@@ -78,14 +92,31 @@ class tablasimbolos
                 {
                     if (simbolo.name == name)
                     {
-                        return simbolo.getValue();
+                        if(simbolo.tipo == TypeSym.Variable)
+                        {
+                            if(simbolo.tipoValue == TypeValue.type)
+                            {
+                                let sim:types = simbolo.getValue();
+                                return [1,sim.getValueAtributo(atributo)];
+                            }
+                            else if(simbolo.tipoValue == TypeValue.Array)
+                            {
+                                let sim:arrays = simbolo.getValue();
+                                return [1,sim.getValue(posicion)];
+                            }
+                            else
+                            {
+                                return [1,simbolo.getValue()];
+                            }
+                        }
+
                     }
                 }
             }
-            return null;
+            return [-1,null];
         }
         catch (e) {
-            return null;
+            return [-1,null];
         }
 
     }
@@ -99,17 +130,39 @@ class tablasimbolos
                 {
                     if (simbolo.name == name)
                     {
-                        return simbolo.tipo;
+                        return [1,simbolo.tipo];
                     }
                 }
             }
-            return null;
+            return [-1,null];
         }
         catch (e) {
-            return null;
+            return [-1,null];
         }
     }
-    insert(name:string, value:any, tipo:TypeStatement)
+
+    getTypeValue(name:string)
+    {
+        try
+        {
+            for(let simbolo of this.simbolos)
+            {
+                if (simbolo instanceof sym)
+                {
+                    if (simbolo.name == name)
+                    {
+                        return [1,simbolo.tipoValue];
+                    }
+                }
+            }
+            return [-1,null];
+        }
+        catch (e) {
+            return [-1,null];
+        }
+
+    }
+    insert(name:string, value:any, tipo:TypeStatement, tipovalue:TypeValue)
     {
         try
         {
@@ -120,15 +173,24 @@ class tablasimbolos
                 {
                     if (simbolo.name == name)
                     {
-                        if(simbolo.ambito == this.ambitoLevel) state = true;
+                        state = true;
                         break;
                     }
                 }
             }
-            if(!state) this.simbolos.push(new sym(name,this.ambitoLevel,value,tipo));
+            if(!state)
+            {
+                let simbolo = new sym(name,this.ambitoLevel,value,tipo);
+                simbolo.tipoValue = tipovalue;
+                this.simbolos.push(simbolo);
+                return [1,null];
+            }
+
+            return [-2,null];
+
         }
         catch (e) {
-            return -1;
+            return [-1,null];
         }
     }
 
@@ -138,6 +200,7 @@ class sym
     name:string;
     ambito:number;
     tipo:TypeSym;
+    tipoValue:TypeValue;
     value:any;
 
     constructor(name: string, ambito:number,value:any,tipo:TypeStatement)
@@ -146,9 +209,26 @@ class sym
         this.ambito = ambito;
         this.value = value;
     }
-    update(new_value:any)
+    update(new_value:any,atributo?:any,position?:any):any
     {
-        this.value = new_value;
+        if(atributo!=undefined && position == undefined)
+        {
+            let valor:types = this.value;
+            valor.setValueAtributo(atributo,new_value);
+            this.value = valor;
+        }
+        else if(atributo==undefined && position != undefined)
+        {
+            let valor:arrays = this.value;
+            valor.setValue(position,new_value);
+            this.value = valor;
+        }
+        else
+        {
+            this.value = new_value;
+            return [1,null];
+        }
+
     }
     getValue():any
     {

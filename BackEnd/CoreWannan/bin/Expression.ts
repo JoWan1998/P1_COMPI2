@@ -12,6 +12,7 @@ class expression extends statement
     valueType:TypeValue;
     Expresion: statement;
     linea:number;
+    ArrayType:NativeArray;
     constructor() {
         super();
     }

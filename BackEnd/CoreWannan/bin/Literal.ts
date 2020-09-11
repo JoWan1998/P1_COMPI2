@@ -10,8 +10,16 @@ class Strings extends statement
     type: TypeStatement;
     value: string;
 
+    constructor() {
+        super();
+        this.value = "";
+    }
     execute(): any {
         return [1,this.value];
+    }
+    getValue()
+    {
+        return this.value;
     }
 
     grahp(): string {
@@ -30,8 +38,18 @@ class Numbers extends statement
     type: TypeStatement;
     value: number;
 
+    constructor() {
+        super();
+        this.value = -1;
+    }
+
     execute(): any {
-        return [1,this.value];
+        return [1, this.value];
+    }
+
+    getValue()
+    {
+        return this.value;
     }
 
     grahp(): string {
@@ -50,6 +68,14 @@ class Booleans extends statement
     type: TypeStatement;
     value: boolean;
 
+    constructor() {
+        super();
+        this.value = false;
+    }
+    getValue()
+    {
+        return this.value;
+    }
     execute(): any {
         return [1,this.value];
     }
@@ -68,6 +94,11 @@ class Nulls extends statement
     StateCode: number;
     type: TypeStatement;
 
+    getValue()
+    {
+        return null;
+    }
+
     execute(): any {
         return [1,null];
     }
@@ -85,6 +116,11 @@ class Cadena3 extends statement
     StateCode: number;
     type: TypeStatement;
     value: any;
+
+    getValue()
+    {
+        return this.value;
+    }
 
     execute(): any {
         return[1,""];

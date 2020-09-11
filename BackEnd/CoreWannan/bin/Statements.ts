@@ -80,7 +80,7 @@ enum TypeValue
     Number,
     Object,
     Array,
-    variable
+    type
 }
 enum NativeArray
 {

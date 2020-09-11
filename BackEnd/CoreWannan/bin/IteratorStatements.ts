@@ -305,7 +305,7 @@ class ForStatements3 extends statement
             {
                 case TypeValue.Array:
 
-                case TypeValue.variable:
+                case TypeValue.type:
             }
             return [-1,null];
         }

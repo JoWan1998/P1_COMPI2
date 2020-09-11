@@ -1,4 +1,9 @@
 ///<reference path="Statements.ts"/>
+/*
+        UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
+        JOSE ORLANDO WANNAN ESCOBAR - 201612331
+        GUATEMALA
+ */
 class arrays extends statement
 {
     StateCode: number;
@@ -9,6 +14,12 @@ class arrays extends statement
     {
 
     }
+
+    getValue(position:any[])
+    {
+        //fix get array
+    }
+
     get(position:number)
     {
         let a = 0;
@@ -22,6 +33,12 @@ class arrays extends statement
         }
         return [-1,null]
     }
+
+    setValue(position:any,value?:any)
+    {
+        //fix array -> position
+    }
+
     set(position:number,value?:any)
     {
         try
