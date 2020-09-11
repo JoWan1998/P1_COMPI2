@@ -8,6 +8,7 @@ class arrays extends statement
 {
     StateCode: number;
     type: TypeStatement;
+    tipoValue:TypeValue;
     values:any[];
 
     execute(): any
@@ -18,6 +19,10 @@ class arrays extends statement
     getValue(position:any[])
     {
         //fix get array
+    }
+    getAll()
+    {
+        return this.values;
     }
 
     get(position:number)

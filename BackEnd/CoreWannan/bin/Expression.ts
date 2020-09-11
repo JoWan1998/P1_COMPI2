@@ -13,9 +13,24 @@ class expression extends statement
     Expresion: statement;
     linea:number;
     ArrayType:NativeArray;
+    position:any;
+    atributo:any;
     constructor() {
         super();
+        this.atributo = null;
+        this.position = null;
     }
+
+    getValuesArray():any
+    {
+
+    }
+
+    getValue():any
+    {
+
+    }
+
 
     execute(tablasimbolo): any[2] {
         return (this.Expresion != null)?this.Expresion.execute(tablasimbolo):[-1,null];

@@ -12,6 +12,8 @@ class types extends statement
     StateCode: number;
     type: TypeStatement;
     atributos:atributo[];
+    identificador:string;
+    tipoValue:TypeValue;
 
     execute(tablasimbolo: tablasimbolos): any {
     }

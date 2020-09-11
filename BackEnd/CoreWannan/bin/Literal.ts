@@ -9,6 +9,7 @@ class Strings extends statement
     StateCode: number;
     type: TypeStatement;
     value: string;
+    tipoValue:TypeValue;
 
     constructor() {
         super();
@@ -37,6 +38,7 @@ class Numbers extends statement
     StateCode: number;
     type: TypeStatement;
     value: number;
+    tipoValue:TypeValue;
 
     constructor() {
         super();
@@ -67,6 +69,7 @@ class Booleans extends statement
     StateCode: number;
     type: TypeStatement;
     value: boolean;
+    tipoValue:TypeValue;
 
     constructor() {
         super();
@@ -93,6 +96,7 @@ class Nulls extends statement
 {
     StateCode: number;
     type: TypeStatement;
+    tipoValue:TypeValue;
 
     getValue()
     {
@@ -115,6 +119,7 @@ class Cadena3 extends statement
 {
     StateCode: number;
     type: TypeStatement;
+    tipoValue:TypeValue;
     value: any;
 
     getValue()

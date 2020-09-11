@@ -162,7 +162,7 @@ class tablasimbolos
         }
 
     }
-    insert(name:string, value:any, tipo:TypeStatement, tipovalue:TypeValue)
+    insert(name:string, value:any, tipo:TypeSym, tipovalue:TypeValue)
     {
         try
         {
@@ -202,12 +202,14 @@ class sym
     tipo:TypeSym;
     tipoValue:TypeValue;
     value:any;
+    clase:TypeValue;
 
-    constructor(name: string, ambito:number,value:any,tipo:TypeStatement)
+    constructor(name: string, ambito:number,value:any,tipo:TypeSym)
     {
         this.name = name;
         this.ambito = ambito;
         this.value = value;
+        this.tipo = tipo;
     }
     update(new_value:any,atributo?:any,position?:any):any
     {

@@ -15,28 +15,28 @@ abstract class statement
 }
 enum TypeSym
 {
-    'Variable',
-    'Funcion'
+    Variable,
+    Funcion
 }
 enum TypeStatement
 {
-    'NativeStatement',
-    'ControlStatement',
-    'IterationStatement',
-    'ExpresionStatement',
-    'FunctionStatement',
-    'DeclarationStatement',
-    'AssignationStatement',
-    'ReturnStatement',
-    'BreakStatement',
-    'ContinueStatement',
-    'SwichtStatement'
+    NativeStatement,
+    ControlStatement,
+    IterationStatement,
+    ExpresionStatement,
+    FunctionStatement,
+    DeclarationStatement,
+    AssignationStatement,
+    ReturnStatement,
+    BreakStatement,
+    ContinueStatement,
+    SwichtStatement
 }
 enum Iteration
 {
-    'DoWhile',
-    'While',
-    'For'
+    DoWhile,
+    While,
+    For
 }
 enum Native
 {
@@ -80,7 +80,8 @@ enum TypeValue
     Number,
     Object,
     Array,
-    type
+    type,
+    Boolean
 }
 enum NativeArray
 {
@@ -99,3 +100,4 @@ enum typeAssigment
     modulo,
     division
 }
+
