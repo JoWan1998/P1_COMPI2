@@ -341,13 +341,11 @@ class ForStatements3 extends statement
                 switch (vals.valueType)
                 {
                     case TypeValue.Array:
-                        let valores:any[] = vals.getValuesArray();
+                        let valores:any[] = vals.getValuesArray(tablasimbolo);
                         for(let post in valores)
                         {
-                            let number:Numbers = new Numbers();
-                            number.value = Number(post);
 
-                            tablasimbolo.update(this.identificador,number);
+                            tablasimbolo.update(this.identificador,post);
                             for(let statement1 of this.body)
                             {
                                 let value = statement1.execute(tablasimbolo);
@@ -384,16 +382,14 @@ class ForStatements3 extends statement
                     case TypeValue.Object:
                         if(vals.atributo==null && vals.position == null)
                         {
-                            let temp:sym = tablasimbolo.get(vals.getValue().toString())
+                            let temp:sym = tablasimbolo.get(vals.getValue(tablasimbolo).toString())
                             switch (temp.tipoValue)
                             {
                                 case TypeValue.Array:
                                     let valores:any[] = temp.getValue().getAll();
                                     for(let post in valores)
                                     {
-                                        let number:Numbers = new Numbers();
-                                        number.value = Number(post);
-                                        tablasimbolo.update(this.identificador,number);
+                                        tablasimbolo.update(this.identificador,post);
                                         for(let statement1 of this.body)
                                         {
                                             let value = statement1.execute(tablasimbolo);
@@ -430,6 +426,38 @@ class ForStatements3 extends statement
                             }
                         }
                         break;
+                    case TypeValue.type:
+                        let vsl = vals.getValueAtributo(tablasimbolo);
+                        for (let post in vsl) {
+                            tablasimbolo.update(this.identificador, post);
+                            for (let statement1 of this.body) {
+                                let value = statement1.execute(tablasimbolo);
+                                switch (value[0]) {
+                                    case -2: //-> error instanciar variable
+                                        return [-2, null];
+                                    case -1: //-> error
+                                        return [-1, null];
+                                    case 0: //-> finalizado
+                                        this.StateCode = 0;
+                                        this.value = value[1];
+                                        break;
+                                    case 1: //-> sin errores
+                                        this.StateCode = 1;
+                                        this.value = value[1];
+                                        break;
+                                    case 2: //-> sin errores, break
+                                        internalState = 2;
+                                        break;
+                                    case 3: //-> sin errores, continue
+                                        internalState = 3;
+                                        break;
+                                    case 4: //-> sin errores, return
+                                        return [4, value[1]];
+                                }
+                                if (internalState == 3 || internalState == 2) break;
+                            }
+                            break;
+                        }
                 }
                 return [1,null];
             }
@@ -467,14 +495,14 @@ class ForStatements4 extends statement
         try
         {
             let internalState = 0;
-            tablasimbolo.insert(this.identificador,null,TypeSym.Variable, TypeValue.Number);
+            tablasimbolo.insert(this.identificador,null,TypeSym.Variable, TypeValue.Object);
             if(this.Expression.type == TypeStatement.ExpresionStatement)
             {
                 let vals = <expression> this.Expression;
                 switch (vals.valueType)
                 {
                     case TypeValue.Array:
-                        let valores:any[] = vals.getValuesArray();
+                        let valores:any[] = vals.getValuesArray(tablasimbolo);
                         for(let post of valores)
                         {
                             tablasimbolo.update(this.identificador,post);
@@ -512,7 +540,7 @@ class ForStatements4 extends statement
                         }
                         break;
                     case TypeValue.String:
-                        let valores1 = vals.getValue().toString();
+                        let valores1 = vals.getValue(tablasimbolo).toString();
                         for(let va of valores1)
                         {
                             tablasimbolo.update(this.identificador,va);
@@ -552,11 +580,11 @@ class ForStatements4 extends statement
                     case TypeValue.Object:
                         if(vals.atributo==null && vals.position == null)
                         {
-                            let temp:sym = tablasimbolo.get(vals.getValue().toString())
+                            let temp:sym = tablasimbolo.get(vals.getValue(tablasimbolo).toString())
                             switch (temp.tipoValue)
                             {
                                 case TypeValue.String:
-                                    let valores1 = temp.getValue().getValue().toString();
+                                    let valores1 = temp.value;
                                     for(let va of valores1)
                                     {
                                         tablasimbolo.update(this.identificador,va);
@@ -634,6 +662,38 @@ class ForStatements4 extends statement
                             }
                         }
                         break;
+                    case TypeValue.type:
+                        let vsl = vals.getValueAtributo(tablasimbolo);
+                        for (let post of vsl) {
+                            tablasimbolo.update(this.identificador, post);
+                            for (let statement1 of this.body) {
+                                let value = statement1.execute(tablasimbolo);
+                                switch (value[0]) {
+                                    case -2: //-> error instanciar variable
+                                        return [-2, null];
+                                    case -1: //-> error
+                                        return [-1, null];
+                                    case 0: //-> finalizado
+                                        this.StateCode = 0;
+                                        this.value = value[1];
+                                        break;
+                                    case 1: //-> sin errores
+                                        this.StateCode = 1;
+                                        this.value = value[1];
+                                        break;
+                                    case 2: //-> sin errores, break
+                                        internalState = 2;
+                                        break;
+                                    case 3: //-> sin errores, continue
+                                        internalState = 3;
+                                        break;
+                                    case 4: //-> sin errores, return
+                                        return [4, value[1]];
+                                }
+                                if (internalState == 3 || internalState == 2) break;
+                            }
+                            break;
+                        }
                 }
                 return [1,null];
             }

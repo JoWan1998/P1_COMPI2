@@ -16,7 +16,11 @@ abstract class statement
 enum TypeSym
 {
     Variable,
-    Funcion
+    Funcion,
+    class,
+    const,
+    let,
+    var
 }
 enum TypeStatement
 {
@@ -81,7 +85,11 @@ enum TypeValue
     Object,
     Array,
     type,
-    Boolean
+    Boolean,
+    void,
+    let,
+    var,
+    const
 }
 enum NativeArray
 {

@@ -20,13 +20,29 @@ class expression extends statement
         this.atributo = null;
         this.position = null;
     }
-
-    getValuesArray():any
+    getValueAtributo(tablasimbolo:tablasimbolos):any
     {
+        try {
+
+        }
+        catch (e) {
+            return null;
+        }
 
     }
 
-    getValue():any
+    getValuesArray(tablasimbolo:tablasimbolos):any
+    {
+        try {
+            let valors =  <arrays> this.Expresion;
+            return valors.getAll();
+        }catch (e) {
+            return [];
+        }
+
+    }
+
+    getValue(tablasimbolo:tablasimbolos):any
     {
 
     }

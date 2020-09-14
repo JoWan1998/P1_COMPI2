@@ -23,6 +23,7 @@ class Asignation extends statement
             {
                 case typeAssigment.division:
                     let oldvalue5 = tablasimbolo.get(this.name);
+
                     if(oldvalue5 != null)
                     {
                         let newvalue5 = new ArichmeticExpression();
