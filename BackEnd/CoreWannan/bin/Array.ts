@@ -269,10 +269,10 @@ class arrays extends statement
     length():any
     {
         try {
-            return [1,this.values.length]
+            return this.values.length;
         }
         catch (e) {
-            return [-1,null]
+            return -1
         }
     }
 

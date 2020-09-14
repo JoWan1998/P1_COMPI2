@@ -11,35 +11,110 @@ class expression extends statement
     type: TypeStatement;
     valueType:TypeValue;
     Expresion: statement;
+    name:string;
     linea:number;
     ArrayType:NativeArray;
-    position:any;
-    atributo:any;
-    constructor() {
+    position:statement[];
+    atributo:string[];
+    isCallFunction:boolean;
+    parameters:statement[];
+
+    constructor()
+    {
         super();
-        this.atributo = null;
-        this.position = null;
+        this.atributo = [];
+        this.position = [];
+        this.name = "";
+        this.ArrayType = null;
     }
+
     getValueAtributo(tablasimbolo:tablasimbolos):any
     {
         //get all atributes
         try {
+            if(this.atributo.length>0)
+            {
+                if(name!="")
+                {
+                    let simbolo = tablasimbolo.getsym(this.name);
+                    if (simbolo[0] > 0)
+                    {
+                        if(simbolo[1] instanceof sym)
+                        {
+                            let simbolito1:sym = simbolo[1];
+                            if(simbolito1.getValue() instanceof types)
+                            {
+                                let valors =  <types> simbolito1.getValue();
+                                let val =  valors.getValuesAtributo(this.atributo,tablasimbolo);
+                                if(val[0]>0)
+                                {
+                                    return val[1];
+                                }
 
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
         }
         catch (e) {
             return null;
         }
-
     }
 
     getValuesArray(tablasimbolo:tablasimbolos):any
     {
         //get all values array
         try {
-            let valors =  <arrays> this.Expresion;
-            return valors.getAll();
+            if(name!="")
+            {
+                let simbolo = tablasimbolo.getsym(this.name);
+                if (simbolo[0] > 0)
+                {
+                    if(simbolo[1] instanceof sym)
+                    {
+                        let simbolito1:sym = simbolo[1];
+                        if(simbolito1.getValue() instanceof arrays)
+                        {
+                            let valors =  <arrays> simbolito1.getValue();
+                            if(this.position.length>0)
+                            {
+                                let val =  valors.getValue(this.position,tablasimbolo);
+                                if(val[0]>0)
+                                {
+                                    return val[1];
+                                }
+                            }
+                            else
+                            {
+                                return valors.getAll();
+                            }
+
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(this.position.length>0)
+                {
+                    let valors =  <arrays> this.Expresion;
+                    let val =  valors.getValue(this.position,tablasimbolo);
+                    if(val[0]>0)
+                    {
+                        return val[1];
+                    }
+                }
+                else
+                {
+                    let valors =  <arrays> this.Expresion;
+                    return valors.getAll();
+                }
+            }
+            return null;
         }catch (e) {
-            return [];
+            return null;
         }
 
     }
@@ -47,6 +122,178 @@ class expression extends statement
     getValue(tablasimbolo:tablasimbolos):any
     {
         //get data in especific
+        try
+        {
+            if(this.ArrayType!=null)
+            {
+                switch (this.ArrayType)
+                {
+                    case NativeArray.Length:
+                        let simbolo = tablasimbolo.getsym(this.name);
+                        if (simbolo[0] > 0)
+                        {
+                            if(simbolo[1] instanceof sym)
+                            {
+                                let simbolito1:sym = simbolo[1];
+                                if(simbolito1.getValue() instanceof arrays)
+                                {
+                                    let valors =  <arrays> simbolito1.getValue();
+                                    if(this.position.length>0)
+                                    {
+                                        let val1 =  valors.getValue(this.position,tablasimbolo);
+                                        if(val1[0]>0)
+                                        {
+                                            if(val1[1] instanceof arrays)
+                                            {
+                                                let retorno = <arrays> val1[1];
+                                                return retorno.length();
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return valors.length();
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case NativeArray.Pop:
+                        let simbolo1  = tablasimbolo.getsym(this.name);
+                        if (simbolo1 [0] > 0)
+                        {
+                            if(simbolo1 [1] instanceof sym)
+                            {
+                                let simbolito1:sym = simbolo1 [1];
+                                if(simbolito1.getValue() instanceof arrays)
+                                {
+                                    let valors =  <arrays> simbolito1.getValue();
+                                    if(this.position.length>0)
+                                    {
+                                        let val1 =  valors.getValue(this.position,tablasimbolo);
+                                        if(val1[0]>0)
+                                        {
+                                            if(val1[1] instanceof arrays)
+                                            {
+                                                let retorno = <arrays> val1[1];
+                                                let retorno1 = retorno.pop();
+                                                if(retorno1[0]>0)
+                                                {
+                                                    return retorno1[1];
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        let retorno =  valors.pop();
+                                        if(retorno[0]>0)
+                                        {
+                                            return retorno[1];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case NativeArray.Push:
+                        let value = this.Expresion.execute(tablasimbolo);
+                        if(value[0]>0)
+                        {
+                            let simbolo2 = tablasimbolo.getsym(this.name);
+                            if (simbolo2[0] > 0)
+                            {
+                                if(simbolo2[1] instanceof sym)
+                                {
+                                    let simbolito1:sym = simbolo2[1];
+                                    if(simbolito1.getValue() instanceof arrays)
+                                    {
+                                        let valors =  <arrays> simbolito1.getValue();
+                                        if(this.position.length>0)
+                                        {
+                                            let val1 =  valors.getValue(this.position,tablasimbolo);
+                                            if(val1[0]>0)
+                                            {
+                                                if(val1[1] instanceof arrays)
+                                                {
+                                                    let retorno = <arrays> val1[1];
+                                                    let bb =  retorno.push(value[1]);
+                                                    if(bb[0]>0)
+                                                    {
+                                                        return retorno.length();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            let bb =  valors.push(value[1]);
+                                            if(bb[0]>0)
+                                            {
+                                                return valors.length();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            else if(name!="")
+            {
+                let simbolo = tablasimbolo.getsym(this.name);
+                if (simbolo[0] > 0)
+                {
+                    if(simbolo[1] instanceof sym)
+                    {
+                        let simbolito1:sym = simbolo[1];
+                        return simbolito1.getValue();
+                    }
+                }
+            }
+            else
+            {
+                switch (this.valueType)
+                {
+                    case TypeValue.Array:
+                    case TypeValue.Boolean:
+                    case TypeValue.const:
+                    case TypeValue.let:
+                    case TypeValue.Number:
+                    case TypeValue.Object:
+                    case TypeValue.String:
+
+                    case TypeValue.type:
+                        if(this.Expresion instanceof  types)
+                        {
+                            return <types> this.Expresion;
+                        }
+                        break;
+                    case TypeValue.var:
+                        if(name!="")
+                        {
+                            let simbolo = tablasimbolo.getsym(this.name);
+                            if (simbolo[0] > 0)
+                            {
+                                if(simbolo[1] instanceof sym)
+                                {
+                                    let simbolito1:sym = simbolo[1];
+                                    return simbolito1.getValue();
+                                }
+                            }
+                        }
+                        break;
+                    case TypeValue.void:
+                        return null;
+
+                }
+            }
+            return null;
+        }
+        catch (e) {
+            return null;
+        }
     }
 
 
