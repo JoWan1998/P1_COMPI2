@@ -45,22 +45,22 @@ class functions extends statement
                         if(this.tipo == TypeValue.void) return[4,null];
                         return [-1,null];
                     }
-                    else if(value[1] as Boolean)
+                    else if(value[1] instanceof Boolean)
                     {
                         if(this.tipo == TypeValue.Boolean) return [4,value[1]]
                         return [-1,null]
                     }
-                    else if(value[1] as Number)
+                    else if(value[1] instanceof Number)
                     {
                         if(this.tipo == TypeValue.Number) return [4,value[1]]
                         return [-1,null]
                     }
-                    else if(value[1] as String)
+                    else if(value[1] instanceof String)
                     {
                         if(this.tipo == TypeValue.String) return [4,value[1]]
                         return [-1,null]
                     }
-                    else if(value[1] as arrays)
+                    else if(value[1] instanceof arrays)
                     {
                         if(this.tipo == TypeValue.Array) return [4,value[1]]
                         return [-1,null]

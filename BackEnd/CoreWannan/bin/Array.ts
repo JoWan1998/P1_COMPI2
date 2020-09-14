@@ -78,53 +78,21 @@ class arrays extends statement
         return [-1,null]
     }
 
-    setValue(tablasimbolo:tablasimbolos,position:any,value?:statement):any
+    setValue(tablasimbolo:tablasimbolos,position:any[],value?:statement):any
     {
         try {
-            if(value!=null || value!=undefined)
+            if(position instanceof Array)
             {
-                let a:expression = position.pop();
-                let result = a.execute(tablasimbolo);
-                if(result[0]>0)
-                {
-                    if(position.length>0)
-                    {
-                        let tt = this.setValorA(tablasimbolo,this.values[result[1]],position,null);
-                        if(tt[0]>0)
-                        {
-                            this.values[result[1]] = tt[1];
-                            return [1,null];
-                        }
-                        else
-                        {
-                            return [-1,null];
-                        }
-                    }
-                    else
-                    {
-                        this.values[result[1]] = this.val;
-                        return [1,null];
-                    }
-                }
-                else
-                {
-                    return [-1,null]
-                }
-            }
-            else
-            {
-                let vals = value.execute(tablasimbolo);
-                if(vals[0]>0)
+
+                if(value == null)
                 {
                     let a:expression = position.pop();
                     let result = a.execute(tablasimbolo);
                     if(result[0]>0)
                     {
-                        let m = this.values[result[1]];
-
                         if(position.length>0)
                         {
-                            let tt = this.setValorA(tablasimbolo,this.values[result[1]],position,vals[1]);
+                            let tt = this.setValorA(tablasimbolo,this.values[result[1]],position,null);
                             if(tt[0]>0)
                             {
                                 this.values[result[1]] = tt[1];
@@ -137,7 +105,7 @@ class arrays extends statement
                         }
                         else
                         {
-                            this.values[result[1]] = vals[1];
+                            this.values[result[1]] = this.val;
                             return [1,null];
                         }
                     }
@@ -148,9 +116,49 @@ class arrays extends statement
                 }
                 else
                 {
-                    return [-1,null]
+                    if(value instanceof  statement)
+                    {
+                        let vals = value.execute(tablasimbolo);
+                        if(vals[0]>0)
+                        {
+                            let a:expression = position.pop();
+                            let result = a.execute(tablasimbolo);
+                            if(result[0]>0)
+                            {
+                                if(position.length>0)
+                                {
+                                    let tt = this.setValorA(tablasimbolo,this.values[result[1]],position,vals[1]);
+                                    if(tt[0]>0)
+                                    {
+                                        this.values[result[1]] = tt[1];
+                                        return [1,null];
+                                    }
+                                    else
+                                    {
+                                        return [-1,null];
+                                    }
+                                }
+                                else
+                                {
+                                    this.values[result[1]] = vals[1];
+                                    return [1,null];
+                                }
+                            }
+                            else
+                            {
+                                return [-1,null]
+                            }
+                        }
+                        else
+                        {
+                            return [-1,null]
+                        }
+                    }
+
                 }
             }
+            return [-1,null]
+
         }
         catch (e) {
             return[-1,null]

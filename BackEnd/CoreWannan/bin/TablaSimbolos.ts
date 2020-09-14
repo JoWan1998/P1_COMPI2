@@ -45,6 +45,30 @@ class tablasimbolos
         }
 
     }
+    updateo(name:string,new_value:any)
+    {
+        try
+        {
+            for(let simbolo of this.simbolos)
+            {
+                if (simbolo instanceof sym)
+                {
+                    if (simbolo.name == name)
+                    {
+                        if(simbolo.tipoValue == TypeValue.type)
+                        {
+                            return simbolo.update(new_value,undefined,undefined);
+                        }
+                    }
+                }
+            }
+            return [-1,null];
+        }
+        catch (e)
+        {
+            return [-1,null];
+        }
+    }
 
 
     update(name:string,new_value:any,atributo?:string,posicion?:any):any
@@ -97,12 +121,12 @@ class tablasimbolos
                             if(simbolo.tipoValue == TypeValue.type)
                             {
                                 let sim:types = simbolo.getValue();
-                                return [1,sim.getValueAtributo(atributo)];
+                                return sim.getValueAtributo(atributo);
                             }
                             else if(simbolo.tipoValue == TypeValue.Array)
                             {
                                 let sim:arrays = simbolo.getValue();
-                                return [1,sim.getValue(posicion)];
+                                return sim.getValue(posicion,this);
                             }
                             else
                             {
@@ -119,6 +143,20 @@ class tablasimbolos
             return [-1,null];
         }
 
+    }
+    getsym(name:string)
+    {
+        for(let simbolo of this.simbolos)
+        {
+            if (simbolo instanceof sym)
+            {
+                if (simbolo.name == name)
+                {
+                    return[1,simbolo]
+                }
+            }
+        }
+        return [-1,null]
     }
     getType(name:string)
     {

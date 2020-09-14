@@ -23,10 +23,10 @@ class types extends statement
         {
             if(atr.name==atributo)
             {
-                return atr;
+                return [1,atr];
             }
         }
-        return null;
+        return [-1,null];
     }
     setValueAtributo(atributo:string,value?:any)
     {

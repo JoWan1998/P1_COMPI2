@@ -22,6 +22,7 @@ class expression extends statement
     }
     getValueAtributo(tablasimbolo:tablasimbolos):any
     {
+        //get all atributes
         try {
 
         }
@@ -33,6 +34,7 @@ class expression extends statement
 
     getValuesArray(tablasimbolo:tablasimbolos):any
     {
+        //get all values array
         try {
             let valors =  <arrays> this.Expresion;
             return valors.getAll();
@@ -44,11 +46,12 @@ class expression extends statement
 
     getValue(tablasimbolo:tablasimbolos):any
     {
-
+        //get data in especific
     }
 
 
     execute(tablasimbolo): any[2] {
+        //get all data from all version of types
         return (this.Expresion != null)?this.Expresion.execute(tablasimbolo):[-1,null];
     }
 
