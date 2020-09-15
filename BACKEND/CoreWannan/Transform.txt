@@ -1,0 +1,304 @@
+
+%left OR
+%left AND
+%left DIF IG
+%left MENIGU MAYIGU MENQUE MAYQUE
+%left MAS MENOS AUTOSUM
+%left POR DIVIDIDO
+%left POT MOD
+%right NOT
+%left UMENOS
+
+Literal
+    : NULLTOKEN
+    | TRUETOKEN
+    | FALSETOKEN
+    | NUMBER
+    | CADENA
+    | CADENA1
+    | CADENA2
+    | IDENT
+;
+
+Expr
+    : AssignmentExpr
+;
+
+ConditionalExpr
+    : LORExpr
+    | LORExpr '?' AssignmentExpr ':' AssignmentExpr
+;
+
+AssignmentExpr
+    : ConditionalExpr
+;
+
+LORExpr
+    : LANDExpr
+    | LORExpr OR LANDExpr
+;
+
+LANDExpr
+    : LNOTExpr
+    | LANDExpr AND LNOTExpr
+;
+
+LNOTExpr
+    : REQExpr
+    | NOT REQExpr
+;
+
+REQExpr
+    : RNOTQExpr
+    | REQExpr EQQ RNOTQExpr
+;
+
+RNOTQExpr
+    : RMAYEQExpr
+    | RNOTQExpr NOEQQ RMAYEQExpr
+;
+
+RMAYEQExpr
+    : RMINEQExpr
+    | RMAYEQExpr MAQ RMINEQExpr
+;
+
+RMINEQExpr
+    : RMAYExpr
+    | RMINEQExpr MIQ RMAYExpr
+;
+
+RMAYExpr
+    : RMINExpr
+    | RMAYExpr MA RMINExpr
+;
+
+RMINExpr
+    : AADDExpr
+    | RMINExpr MI AADDExpr
+;
+
+AADDExpr
+    : AADDExpr '+' AMULTExpr
+    | AADDExpr '-' AMULTExpr
+    | AMULTExpr
+;
+
+AMULTExpr
+    : AMULTExpr '*' APOTExpr
+    | AMULTExpr '/' APOTExpr
+    | APOTExpr
+;
+
+APOTExpr
+    : APOTExpr '^' UnaryExpr
+    | APOTExpr '%' UnaryExpr
+    | UnaryExpr
+;
+
+UnaryExpr
+    : UnaryExprC
+    | PostFixExpr
+;
+
+UnaryExprC
+    : '-' UnaryExpr
+    | PLUSPLUS UnaryExpr
+    | MINSMINS UnaryExpr
+;
+
+PostFixExpr
+    : LeftHandSideExpr
+    | LeftHandSideExpr PLUSPLUS
+    | LeftHandSideExpr MINSMINS
+;
+
+LeftHandSideExpr
+    : MemberExpr
+    | CallExpr
+;
+
+MemberExpr
+    : PrimaryExpr
+    | FunctionExpr
+    | MemberExpr ArrList
+    | MemberExpr '.' IDENT
+;
+
+CallExpr
+    : MemberExpr Arguments
+    | CallExpr Arguments
+    | CallExpr ArrList
+    | CallExpr '.' IDENT
+;
+
+Arguments
+    : '(' ')'
+    | '(' ArgumentList ')'
+;
+
+CallExprNoIn
+    : CallExprNoIn Arguments
+    | CallExprNoIn ArrList
+    | CallExprNoIn '.' IDENT
+    | '.' IDENT
+    | ArrList
+    | Arguments
+;
+
+CallExprNoInA
+    : CallExprNoInA ArrList
+    | CallExprNoInA '.' IDENT
+    | IDENT
+;
+
+ArrList
+    : Arr ArrList
+    | Arr
+;
+
+Arr
+    : '[' Expr ']'
+;
+
+ArgumentList
+    : AssignmentExpr
+    | ArgumentList ',' AssignmentExpr
+;
+
+PrimaryExpr
+    : PrimaryExprNoBrace
+    | OPENBRACE CLOSEBRACE
+    | OPENBRACE PropertyList CLOSEBRACE
+    ;
+
+PrimaryExprNoBrace
+    : Literal
+    | ArrayLiteral
+    | NativeArray
+    | IDENT
+    | '(' Expr ')'
+;
+
+Property
+    : IDENT ':' AssignmentExpr
+    | IDENT IDENT '(' ')' OPENBRACE FunctionBody CLOSEBRACE
+    | IDENT IDENT '(' FormalParameterList ')' OPENBRACE FunctionBody CLOSEBRACE
+;
+
+PropertyList
+    : Property
+    | PropertyList ',' Property
+;
+
+
+ExprNB
+    : AssignmentExprNB
+;
+
+ConditionalExprNB
+    : LORExprNB
+    | LORExprNB '?' AssignmentExprNB ':' AssignmentExprNB
+;
+
+AssignmentExprNB
+    : ConditionalExprNB
+;
+
+LORExprNB
+    : LANDExpr
+    | LORExprNB OR LANDExpr
+;
+
+LANDExprNB
+    : LNOTExpr
+    | LANDExprNB AND LNOTExpr
+;
+
+LNOTExprNB
+    : REQExpr
+    | NOT REQExpr
+;
+
+REQExprNB
+    : RNOTQExpr
+    | REQExprNB EQQ RNOTQExpr
+;
+
+RNOTQExprNB
+    : RMAYEQExpr
+    | RNOTQExprNB NOEQQ RMAYEQExpr
+;
+
+RMAYEQExprNB
+    : RMINEQExpr
+    | RMAYEQExprNB MAQ RMINEQExpr
+;
+
+RMINEQExprNB
+    : RMAYExpr
+    | RMINEQExprNB MIQ RMAYExpr
+;
+
+RMAYExprNB
+    : RMINExpr
+    | RMAYExprNB MA RMINExpr
+;
+
+RMINExprNB
+    : AADDExpr
+    | RMINExprNB MI AADDExpr
+;
+
+AADDExprNB
+    : AADDExprNB '+' AMULTExpr
+    | AADDExprNB '-' AMULTExpr
+    | AMULTExpr
+;
+
+AMULTExprNB
+    : AMULTExprNB '*' APOTExpr
+    | AMULTExprNB '/' APOTExpr
+    | APOTExprNB
+;
+
+APOTExprNB
+    : APOTExprNB '^' UnaryExpr
+    | APOTExprNB '%' UnaryExpr
+    | UnaryExpr
+;
+
+UnaryExprNB
+    : UnaryExprNBC
+    | PostFixExprNB
+;
+
+UnaryExprNBC
+    : '-' UnaryExprNB
+    | PLUSPLUS UnaryExprNB
+    | MINSMINS UnaryExprNB
+;
+
+PostFixExprNB
+    : LeftHandSideExprNB
+    | LeftHandSideExprNB PLUSPLUS
+    | LeftHandSideExprNB MINSMINS
+;
+
+LeftHandSideExprNB
+    : MemberExprNB
+    | CallExprNB
+;
+
+MemberExprNB
+    : PrimaryExprNoBrace
+    | MemberExprNB '[' Expr ']'
+    | MemberExprNB '.' IDENT
+;
+
+CallExprNB
+    : MemberExprNB Arguments
+    | CallExprNB Arguments
+    | CallExprNB '[' Expr ']'
+    | CallExprNB '.' IDENT
+;
