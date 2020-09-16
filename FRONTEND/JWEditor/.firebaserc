@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "wannan-1b398": {
+      "hosting": {
+        "JWEditor": [
+          "wannan-1b398"
+        ]
+      }
+    }
+  }
+}
