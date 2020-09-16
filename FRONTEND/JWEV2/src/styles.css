@@ -1,0 +1,47 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~codemirror/lib/codemirror.css';
+@import '~codemirror/theme/lucario.css';
+@import '~codemirror/theme/idea.css';
+@import '~codemirror/theme/midnight.css';
+@import '~codemirror/theme/yonce.css';
+@import '~codemirror/addon/fold/foldgutter.css';
+@import '~codemirror/addon/lint/lint.css';
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Candara, sans-serif; }
+
+.row-header {
+  margin: 0px auto;
+  padding: 0px 0px; }
+
+.row-content {
+  margin: 0px auto;
+  padding: 50px 0px;
+  border-bottom: 1px ridge;
+  min-height: 400px; }
+
+.footer {
+  margin: 0px auto;
+  padding: 20px 0px;
+}
+
+.jumbotron {
+  margin: 0px auto;
+  padding: 70px 30px;
+}
+
+address {
+  font-size: 80%;
+  margin: 0px;
+  color: #0f0f0f; }
+
+
+.navbar-dark {
+}
+.tab-content {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 10px; }
+
+
