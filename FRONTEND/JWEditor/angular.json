@@ -16,7 +16,7 @@
             "allowedCommonJsDependencies": [
               "lodash"
             ],
-            "outputPath": "docs",
+            "outputPath": "dist/JWEditor",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
