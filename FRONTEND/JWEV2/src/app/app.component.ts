@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+import Parser from 'node_modules/wannantraduction/WT';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,7 @@ export class AppComponent implements OnInit{
   showFiller = false;
   traduce: boolean;
   ejecutar: boolean;
+  traduction:any;
 
   codeMirrorOptions: any = {
     theme: 'lucario',
@@ -96,7 +98,8 @@ export class AppComponent implements OnInit{
   {
     try {
       this.traduce = true;
-      console.log(value.value);
+      this.traduction = Parser.parse(value.value);
+      console.log(this.traduction);
     }
     catch (e) {
       console.error('not read the data');
