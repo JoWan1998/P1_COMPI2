@@ -1,6 +1,10 @@
 * {
   font-family: "Candara", sans-serif;
 }
+.row.output
+{
+  height: 350px;
+}
 .example-container {
   width: 100%;
   height: 300px;

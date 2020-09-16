@@ -32,6 +32,18 @@ export class AppComponent implements OnInit{
     matchBrackets: true,
     lint: true
   };
+  codeMirrorOptions0: any = {
+    theme: 'lucario',
+    mode: 'application/javascript',
+    readOnly: true,
+    lineNumbers: true,
+    lineWrapping: true,
+    foldGutter: false,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
+    autoCloseBrackets: true,
+    matchBrackets: true,
+    lint: true
+  };
 
   codeMirrorOptions1: any = {
     theme: 'lucario',
@@ -48,6 +60,7 @@ export class AppComponent implements OnInit{
     lint: true
   };
   cargadescarga: boolean;
+  showTraduction: boolean;
 
   ngOnInit() {
     this.obj = 'const HelloWorld = \'Hello World!!!\';\nconsole.log(HelloWorld);';
@@ -59,6 +72,11 @@ export class AppComponent implements OnInit{
     this.traduce = false;
     this.ejecutar = false;
     this.cargadescarga = false;
+    this.showTraduction = true;
+  }
+  ShowTraduction()
+  {
+    this.showTraduction = !this.showTraduction;
   }
   setEditorContent(event) {
     console.log(this.obj);
