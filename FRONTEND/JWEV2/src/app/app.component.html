@@ -66,7 +66,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">
-            <button type="button" class="btn btn-warning" value = "Traducir" [hidden]="traduce" (click)="Traductor($event,codemirror)">
+            <button type="button" class="btn btn-warning" value = "Traducir" [hidden]="traduce" (click)="Traductor($event,codemirror2,codemirror)">
               Traducir
               <span class="badge badge-light">
                     <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-diagram-3-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -121,7 +121,7 @@
                                     #codemirror1
                                     [options]="codeMirrorOptions0"
                                     [(ngModel)]="obj2"
-                                    (ngModelChange)="setEditorContent($event)">
+                                    (ngModelChange)="setEditorContent1($event)">
                     </ngx-codemirror>
                   </div>
                 </div>
@@ -129,7 +129,7 @@
               <div class="row bg-light">
                 <div class="col">
                   <div class="col-lg-12 col-sm-auto col-md-auto pt-3 pb-2 mb-3 border-bottom">
-                      <p><ngb-progressbar type="success" textType="white" [value]="progreso" [showValue]="true"></ngb-progressbar></p>
+                    <p><ngb-progressbar type="success" [value]="progreso" [striped]="true" [animated]="true"><i>{{progreso}}%</i></ngb-progressbar></p>
                   </div>
                 </div>
               </div>
@@ -146,7 +146,7 @@
                                     #codemirror2
                                     [options]="codeMirrorOptions1"
                                     [(ngModel)]="obj1"
-                                    (ngModelChange)="setEditorContent($event)">
+                                    (ngModelChange)="setEditorContent2($event)">
                     </ngx-codemirror>
                   </div>
                 </div>

@@ -11,6 +11,7 @@ class NativeStatement extends statement
     instruction: Native;
     linea:number;
     Expression: statement[];
+    graph:string;
 
     constructor(typeS:TypeStatement, instr: Native) {
         super();

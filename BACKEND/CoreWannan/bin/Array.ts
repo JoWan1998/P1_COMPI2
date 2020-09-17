@@ -15,7 +15,7 @@ class arrays extends statement
 
     execute(): any
     {
-
+        return [1,this];
     }
 
     getValue(position:any[],tablasimbolo:tablasimbolos)

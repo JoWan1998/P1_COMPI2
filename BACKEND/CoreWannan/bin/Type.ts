@@ -16,6 +16,7 @@ class types extends statement
     tipoValue:TypeValue;
 
     execute(tablasimbolo: tablasimbolos): any {
+        return [1,this]
     }
     getValueAtributo(atributo:string)
     {

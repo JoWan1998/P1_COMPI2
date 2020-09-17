@@ -13,6 +13,10 @@ class declarations extends statement
     tipo:TypeValue;
     value:any;
     Expression:statement[];
+    constructor() {
+        super();
+        this.Expression = [];
+    }
 
     execute(tablasimbolo: tablasimbolos): any
     {

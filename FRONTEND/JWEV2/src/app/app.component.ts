@@ -1,12 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import Parser from 'node_modules/wannantraduction/WT';
+import Core from 'node_modules/wannancore/globalCore';
+
+
+function delay(ms: number) {
+  return new Promise( resolve => setTimeout(resolve, ms) );
+}
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
+
+
 export class AppComponent implements OnInit{
   title = 'JWEditor';
 
@@ -23,7 +31,11 @@ export class AppComponent implements OnInit{
   showFiller = false;
   traduce: boolean;
   ejecutar: boolean;
-  traduction:any;
+  traduction: any;
+  core: any;
+  salida: string;
+  s: string;
+  s1: string;
 
   codeMirrorOptions: any = {
     theme: 'lucario',
@@ -66,9 +78,10 @@ export class AppComponent implements OnInit{
   cargadescarga: boolean;
   showTraduction: boolean;
   isMenuCollapsed: boolean;
+  private jsonsalida: any;
 
   ngOnInit() {
-    this.obj = 'const HelloWorld = \'Hello World!!!\';\nconsole.log(HelloWorld);';
+    this.obj = 'console.log("HELLO WORLD, ",2020," this is jowan and jowan says, ",1998);';
     this.obj1 = '';
     this.obj2 = '';
     this.EL = 0;
@@ -85,7 +98,10 @@ export class AppComponent implements OnInit{
     this.showTraduction = !this.showTraduction;
   }
   setEditorContent(event) {
-    console.log(this.obj);
+    this.s = this.obj1;
+  }
+  setEditorContent1(event) {
+    this.s1 = this.obj2;
   }
 
   Ejecutar(event, value)
@@ -94,16 +110,43 @@ export class AppComponent implements OnInit{
     console.log(value.value);
     this.ejecutar = false;
   }
-  Traductor(event, value)
+  Traductor(event, value1, value)
   {
-    try {
+    (async () => {
       this.traduce = true;
-      this.traduction = Parser.parse(value.value);
-      console.log(this.traduction);
-    }
-    catch (e) {
-      console.error('not read the data');
-    }
-    this.traduce = false;
+      this.progreso = 10;
+      await delay(1000);
+      try {
+        this.salida = '';
+        this.traduction = Parser.parse(value.value);
+        this.progreso = 50;
+        Core.jsondata = this.traduction;
+        console.log(JSON.parse(this.traduction));
+        Core.generate(this.traduction);
+        this.core = Core.exec();
+
+        this.jsonsalida = JSON.parse(this.core);
+        console.log(this.jsonsalida);
+        for (const values of this.jsonsalida.salida) {
+          if (values.hasOwnProperty('linea')) {
+            this.salida += '[JoWan1998] Linea: [' + values.linea + '] Output: ' + values.valor + '\n';
+          }
+        }
+        this.obj1 = this.salida;
+        value1.value = this.salida;
+        this.progreso = 100;
+      } catch (e) {
+        console.error(e);
+      }
+      await delay(1000);
+      this.traduce = false;
+      this.progreso = 0;
+    })();
+  }
+
+
+
+  setEditorContent2($event) {
+    $event.value = this.salida;
   }
 }
