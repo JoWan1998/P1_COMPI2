@@ -1,44 +1,44 @@
-console
-graph
-declaration
-CallFunction
-asignation
-Argument
-ArrayList
-Object
-MatrizPosition
-variable
-variableArray
-funcion
-continue
-break
-return
-switch
-case
-default
-if
-dowhile
-for
-forin
-while
-forof
-parameter
-array
-atributo
-typebody
-arreglo
-callMatriz
-callAtributo
-callFuncion
-nativeArray
-postincrement
-postdecrement
-preincrement
-predecrement
-positivo
-negativo
-logical
-Aritmetic
-Relational
-Logical
-ternario
+case "console":
+case "graph":
+case "declaration":
+case "CallFunction":
+case "asignation":
+case "Argument":
+case "ArrayList":
+case "Object":
+case "MatrizPosition":
+case "variable":
+case "variableArray":
+case "funcion":
+case "continue":
+case "break":
+case "return":
+case "switch":
+case "case":
+case "default":
+case "if":
+case "dowhile":
+case "for":
+case "forin":
+case "while":
+case "forof":
+case "parameter":
+case "array":
+case "atributo":
+case "typebody":
+case "arreglo":
+case "callMatriz":
+case "callAtributo":
+case "callFuncion":
+case "nativeArray":
+case "postincrement":
+case "postdecrement":
+case "preincrement":
+case "predecrement":
+case "positivo":
+case "negativo":
+case "logical":
+case "Aritmetic":
+case "Relational":
+case "Logical":
+case "ternario":

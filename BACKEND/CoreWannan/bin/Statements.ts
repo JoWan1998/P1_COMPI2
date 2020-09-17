@@ -89,7 +89,8 @@ enum TypeValue
     void,
     let,
     var,
-    const
+    const,
+    null
 }
 enum NativeArray
 {

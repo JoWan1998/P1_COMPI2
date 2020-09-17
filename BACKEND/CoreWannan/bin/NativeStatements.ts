@@ -9,7 +9,8 @@ class NativeStatement extends statement
     StateCode: number;
     type: TypeStatement;
     instruction: Native;
-    Expression: statement;
+    linea:number;
+    Expression: statement[];
 
     constructor(typeS:TypeStatement, instr: Native) {
         super();
@@ -18,15 +19,31 @@ class NativeStatement extends statement
     }
 
     execute(tablasimbolo): any[2] {
-        if(this.instruction == Native.console)
+        try
         {
-            if(this.Expression == null)return [-1,null];
-            let value = this.Expression.execute(tablasimbolo);
-            if(value[0]<0) return [-1,null];
-            //this.htmlYouWantToAdd = "<p><b>value[1]</b></p>";
-            this.StateCode = 1;
+            if(this.instruction == Native.console)
+            {
+                let resultado = '';
+                for(let valu of this.Expression)
+                {
+                    if(this.Expression == null)return [-1,null];
+                    let value = valu.execute(tablasimbolo);
+                    if(value[0]<0) return [-1,null];
+                    //this.htmlYouWantToAdd = "<p><b>value[1]</b></p>";
+                    resultado += value[1].toString();
+                    this.StateCode = 1;
+                }
+                if(this.StateCode==1)
+                {
+                    //this.htmlYouWantToAdd = "<p><b>value[1]</b></p>";
+                }
+            }
+            return [this.StateCode,null];
         }
-        return [this.StateCode,null];
+        catch (e) {
+            return [-1,null]
+        }
+
     }
 
     grahp(): string {

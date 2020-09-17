@@ -6,6 +6,7 @@
 
 ///<reference path="Statements.ts"/>
 ///<reference path="Literal.ts"/>
+///<reference path="FunctionStatements.ts"/>
 class expression extends statement
 {
     StateCode: number;
@@ -297,6 +298,8 @@ class expression extends statement
             {
                 switch (this.valueType)
                 {
+                    case TypeValue.null:
+                        return "__jw__";
                     case TypeValue.Array:
                         if(this.Expresion instanceof arrays)
                         {

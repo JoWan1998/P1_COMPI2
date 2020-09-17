@@ -1,0 +1,13 @@
+case "null":
+case "boolean":
+case "number":
+case "string1":
+case "string2":
+case "string3":
+
+
+array
+atributo
+typebody
+variable
+arreglo
