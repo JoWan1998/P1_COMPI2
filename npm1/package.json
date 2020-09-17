@@ -1,8 +1,8 @@
 {
-  "name": "wannantraduction",
-  "version": "1.0.5",
+  "name": "wannancompile",
+  "version": "1.0.0",
   "description": "",
-  "main": "WT.js",
+  "main": "WE.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import Parser from 'node_modules/wannantraduction/WT';
+import * as ParserE from 'node_modules/wannancompile/WE';
 import Core from 'node_modules/wannancore/globalCore';
+import {formatDate} from '@angular/common';
 
 
 function delay(ms: number) {
@@ -50,7 +52,7 @@ export class AppComponent implements OnInit{
   };
   codeMirrorOptions0: any = {
     theme: 'lucario',
-    mode: 'application/javascript',
+    mode: 'application/json',
     readOnly: true,
     lineNumbers: true,
     lineWrapping: true,
@@ -106,19 +108,14 @@ export class AppComponent implements OnInit{
 
   Ejecutar(event, value)
   {
-    this.ejecutar = true;
-    console.log(value.value);
-    this.ejecutar = false;
-  }
-  Traductor(event, value1, value)
-  {
     (async () => {
-      this.traduce = true;
+      this.ejecutar = true;
       this.progreso = 10;
+      this.salida = '';
+      this.obj1 = '';
       await delay(1000);
       try {
-        this.salida = '';
-        this.traduction = Parser.parse(value.value);
+        this.traduction = ParserE.parse(value.value);
         this.progreso = 50;
         Core.jsondata = this.traduction;
         console.log(JSON.parse(this.traduction));
@@ -126,17 +123,59 @@ export class AppComponent implements OnInit{
         this.core = Core.exec();
 
         this.jsonsalida = JSON.parse(this.core);
-        console.log(this.jsonsalida);
+        console.log(this.jsonsalida.salida);
         for (const values of this.jsonsalida.salida) {
           if (values.hasOwnProperty('linea')) {
-            this.salida += '[JoWan1998] Linea: [' + values.linea + '] Output: ' + values.valor + '\n';
+            this.salida += '[JoWan1998][' + formatDate(new Date(), 'yyyy/MM/dd  HH:mm:ss', 'en') + '] Linea: [' + values.linea + '] Output: ' + values.valor + '\n';
+          }
+          else {
+            this.salida += '[JoWan1998][' + formatDate(new Date(), 'yyyy/MM/dd  HH:mm:ss', 'en') + '] valor: [' + values.valor + ']  Error: ' + values.salida + '\n';
           }
         }
         this.obj1 = this.salida;
-        value1.value = this.salida;
         this.progreso = 100;
       } catch (e) {
         console.error(e);
+        // tslint:disable-next-line:max-line-length
+        this.obj1 = '[JoWan1998][' + formatDate(new Date(), 'yyyy/MM/dd  HH:mm:ss', 'en') + '] valor: [Unexpected Error]  Error: ' + e.toString() + '\n';
+      }
+      await delay(1000);
+      this.ejecutar = false;
+      this.progreso = 0;
+    })();
+  }
+  Traductor(event, value)
+  {
+    (async () => {
+      this.traduce = true;
+      this.progreso = 10;
+      this.salida = '';
+      this.obj1 = '';
+      await delay(1000);
+      try {
+        this.traduction = Parser.parse(value.value);
+        this.progreso = 50;
+        Core.jsondata = this.traduction;
+        console.log(JSON.parse(this.traduction));
+        this.obj2 = this.traduction;
+        Core.generate(this.traduction);
+        this.core = Core.exec();
+        this.jsonsalida = JSON.parse(this.core);
+        console.log(this.jsonsalida);
+        for (const values of this.jsonsalida.salida) {
+          if (values.hasOwnProperty('linea')) {
+            this.salida += '[JoWan1998][' + formatDate(new Date(), 'yyyy/MM/dd  HH:mm:ss', 'en') + '] Linea: [' + values.linea + '] Output: ' + values.valor + '\n';
+          }
+          else {
+            this.salida += '[JoWan1998][' + formatDate(new Date(), 'yyyy/MM/dd  HH:mm:ss', 'en') + '] valor: [' + values.valor + ']  Error: ' + values.salida + '\n';
+          }
+        }
+        this.obj1 = this.salida;
+        this.progreso = 100;
+      } catch (e) {
+        console.error(e);
+        // tslint:disable-next-line:max-line-length
+        this.obj1 = '[JoWan1998][' + formatDate(new Date(), 'yyyy/MM/dd  HH:mm:ss', 'en') + '] valor: [Unexpected Error]  Error: ' + e.toString() + '\n';
       }
       await delay(1000);
       this.traduce = false;

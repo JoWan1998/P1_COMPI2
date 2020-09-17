@@ -1,3 +1,139 @@
+Function_statements
+    : FUNCTION IDENT '(' ')' OPENBRACE Source2 CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":[],\"params\":[],\"body\":['+$6+']}';
+    }
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE Source2 CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":[],\"params\":['+$4+'],\"body\":['+$7+']}';
+    }
+    | FUNCTION IDENT '(' ')' ':' Type OPENBRACE Source2 CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":['+$6+'],\"params\":[],\"body\":['+$8+']}';
+    }
+    | FUNCTION IDENT '(' ParameterList ')' ':' Type OPENBRACE Source2 CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":['+$7+'],\"params\":['+$4+'],\"body\":['+$9+']}';
+    }
+    | FUNCTION IDENT '(' ')' OPENBRACE  CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":[],\"params\":[],\"body\":[]}';
+    }
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE  CLOSEBRACE
+    {
+         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":[],\"params\":['+$4+'],\"body\":[]}';
+     }
+    | FUNCTION IDENT '(' ')' ':' Type OPENBRACE  CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":['+$6+'],\"params\":[],\"body\":[]}';
+    }
+    | FUNCTION IDENT '(' ParameterList ')' ':' Type OPENBRACE  CLOSEBRACE
+    {
+         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":['+$7+'],\"params\":['+$4+'],\"body\":[]}';
+    }
+;
+FunctionExpr
+    : FUNCTION '(' ')' OPENBRACE Source2 CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"\",\"type\":[],\"params\":[],\"body\":['+$5+']}';
+    }
+    | FUNCTION '(' ParameterList ')' OPENBRACE Source2 CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"\",\"type\":[],\"params\":['+$3+'],\"body\":['+$5+']}';
+    }
+    | FUNCTION IDENT '(' ')' OPENBRACE Source2 CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":[],\"params\":[],\"body\":['+$6+']}';
+    }
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE Source2 CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":[],\"params\":['+$4+'],\"body\":['+$7+']}';
+    }
+    | FUNCTION '(' ')' OPENBRACE  CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"\",\"type\":[],\"params\":[],\"body\":[]}';
+    }
+    | FUNCTION '(' ParameterList ')' OPENBRACE Source2 CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"\",\"type\":[],\"params\":['+$3+'],\"body\":['+$6+']}';
+    }
+    | FUNCTION IDENT '(' ')' OPENBRACE  CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":[],\"params\":[],\"body\":[]}';
+    }
+    | FUNCTION IDENT '(' ParameterList ')' OPENBRACE  CLOSEBRACE
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$2+'\",\"type\":[],\"params\":['+$4+'],\"body\":[]}';
+    }
+;
+Source2
+    :  Statement1
+      {
+        $$ = $1;
+      }
+    |  Statement1 Source2
+      {
+        $$ = $1+',\n'+$2;
+      }
+    |  EOF
+      {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+      }
+;
+
+Statement1
+    : Declaration_statements
+      {
+        $$ = $1;
+      }
+    | Expr_statements
+      {
+        $$ = $1;
+      }
+    | Assignation_statements
+      {
+        $$ = $1;
+      }
+    | Native_statements
+      {
+        $$ = $1;
+      }
+    | Block_statements
+      {
+        $$ = $1;
+      }
+    | If_statements
+      {
+        $$ = $1;
+      }
+    | Iteration_statements
+      {
+        $$ = $1;
+      }
+    | Return_statements
+      {
+        $$ = $1;
+      }
+    | Break_statements
+      {
+        $$ = $1;
+      }
+    | Continue_statements
+      {
+        $$ = $1;
+      }
+    | Switch_statements
+      {
+        $$ = $1;
+      }
+    | Empty_statements
+      {
+        $$ = $1;
+      }
+;
+
+
+
 Literal
     : NULLTOKEN
     | TRUETOKEN

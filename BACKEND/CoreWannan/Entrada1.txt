@@ -166,3 +166,4 @@ tree.root = insert(tree.root, 4);
 tree.root = insert(tree.root, 0);
 tree.root = insert(tree.root, 1);
 preOrder(tree.root);
+

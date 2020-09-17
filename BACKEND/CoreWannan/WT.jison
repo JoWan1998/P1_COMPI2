@@ -209,13 +209,13 @@ Native_statements
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"graph\","expression":[]}';
         }
-    | CONSOLE '.' LOG '(' Expr ')' error
+    | CONSOLE '.' LOG '(' Expr ')'
          {
-                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"console\","expression":['+$5+']}';
          }
-    | GRAHPTS '(' ')' error
+    | GRAHPTS '(' ')'
          {
-                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"graph\","expression":[]}';
          }
 ;
 
@@ -254,9 +254,9 @@ Declaration_statements
         {
             $$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"declaration\",\"type\":['+$1+'], \"values\":['+$2+']}';
         }
-    | Type ValStatementL error
+    | Type ValStatementL
          {
-                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+                $$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"declaration\",\"type\":['+$1+'], \"values\":['+$2+']}';
          }
     | IDENT Arguments
         {
@@ -269,17 +269,17 @@ Assignation_statements
         {
              $$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"asignation\",\"variable\":\"'+$1+'\",\"params\":['+$2+'],\"ValExpression\":['+$3+']}';
         }
-    | IDENT CallExprNoIn initialNo error
+    | IDENT CallExprNoIn initialNo
         {
-            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+            $$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"asignation\",\"variable\":\"'+$1+'\",\"params\":['+$2+'],\"ValExpression\":['+$3+']}';
         }
     | IDENT initialNo ';'
         {
             $$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"asignation\",\"variable\":\"'+$1+'\",\"params\":[],\"ValExpression\":['+$2+']}';
         }
-    | IDENT initialNo error
+    | IDENT initialNo
         {
-            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+           $$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"asignation\",\"variable\":\"'+$1+'\",\"params\":[],\"ValExpression\":['+$2+']}';
         }
 ;
 CallExprNoIn
@@ -293,11 +293,11 @@ CallExprNoIn
         }
     | CallExprNoIn '.' IDENT
         {
-            $$ = $1 + ',{\"statement\":\"Object\",\"value\":['+$3+']}';
+            $$ = $1 + ',{\"statement\":\"Object\",\"value\":\"'+$3+'\"]}';
         }
     | '.' IDENT
         {
-            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"Object\",\"value\":['+$2+']}';
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"Object\",\"value\":\"'+$2+'\"}';
         }
     | ArrList
         {
@@ -380,7 +380,7 @@ ValStatement1
 ;
 
 initialNo
-    : AssignmentOperator AssignmentExpr
+    : AssignmentOperator Expr
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"operator\":['+$1+'],\"Expression\":['+$2+']}';
     }
@@ -492,9 +492,9 @@ Continue_statements
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"continue\"}';
     }
-    | CONTINUE error
+    | CONTINUE
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"continue\"}';
     }
     /*
     | CONTINUE Expr ';'
@@ -512,9 +512,9 @@ Break_statements
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"break\"}';
     }
-    | BREAK error
+    | BREAK
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"break\"}';
     }
     /*
     | BREAK IDENT ';'
@@ -527,17 +527,17 @@ Return_statements
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"return\", \"Expression\":[]}';
     }
-    | RETURN error
+    | RETURN
         {
-            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"return\", \"Expression\":[]}';
         }
     | RETURN Expr ';'
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"return\", \"Expression\":['+$2+']}';
     }
-    | RETURN Expr error
+    | RETURN Expr
         {
-            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"return\", \"Expression\":['+$2+']}';
         }
 ;
 
@@ -627,9 +627,9 @@ Iteration_statements
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"dowhile\",\"body\":['+$2+'],\"Expression\":['+$5+']}';
     }
-    | DO Statement WHILE '(' Expr ')' error
+    | DO Statement WHILE '(' Expr ')'
         {
-            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"dowhile\",\"body\":['+$2+'],\"Expression\":['+$5+']}';
         }
     | WHILE '(' Expr ')' Statement
     {
@@ -871,14 +871,18 @@ Literal
 ;
 
 Property
-    : IDENT ':' TypeV
+    : IDENT ':' AssignmentExpr
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"atributo\",\"name\":\"'+$1+'\", \"tipo\":['+$3+']}';
+       $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"atributo\",\"name\":\"'+$1+'\", \"valor\":['+$3+']}';
     }
+    |  IDENT ':' TypeV
+           {
+               $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"atributo\",\"name\":\"'+$1+'\", \"tipo\":['+$3+']}';
+           }
     | EOF
-    {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
-    }
+        {
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+        }
     ;
 
 PropertyList
@@ -886,7 +890,7 @@ PropertyList
     {
         $$ = $1;
     }
-    | PropertyList ',' Property
+    | Property ',' PropertyList
     {
         $$ = $1 +',\n'+$3
     }
@@ -964,7 +968,7 @@ MemberExpr
     }
     | MemberExpr '.' IDENT
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":['+$3+']}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":\"'+$3+'\"}';
     }
 ;
 
@@ -979,7 +983,7 @@ MemberExprNoBF
     }
     | MemberExprNoBF '.' IDENT
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":['+$3+']}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":\"'+$3+'\"}';
     }
     ;
 
@@ -999,7 +1003,7 @@ CallExpr
     }
     | CallExpr '.' IDENT
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":['+$3+']}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":\"'+$3+'\"}';
     }
     | CallExpr '.' POP '(' Element ')'
     {
@@ -1030,7 +1034,7 @@ CallExprNoBF
     }
     | CallExprNoBF '.' IDENT
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":['+$3+']}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":\"'+$3+'\"}';
     }
     | CallExprNoBF '.' POP '(' Element ')'
     {
