@@ -4197,9 +4197,9 @@ function getRelational(data):statement
 {
     try
     {
-        switch (data.Aritmetic)
+        switch (data.Relational)
         {
-            case '+':
+            case '>=':
                 let suma:ArichmeticExpression = new ArichmeticExpression();
                 suma.type = TypeStatement.ExpresionStatement;
                 suma.linea = data.linea;
@@ -4207,7 +4207,7 @@ function getRelational(data):statement
                 suma.Expression1 = getExpressiones(data.Expression1[0]);
                 suma.Expression2 = getExpressiones(data.Expression2[0]);
                 return suma;
-            case '-':
+            case '<=':
                 let resta:ArichmeticExpression = new ArichmeticExpression();
                 resta.type = TypeStatement.ExpresionStatement;
                 resta.linea = data.linea;
@@ -4215,7 +4215,7 @@ function getRelational(data):statement
                 resta.Expression1 = getExpressiones(data.Expression1[0]);
                 resta.Expression2 = getExpressiones(data.Expression2[0]);
                 return resta;
-            case '*':
+            case '>':
                 let operate:ArichmeticExpression = new ArichmeticExpression();
                 operate.type = TypeStatement.ExpresionStatement;
                 operate.linea = data.linea;
@@ -4223,7 +4223,7 @@ function getRelational(data):statement
                 operate.Expression1 = getExpressiones(data.Expression1[0]);
                 operate.Expression2 = getExpressiones(data.Expression2[0]);
                 return operate;
-            case '**':
+            case '<':
                 let poten:ArichmeticExpression = new ArichmeticExpression();
                 poten.type = TypeStatement.ExpresionStatement;
                 poten.linea = data.linea;
@@ -4231,7 +4231,7 @@ function getRelational(data):statement
                 poten.Expression1 = getExpressiones(data.Expression1[0]);
                 poten.Expression2 = getExpressiones(data.Expression2[0]);
                 return poten;
-            case '/':
+            case '==':
                 let division:ArichmeticExpression = new ArichmeticExpression();
                 division.type = TypeStatement.ExpresionStatement;
                 division.linea = data.linea;
@@ -4239,7 +4239,7 @@ function getRelational(data):statement
                 division.Expression1 = getExpressiones(data.Expression1[0]);
                 division.Expression2 = getExpressiones(data.Expression2[0]);
                 return division;
-            case '%':
+            case '!=':
                 let modulo:ArichmeticExpression = new ArichmeticExpression();
                 modulo.type = TypeStatement.ExpresionStatement;
                 modulo.linea = data.linea;

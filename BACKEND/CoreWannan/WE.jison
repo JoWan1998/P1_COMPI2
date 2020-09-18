@@ -357,7 +357,7 @@ ValStatement
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":[],\"name\":\"'+$1+'\",\"ValExpression\":['+$2+']}';
         }
-    | IDENT  ':' Type ArrayList initialNo
+    | IDENT  ArrayList ':' Type  initialNo
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":['+$4+'],\"name\":\"'+$1+'\",\"ValExpression\":['+$5+'],\"ArrayLength\":['+$2+']}';
         }
