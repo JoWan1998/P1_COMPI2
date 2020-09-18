@@ -905,7 +905,6 @@ var Asignation = /** @class */ (function (_super) {
     };
     return Asignation;
 }(statement));
-///<reference path="Statements.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -1224,7 +1223,7 @@ var expression = /** @class */ (function (_super) {
             else if (this.position.length > 0) {
                 return this.getValuesArray(tablasimbolo);
             }
-            else if (name != "") {
+            else if (this.name != "") {
                 if (this.isCallFunction) {
                     return this.getValueCallFunction(tablasimbolo);
                 }
@@ -1262,7 +1261,8 @@ var expression = /** @class */ (function (_super) {
                         }
                         break;
                     case TypeValue.Object:
-                        return this.Expresion.execute(tablasimbolo);
+                        var simbolo = tablasimbolo.getsym(this.name);
+                        return simbolo[1];
                     case TypeValue.String:
                         if (this.Expresion instanceof Strings) {
                             return this.Expresion.getValue();
@@ -1275,10 +1275,10 @@ var expression = /** @class */ (function (_super) {
                         break;
                     case TypeValue["var"]:
                         if (name != "") {
-                            var simbolo = tablasimbolo.getsym(this.name);
-                            if (simbolo[0] > 0) {
-                                if (simbolo[1] instanceof sym) {
-                                    var simbolito1 = simbolo[1];
+                            var simbolo_1 = tablasimbolo.getsym(this.name);
+                            if (simbolo_1[0] > 0) {
+                                if (simbolo_1[1] instanceof sym) {
+                                    var simbolito1 = simbolo_1[1];
                                     return simbolito1.getValue();
                                 }
                             }
@@ -1296,13 +1296,18 @@ var expression = /** @class */ (function (_super) {
     };
     expression.prototype.execute = function (tablasimbolo) {
         //get all data from all version of types
-        var data = this.getValue(tablasimbolo);
-        if (data != null) {
-            if (data == '__jw__')
-                return [1, null];
-            return [1, data];
+        try {
+            var data = this.getValue(tablasimbolo);
+            if (data != null) {
+                if (data == '__jw__')
+                    return [1, null];
+                return [1, data];
+            }
+            return [-1, null];
         }
-        return [-1, null];
+        catch (e) {
+            return [-1, null];
+        }
     };
     expression.prototype.grahp = function () {
         return "";
@@ -1323,65 +1328,33 @@ var ArichmeticExpression = /** @class */ (function (_super) {
         try {
             var izq = (this.Expression1 != null) ? this.Expression1.execute(tablasimbolo) : [-1, null];
             var der = (this.Expression2 != null) ? this.Expression2.execute(tablasimbolo) : [-1, null];
-            if (izq[0] == 1 && der[0] == 1) {
+            if (izq[0] > 0 && der[0] > 0) {
                 switch (this.Function) {
                     case ArichmeticExpr.suma:
-                        this.value = izq[1] + der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] + der[1]];
                     case ArichmeticExpr.resta:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof Boolean) {
-                            this.value = izq[1] - der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, izq[1] - der[1]];
                     case ArichmeticExpr.potenciacion:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof Boolean) {
-                            this.value = izq[1] ^ der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, izq[1] ^ der[1]];
                     case ArichmeticExpr.multiplicacion:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof Boolean) {
-                            this.value = izq[1] * der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, izq[1] * der[1]];
                     case ArichmeticExpr.modulo:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof Boolean) {
-                            this.value = izq[1] % der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, izq[1] % der[1]];
                     case ArichmeticExpr.negacion:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean) {
-                            this.value = -izq[1].toString();
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, -izq[1]];
                     case ArichmeticExpr.division:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof Boolean) {
-                            if (der[1] != 0) {
-                                this.value = izq[1] / der[1];
-                                this.StateCode = 1;
-                            }
-                            else {
-                                this.value = izq[1] / der[1];
-                                this.StateCode = -1;
-                            }
+                        if (der[1] != 0) {
+                            return [1, izq[1] / der[1]];
                         }
-                        break;
+                        else {
+                            return [1, izq[1] / der[1]];
+                        }
                 }
             }
-            return [this.StateCode, this.value];
+            return [-1, null];
         }
         catch (e) {
-            return [this.StateCode, this.value];
+            return [-1, null];
         }
     };
     ArichmeticExpression.prototype.grahp = function () {
@@ -1418,44 +1391,33 @@ var LogialExpression = /** @class */ (function (_super) {
         this.StateCode = -1;
         this.value = null;
         try {
+            //console.log('F->'+this.Function);
+            //console.log(this.Expression1);
+            //console.log(this.Expression2);
             var izq = (this.Expression1 != null) ? this.Expression1.execute(tablasimbolo) : [-1, null];
             var der = (this.Expression2 != null) ? this.Expression2.execute(tablasimbolo) : [-1, null];
-            if (izq[0] == 1 && der[0] == 1) {
+            //console.log(izq);
+            //console.log(der);
+            if (izq[0] > 0 && der[0] > 0) {
                 switch (this.Function) {
                     case LogicalExpr.Y:
-                        if (izq[1] instanceof Boolean && der[1] instanceof Boolean) {
-                            this.value = izq[1] && der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, izq[1] && der[1]];
                     case LogicalExpr.O:
-                        if (izq[1] instanceof Boolean && der[1] instanceof Boolean) {
-                            this.value = izq[1] || der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, izq[1] || der[1]];
                     case LogicalExpr.NOT:
-                        if (izq[1] instanceof Boolean) {
-                            this.value = !izq[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, !izq[1]];
                 }
             }
-            else if (izq[0] == 1) {
+            else if (izq[0] > 0) {
                 switch (this.Function) {
                     case LogicalExpr.NOT:
-                        if (izq[1] instanceof Boolean) {
-                            this.value = !izq[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, !izq[1]];
                 }
             }
-            return [this.StateCode, this.value];
+            return [-1, null];
         }
         catch (e) {
-            return [this.StateCode, this.value];
+            return [-1, null];
         }
     };
     LogialExpression.prototype.grahp = function () {
@@ -1489,35 +1451,23 @@ var RelationalExpression = /** @class */ (function (_super) {
             if (izq[0] == 1 && der[0] == 1) {
                 switch (this.Function) {
                     case RelationalExpr.Igual:
-                        this.value = izq[1] == der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] == der[1]];
                     case RelationalExpr.Mayor:
-                        this.value = izq[1] > der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] > der[1]];
                     case RelationalExpr.MayorQue:
-                        this.value = izq[1] >= der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] >= der[1]];
                     case RelationalExpr.Menor:
-                        this.value = izq[1] < der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] < der[1]];
                     case RelationalExpr.MenorQue:
-                        this.value = izq[1] <= der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] <= der[1]];
                     case RelationalExpr.NoIgual:
-                        this.value = izq[1] != der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] != der[1]];
                 }
             }
-            return [this.StateCode, this.value];
+            return [-1, null];
         }
         catch (e) {
-            return [this.StateCode, this.value];
+            return [-1, null];
         }
     };
     RelationalExpression.prototype.grahp = function () {
@@ -2571,8 +2521,11 @@ var NativeStatement = /** @class */ (function (_super) {
                 var resultado = '';
                 for (var _i = 0, _a = this.Expression; _i < _a.length; _i++) {
                     var valu = _a[_i];
+                    //console.log(this.Expression)
+                    //console.log(tablasimbolo)
                     if (this.Expression == null)
                         return [-1, null];
+                    //console.log(this.Expression);
                     var value = valu.execute(tablasimbolo);
                     if (value[0] < 0)
                         return [-1, null];
@@ -2703,80 +2656,81 @@ var declarations = /** @class */ (function (_super) {
         return _this;
     }
     declarations.prototype.execute = function (tablasimbolo) {
-        if (this.tipo == TypeValue.type) {
-            var declaracion = this.Expression[0];
-            tablasimbolo.insert(declaracion.name, declaracion.Expression, TypeSym["class"], this.tipo);
-        }
-        else {
-            for (var _i = 0, _a = this.Expression; _i < _a.length; _i++) {
-                var declaracion = _a[_i];
-                if (this.tipo == TypeValue.let) {
-                    var declaration = declaracion;
-                    declaration.tipoSim = TypeSym.let;
-                    var value = declaration.execute(tablasimbolo);
-                    switch (value[0]) {
-                        case -2: //-> error instanciar variable
-                            return [-2, null];
-                        case -1: //-> error
-                            return [-1, null];
-                        case 0: //-> finalizado
-                            this.StateCode = 0;
-                            this.value = value[1];
-                            break;
-                        case 1: //-> sin errores
-                            this.StateCode = 1;
-                            this.value = value[1];
-                            break;
-                        default:
-                            return [-1, null];
+        try {
+            if (this.tipo == TypeValue.type) {
+                var declaracion = this.Expression[0];
+                tablasimbolo.insert(declaracion.name, declaracion.Expression, TypeSym["class"], this.tipo);
+            }
+            else {
+                for (var _i = 0, _a = this.Expression; _i < _a.length; _i++) {
+                    var declaracion = _a[_i];
+                    if (this.tipo == TypeValue.let) {
+                        console.log(declaracion);
+                        var declaration = declaracion;
+                        declaration.tipoSim = TypeSym.let;
+                        var value = declaration.execute(tablasimbolo);
+                        switch (value[0]) {
+                            case -2: //-> error instanciar variable
+                                return [-2, null];
+                            case -1: //-> error
+                                return [-1, null];
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                this.value = value[1];
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                this.value = value[1];
+                                break;
+                            default:
+                                return [-1, null];
+                        }
                     }
-                }
-                else if (this.tipo == TypeValue["var"]) {
-                    var declaration = declaracion;
-                    declaration.tipoSim = TypeSym["var"];
-                    var value = declaration.execute(tablasimbolo);
-                    switch (value[0]) {
-                        case -2: //-> error instanciar variable
-                            return [-2, null];
-                        case -1: //-> error
-                            return [-1, null];
-                        case 0: //-> finalizado
-                            this.StateCode = 0;
-                            this.value = value[1];
-                            break;
-                        case 1: //-> sin errores
-                            this.StateCode = 1;
-                            this.value = value[1];
-                            break;
-                        default:
-                            return [-1, null];
+                    else if (this.tipo == TypeValue["var"]) {
+                        var declaration = declaracion;
+                        declaration.tipoSim = TypeSym["var"];
+                        var value = declaration.execute(tablasimbolo);
+                        switch (value[0]) {
+                            case -2: //-> error instanciar variable
+                                return [-2, null];
+                            case -1: //-> error
+                                return [-1, null];
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                this.value = value[1];
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                this.value = value[1];
+                                break;
+                            default:
+                                return [-1, null];
+                        }
                     }
-                }
-                else if (this.tipo == TypeValue["const"]) {
-                    var declaration = declaracion;
-                    declaration.tipoSim = TypeSym["const"];
-                    var value = declaration.execute(tablasimbolo);
-                    switch (value[0]) {
-                        case -2: //-> error instanciar variable
-                            return [-2, null];
-                        case -1: //-> error
-                            return [-1, null];
-                        case 0: //-> finalizado
-                            this.StateCode = 0;
-                            this.value = value[1];
-                            break;
-                        case 1: //-> sin errores
-                            this.StateCode = 1;
-                            this.value = value[1];
-                            break;
-                        default:
-                            return [-1, null];
+                    else if (this.tipo == TypeValue["const"]) {
+                        var declaration = declaracion;
+                        declaration.tipoSim = TypeSym["const"];
+                        var value = declaration.execute(tablasimbolo);
+                        switch (value[0]) {
+                            case -2: //-> error instanciar variable
+                                return [-2, null];
+                            case -1: //-> error
+                                return [-1, null];
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                this.value = value[1];
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                this.value = value[1];
+                                break;
+                            default:
+                                return [-1, null];
+                        }
                     }
-                }
-                else {
-                    var declaration = declaracion;
-                    declaration.tipoSim = TypeSym.Variable;
-                    if (declaration.tipo == this.tipo) {
+                    else {
+                        var declaration = declaracion;
+                        declaration.tipoSim = TypeSym.Variable;
                         var value = declaration.execute(tablasimbolo);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
@@ -2797,8 +2751,11 @@ var declarations = /** @class */ (function (_super) {
                     }
                 }
             }
+            return [1, null];
         }
-        return [1, null];
+        catch (e) {
+            return [-1, null];
+        }
     };
     declarations.prototype.grahp = function () {
         return "";
@@ -2814,11 +2771,16 @@ var declaration0 = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     declaration0.prototype.execute = function (tablasimbolo) {
-        var valor = this.Expression.execute(tablasimbolo);
-        if (valor[0] > 0) {
-            return tablasimbolo.insert(this.name, valor[1], this.tipoSim, this.tipo);
+        try {
+            var valor = this.Expression.execute(tablasimbolo);
+            if (valor[0] > 0) {
+                return tablasimbolo.insert(this.name, valor[1], this.tipoSim, this.tipo);
+            }
+            return [-1, null];
         }
-        return [-1, null];
+        catch (e) {
+            return [-1, null];
+        }
     };
     declaration0.prototype.grahp = function () {
         return "";
@@ -2828,9 +2790,6 @@ var declaration0 = /** @class */ (function (_super) {
     };
     return declaration0;
 }(statement));
-///<reference path="Statements.ts"/>
-///<reference path="NativeStatements.ts"/>
-///<reference path="DeclarationStatements.ts"/>
 /*
     UNIVERSIDAD DE SAN CARLOS DE GUATEMALA
     JOSE WANNAN - 201612331 @2020
@@ -3005,30 +2964,37 @@ var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":"CallFunction","name":"sumarColumnas", "parameters":[{"linea":"195","statement":"variable","value":"matrixA"}]},\n' +
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
+var jsondata2 = '{"linea":"1","S":[{"linea":"1","statement":"console","expression":[{"linea":"1","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"1","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"1","tipo":"number", "value":"5"}],"Expression2":[{"linea":"1","tipo":"string3", "value":"hola"}]}],"Expression2":[{"linea":"1","statement":"logical","logical":"not","Expression":[{"linea":"1","tipo":"boolean", "value":"true"}]}]}]},\n' +
+    '{"linea":"1","statement":""}]}';
 var instrucciones = [];
 var tablasimbolo = new tablasimbolos();
 var jsondata = '';
 var erroresSemanticos = '';
 var salida = '';
 var lineas = 0;
+generatinginformationExample();
+execute();
 function execute() {
+    tablasimbolo = new tablasimbolos();
     salida = '{\"salida\":[\n';
     if (erroresSemanticos == '') {
         for (var _i = 0, instrucciones_1 = instrucciones; _i < instrucciones_1.length; _i++) {
             var value = instrucciones_1[_i];
-            var result = value.execute(tablasimbolo);
-            if (result[0] > 0) {
-                if (value.type == TypeStatement.NativeStatement) {
-                    salida += result[1] + ',\n';
+            if (value instanceof statement) {
+                var result = value.execute(tablasimbolo);
+                if (result[0] > 0) {
+                    if (value.type == TypeStatement.NativeStatement) {
+                        salida += result[1] + ',\n';
+                    }
                 }
-            }
-            else if (result[0] == 0) {
-                console.log("finish without error...");
-            }
-            else {
-                salida += '{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"' + result[1] + '\"},\n';
-                console.log('finish with error...');
-                break;
+                else if (result[0] == 0) {
+                    console.log("finish without error...");
+                }
+                else {
+                    salida += '{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Linea: ' + value.linea + ', ' + result[1] + '\"},\n';
+                    console.log('finish with error...');
+                    break;
+                }
             }
         }
     }
@@ -3039,7 +3005,7 @@ function execute() {
     console.log(salida);
 }
 function generatinginformationExample() {
-    var statement = JSON.parse(jsondataprueba);
+    var statement = JSON.parse(jsondata2);
     lineas = Number(statement.linea);
     var S = statement.S;
     for (var _i = 0, S_1 = S; _i < S_1.length; _i++) {
@@ -3050,6 +3016,10 @@ function generatinginformationExample() {
     }
 }
 function generatinginformation(jsondata) {
+    instrucciones = [];
+    erroresSemanticos = '';
+    salida = '';
+    lineas = 0;
     var statement = JSON.parse(jsondata);
     lineas = Number(statement.linea);
     var S = statement.S;
@@ -3123,10 +3093,26 @@ function getStatement(data) {
         case "predecrement":
         case "positivo":
         case "negativo":
+            var negar = new ArichmeticExpression();
+            negar.type = TypeStatement.ExpresionStatement;
+            negar.linea = data.linea;
+            negar.Function = ArichmeticExpr.negacion;
+            negar.Expression1 = getExpressiones(data.Expression1[0]);
+            negar.Expression2 = null;
+            return negar;
         case "logical":
+            var not = new LogialExpression();
+            not.type = TypeStatement.ExpresionStatement;
+            not.linea = data.linea;
+            not.Function = LogicalExpr.NOT;
+            not.Expression1 = getExpressiones(data.Expression1[0]);
+            not.Expression2 = null;
+            return not;
         case "Aritmetic":
+            return getArichmetic(data);
         case "Relational":
         case "Logical":
+            return getLogical(data);
         case "ternario":
         default:
             break;
@@ -3329,6 +3315,14 @@ function getExpressiones(data) {
                 case "return":
                 case "switch":
                 case "case":
+                case "typebody":
+                case "arreglo":
+                case "callMatriz":
+                case "callAtributo":
+                case "callFuncion":
+                case "nativeArray":
+                case "postincrement":
+                case "postdecrement":
                 case "default":
                 case "if":
                 case "dowhile":
@@ -3339,22 +3333,30 @@ function getExpressiones(data) {
                 case "parameter":
                 case "array":
                 case "atributo":
-                case "typebody":
-                case "arreglo":
-                case "callMatriz":
-                case "callAtributo":
-                case "callFuncion":
-                case "nativeArray":
-                case "postincrement":
-                case "postdecrement":
                 case "preincrement":
                 case "predecrement":
                 case "positivo":
                 case "negativo":
+                    var negar = new ArichmeticExpression();
+                    negar.type = TypeStatement.ExpresionStatement;
+                    negar.linea = data.linea;
+                    negar.Function = ArichmeticExpr.negacion;
+                    negar.Expression1 = getExpressiones(data.Expression1[0]);
+                    negar.Expression2 = null;
+                    return negar;
                 case "logical":
+                    var not = new LogialExpression();
+                    not.type = TypeStatement.ExpresionStatement;
+                    not.linea = data.linea;
+                    not.Function = LogicalExpr.NOT;
+                    not.Expression1 = getExpressiones(data.Expression[0]);
+                    not.Expression2 = null;
+                    return not;
                 case "Aritmetic":
+                    return getArichmetic(data);
                 case "Relational":
                 case "Logical":
+                    return getLogical(data);
                 case "ternario":
             }
         }
@@ -3395,6 +3397,148 @@ function getExpressiones(data) {
                     strings3.value = data.value.toString();
                     return strings3;
             }
+        }
+        return null;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getArichmetic(data) {
+    try {
+        switch (data.Aritmetic) {
+            case '+':
+                var suma = new ArichmeticExpression();
+                suma.type = TypeStatement.ExpresionStatement;
+                suma.linea = data.linea;
+                suma.Function = ArichmeticExpr.suma;
+                suma.Expression1 = getExpressiones(data.Expression1[0]);
+                suma.Expression2 = getExpressiones(data.Expression2[0]);
+                return suma;
+            case '-':
+                var resta = new ArichmeticExpression();
+                resta.type = TypeStatement.ExpresionStatement;
+                resta.linea = data.linea;
+                resta.Function = ArichmeticExpr.resta;
+                resta.Expression1 = getExpressiones(data.Expression1[0]);
+                resta.Expression2 = getExpressiones(data.Expression2[0]);
+                return resta;
+            case '*':
+                var operate = new ArichmeticExpression();
+                operate.type = TypeStatement.ExpresionStatement;
+                operate.linea = data.linea;
+                operate.Function = ArichmeticExpr.multiplicacion;
+                operate.Expression1 = getExpressiones(data.Expression1[0]);
+                operate.Expression2 = getExpressiones(data.Expression2[0]);
+                return operate;
+            case '**':
+                var poten = new ArichmeticExpression();
+                poten.type = TypeStatement.ExpresionStatement;
+                poten.linea = data.linea;
+                poten.Function = ArichmeticExpr.potenciacion;
+                poten.Expression1 = getExpressiones(data.Expression1[0]);
+                poten.Expression2 = getExpressiones(data.Expression2[0]);
+                return poten;
+            case '/':
+                var division = new ArichmeticExpression();
+                division.type = TypeStatement.ExpresionStatement;
+                division.linea = data.linea;
+                division.Function = ArichmeticExpr.division;
+                division.Expression1 = getExpressiones(data.Expression1[0]);
+                division.Expression2 = getExpressiones(data.Expression2[0]);
+                return division;
+            case '%':
+                var modulo = new ArichmeticExpression();
+                modulo.type = TypeStatement.ExpresionStatement;
+                modulo.linea = data.linea;
+                modulo.Function = ArichmeticExpr.modulo;
+                modulo.Expression1 = getExpressiones(data.Expression1[0]);
+                modulo.Expression2 = getExpressiones(data.Expression2[0]);
+                return modulo;
+        }
+        return null;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getLogical(data) {
+    try {
+        switch (data.Logical) {
+            case '&&':
+                var suma = new LogialExpression();
+                suma.type = TypeStatement.ExpresionStatement;
+                suma.linea = data.linea;
+                suma.Function = LogicalExpr.Y;
+                suma.Expression1 = getExpressiones(data.Expression1[0]);
+                suma.Expression2 = getExpressiones(data.Expression2[0]);
+                return suma;
+            case '||':
+                var resta = new LogialExpression();
+                resta.type = TypeStatement.ExpresionStatement;
+                resta.linea = data.linea;
+                resta.Function = LogicalExpr.O;
+                resta.Expression1 = getExpressiones(data.Expression1[0]);
+                resta.Expression2 = getExpressiones(data.Expression2[0]);
+                return resta;
+        }
+        return null;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getRelational(data) {
+    try {
+        switch (data.Aritmetic) {
+            case '+':
+                var suma = new ArichmeticExpression();
+                suma.type = TypeStatement.ExpresionStatement;
+                suma.linea = data.linea;
+                suma.Function = ArichmeticExpr.suma;
+                suma.Expression1 = getExpressiones(data.Expression1[0]);
+                suma.Expression2 = getExpressiones(data.Expression2[0]);
+                return suma;
+            case '-':
+                var resta = new ArichmeticExpression();
+                resta.type = TypeStatement.ExpresionStatement;
+                resta.linea = data.linea;
+                resta.Function = ArichmeticExpr.resta;
+                resta.Expression1 = getExpressiones(data.Expression1[0]);
+                resta.Expression2 = getExpressiones(data.Expression2[0]);
+                return resta;
+            case '*':
+                var operate = new ArichmeticExpression();
+                operate.type = TypeStatement.ExpresionStatement;
+                operate.linea = data.linea;
+                operate.Function = ArichmeticExpr.multiplicacion;
+                operate.Expression1 = getExpressiones(data.Expression1[0]);
+                operate.Expression2 = getExpressiones(data.Expression2[0]);
+                return operate;
+            case '**':
+                var poten = new ArichmeticExpression();
+                poten.type = TypeStatement.ExpresionStatement;
+                poten.linea = data.linea;
+                poten.Function = ArichmeticExpr.potenciacion;
+                poten.Expression1 = getExpressiones(data.Expression1[0]);
+                poten.Expression2 = getExpressiones(data.Expression2[0]);
+                return poten;
+            case '/':
+                var division = new ArichmeticExpression();
+                division.type = TypeStatement.ExpresionStatement;
+                division.linea = data.linea;
+                division.Function = ArichmeticExpr.division;
+                division.Expression1 = getExpressiones(data.Expression1[0]);
+                division.Expression2 = getExpressiones(data.Expression2[0]);
+                return division;
+            case '%':
+                var modulo = new ArichmeticExpression();
+                modulo.type = TypeStatement.ExpresionStatement;
+                modulo.linea = data.linea;
+                modulo.Function = ArichmeticExpr.modulo;
+                modulo.Expression1 = getExpressiones(data.Expression1[0]);
+                modulo.Expression2 = getExpressiones(data.Expression2[0]);
+                return modulo;
         }
         return null;
     }

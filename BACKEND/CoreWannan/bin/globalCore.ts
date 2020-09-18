@@ -276,6 +276,7 @@ abstract class statement
 {
     abstract type: TypeStatement;
     abstract StateCode: number;
+    abstract linea:number;
     abstract execute(tablasimbolo:tablasimbolos): any[2];
     abstract traduction():string;
     abstract grahp():string;
@@ -649,6 +650,8 @@ class arrays extends statement
             return -1
         }
     }
+
+    linea: number;
 
 }
 
@@ -1155,7 +1158,6 @@ class Asignation extends statement
     }
 
 }
-///<reference path="Statements.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -1166,6 +1168,7 @@ class IfStatement extends statement
     StateCode: number;
     type: TypeStatement;
     value:any;
+    linea:number;
     ValueExpression: statement;
     body:statement[];
     bodyElse:statement[];
@@ -1257,6 +1260,7 @@ class OperatorTernario extends statement
     type: TypeStatement;
     ValueExpression: statement;
     value:any;
+    linea:number;
     Expression1:statement;
     Expression2:statement;
 
@@ -1568,7 +1572,7 @@ class expression extends statement
             {
                 return this.getValuesArray(tablasimbolo);
             }
-            else if(name!="")
+            else if(this.name!="")
             {
                 if(this.isCallFunction)
                 {
@@ -1617,7 +1621,9 @@ class expression extends statement
                         }
                         break;
                     case TypeValue.Object:
-                        return this.Expresion.execute(tablasimbolo);
+                        let simbolo = tablasimbolo.getsym(this.name);
+                        return simbolo[1];
+
                     case TypeValue.String:
                         if(this.Expresion instanceof Strings)
                         {
@@ -1659,13 +1665,20 @@ class expression extends statement
 
     execute(tablasimbolo): any[2] {
         //get all data from all version of types
-        let data = this.getValue(tablasimbolo);
-        if(data!=null)
+        try
         {
-            if(data == '__jw__') return [1,null]
-            return [1,data]
+            let data = this.getValue(tablasimbolo);
+            if(data!=null)
+            {
+                if(data == '__jw__') return [1,null]
+                return [1,data]
+            }
+            return [-1,null]
         }
-        return [-1,null]
+        catch (e) {
+            return [-1,null]
+        }
+
     }
 
     grahp(): string {
@@ -1695,77 +1708,38 @@ class ArichmeticExpression extends statement
         {
             let izq = (this.Expression1!=null)?this.Expression1.execute(tablasimbolo):[-1,null];
             let der = (this.Expression2!=null)?this.Expression2.execute(tablasimbolo):[-1,null];
-            if(izq[0]==1&&der[0]==1)
+            if(izq[0]>0&&der[0]>0)
             {
                 switch (this.Function)
                 {
                     case ArichmeticExpr.suma:
-                        this.value = izq[1] + der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1,izq[1] + der[1]]
                     case ArichmeticExpr.resta:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof  Boolean)
-                        {
-                            this.value = izq[1] - der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                            return[1,izq[1]-der[1]]
                     case ArichmeticExpr.potenciacion:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof  Boolean)
-                        {
-                            this.value = izq[1] ^ der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1,izq[1] ^ der[1]];
                     case ArichmeticExpr.multiplicacion:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof  Boolean)
-                        {
-                            this.value = izq[1] * der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1,izq[1] * der[1]]
                     case ArichmeticExpr.modulo:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof  Boolean)
-                        {
-                            this.value = izq[1] % der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1,izq[1] % der[1]]
                     case ArichmeticExpr.negacion:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean )
-                        {
-                            this.value = -izq[1].toString();
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1, -izq[1]]
                     case ArichmeticExpr.division:
-                        if (izq[1] instanceof Number || izq[1] instanceof Boolean &&
-                            der[1] instanceof Number || der[1] instanceof  Boolean)
-                        {
                             if(der[1]!=0)
                             {
-                                this.value = izq[1] / der[1];
-                                this.StateCode = 1;
+                                return [1,izq[1] / der[1]]
                             }
                             else
                             {
-                                this.value = izq[1] / der[1];
-                                this.StateCode = -1;
+                                return [1,izq[1] / der[1]]
                             }
-
-                        }
-                        break;
                 }
             }
-            return [this.StateCode,this.value];
+            return [-1,null];
         }
         catch (e) {
 
-            return [this.StateCode,this.value];
+            return [-1,null];
         }
 
     }
@@ -1814,53 +1788,38 @@ class LogialExpression extends statement
         this.value = null;
         try
         {
+            //console.log('F->'+this.Function);
+            //console.log(this.Expression1);
+            //console.log(this.Expression2);
             let izq = (this.Expression1!=null)?this.Expression1.execute(tablasimbolo):[-1,null];
             let der = (this.Expression2!=null)?this.Expression2.execute(tablasimbolo):[-1,null];
-            if(izq[0]==1&&der[0]==1)
+            //console.log(izq);
+            //console.log(der);
+            if(izq[0]>0&&der[0]>0)
             {
                 switch (this.Function)
                 {
                     case LogicalExpr.Y:
-                        if(izq[1] instanceof Boolean && der[1] instanceof Boolean)
-                        {
-                            this.value = izq[1] && der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1,izq[1] && der[1]]
                     case LogicalExpr.O:
-                        if(izq[1] instanceof Boolean && der[1] instanceof Boolean)
-                        {
-                            this.value = izq[1] || der[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                            return [1,izq[1] || der[1]]
                     case LogicalExpr.NOT:
-                        if(izq[1] instanceof Boolean)
-                        {
-                            this.value = !izq[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                        return [1,!izq[1]];
                 }
             }
-            else if(izq[0]==1)
+            else if(izq[0]>0)
             {
                 switch (this.Function)
                 {
                     case LogicalExpr.NOT:
-                        if(izq[1] instanceof Boolean)
-                        {
-                            this.value = !izq[1];
-                            this.StateCode = 1;
-                        }
-                        break;
+                            return [1,!izq[1]];
                 }
             }
-            return [this.StateCode,this.value];
+            return [-1,null];
         }
         catch (e) {
 
-            return [this.StateCode,this.value];
+            return [-1,null];
         }
     }
 
@@ -1907,36 +1866,23 @@ class RelationalExpression extends statement
                 switch (this.Function)
                 {
                     case RelationalExpr.Igual:
-                        this.value = izq[1] == der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1,izq[1] == der[1]]
                     case RelationalExpr.Mayor:
-                        this.value = izq[1] > der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1,izq[1] > der[1]]
                     case RelationalExpr.MayorQue:
-                        this.value = izq[1] >= der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] >= der[1]]
                     case RelationalExpr.Menor:
-                        this.value = izq[1] < der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1,izq[1] < der[1]]
                     case RelationalExpr.MenorQue:
-                        this.value = izq[1] <= der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] <= der[1]]
                     case RelationalExpr.NoIgual:
-                        this.value = izq[1] != der[1];
-                        this.StateCode = 1;
-                        break;
+                        return [1, izq[1] != der[1]]
                 }
             }
-            return [this.StateCode,this.value];
+            return [-1,null];
         }
         catch (e) {
-
-            return [this.StateCode,this.value];
+            return [-1,null];
         }
 
     }
@@ -1981,6 +1927,7 @@ class functions extends statement
 {
     StateCode: number;
     type: TypeStatement;
+    linea:number;
     name:string;
     tipo:TypeValue;
     body:statement[];
@@ -2241,6 +2188,7 @@ class Parameter extends statement
     type: TypeStatement;
     name:string;
     tipo:TypeValue;
+    linea:number;
 
     execute(tablasimbolo: tablasimbolos): any {
     }
@@ -2270,6 +2218,7 @@ class WhileStatements extends statement
     ValueExpression: statement;
     body: statement[];
     value: any;
+    linea:number;
 
     constructor(Value:statement,cuerpo:statement[]) {
         super();
@@ -2342,6 +2291,7 @@ class DoWhileStatements extends statement
     ValueExpression: statement;
     body: statement[];
     value: any;
+    linea:number;
 
     constructor(Value:statement,cuerpo:statement[]) {
         super();
@@ -2417,6 +2367,7 @@ class ForStatements1 extends statement
     valueInitial:statement;
     body:statement[];
     value: any;
+    linea:number;
 
     execute(tablasimbolo): any[2]
     {
@@ -2501,6 +2452,7 @@ class ForStatements2 extends statement
     valueInitial:string;
     body:statement[];
     value: any;
+    linea:number;
 
     execute(tablasimbolo): any[2]
     {
@@ -2584,6 +2536,7 @@ class ForStatements3 extends statement
     identificador:string;
     body:statement[];
     value: any;
+    linea:number;
 
     execute(tablasimbolo): any[2]
     {
@@ -2744,6 +2697,7 @@ class ForStatements4 extends statement
     identificador:string;
     body:statement[];
     value: any;
+    linea:number;
 
     execute(tablasimbol): any[2]
     {
@@ -2982,6 +2936,7 @@ class Strings extends statement
     type: TypeStatement;
     value: string;
     tipoValue:TypeValue;
+    linea:number;
 
     constructor() {
         super();
@@ -3011,6 +2966,7 @@ class Numbers extends statement
     type: TypeStatement;
     value: number;
     tipoValue:TypeValue;
+    linea:number;
 
     constructor() {
         super();
@@ -3042,6 +2998,7 @@ class Booleans extends statement
     type: TypeStatement;
     value: boolean;
     tipoValue:TypeValue;
+    linea:number;
 
     constructor() {
         super();
@@ -3069,6 +3026,7 @@ class Nulls extends statement
     StateCode: number;
     type: TypeStatement;
     tipoValue:TypeValue;
+    linea:number;
 
     getValue()
     {
@@ -3093,6 +3051,7 @@ class Cadena3 extends statement
     type: TypeStatement;
     tipoValue:TypeValue;
     value: any;
+    linea:number;
 
     getValue()
     {
@@ -3141,7 +3100,10 @@ class NativeStatement extends statement
                 let resultado = '';
                 for(let valu of this.Expression)
                 {
-                    if(this.Expression == null)return [-1,null];
+                    //console.log(this.Expression)
+                    //console.log(tablasimbolo)
+                    if(this.Expression == null) return [-1,null];
+                    //console.log(this.Expression);
                     let value = valu.execute(tablasimbolo);
                     if(value[0]<0) return [-1,null];
                     //this.htmlYouWantToAdd = "<p><b>value[1]</b></p>";
@@ -3185,6 +3147,7 @@ class types extends statement
     atributos:atributo[];
     identificador:string;
     tipoValue:TypeValue;
+    linea:number;
 
     execute(tablasimbolo: tablasimbolos): any {
         return [1,this]
@@ -3323,90 +3286,22 @@ class declarations extends statement
 
     execute(tablasimbolo: tablasimbolos): any
     {
-        if(this.tipo == TypeValue.type)
+        try
         {
-            let declaracion = <declaration0> this.Expression[0];
-            tablasimbolo.insert(declaracion.name,declaracion.Expression,TypeSym.class,this.tipo);
-        }
-        else
-        {
-            for(let declaracion of this.Expression)
+            if(this.tipo == TypeValue.type)
             {
-                if(this.tipo == TypeValue.let)
+                let declaracion = <declaration0> this.Expression[0];
+                tablasimbolo.insert(declaracion.name,declaracion.Expression,TypeSym.class,this.tipo);
+            }
+            else
+            {
+                for(let declaracion of this.Expression)
                 {
-                    let declaration = <declaration0> declaracion;
-                    declaration.tipoSim = TypeSym.let;
-                    let value = declaration.execute(tablasimbolo);
-                    switch (value[0])
+                    if(this.tipo == TypeValue.let)
                     {
-                        case -2: //-> error instanciar variable
-                            return [-2,null];
-                        case -1: //-> error
-                            return[-1,null];
-                        case 0: //-> finalizado
-                            this.StateCode = 0;
-                            this.value = value[1];
-                            break;
-                        case 1: //-> sin errores
-                            this.StateCode = 1;
-                            this.value = value[1];
-                            break;
-                        default:
-                            return [-1,null];
-                    }
-                }
-                else if(this.tipo == TypeValue.var)
-                {
-                    let declaration = <declaration0> declaracion;
-                    declaration.tipoSim = TypeSym.var;
-                    let value = declaration.execute(tablasimbolo);
-                    switch (value[0])
-                    {
-                        case -2: //-> error instanciar variable
-                            return [-2,null];
-                        case -1: //-> error
-                            return[-1,null];
-                        case 0: //-> finalizado
-                            this.StateCode = 0;
-                            this.value = value[1];
-                            break;
-                        case 1: //-> sin errores
-                            this.StateCode = 1;
-                            this.value = value[1];
-                            break;
-                        default:
-                            return [-1,null];
-                    }
-                }
-                else if(this.tipo == TypeValue.const)
-                {
-                    let declaration = <declaration0> declaracion;
-                    declaration.tipoSim = TypeSym.const;
-                    let value = declaration.execute(tablasimbolo);
-                    switch (value[0])
-                    {
-                        case -2: //-> error instanciar variable
-                            return [-2,null];
-                        case -1: //-> error
-                            return[-1,null];
-                        case 0: //-> finalizado
-                            this.StateCode = 0;
-                            this.value = value[1];
-                            break;
-                        case 1: //-> sin errores
-                            this.StateCode = 1;
-                            this.value = value[1];
-                            break;
-                        default:
-                            return [-1,null];
-                    }
-                }
-                else
-                {
-                    let declaration = <declaration0> declaracion;
-                    declaration.tipoSim = TypeSym.Variable;
-                    if(declaration.tipo == this.tipo)
-                    {
+                        console.log(declaracion);
+                        let declaration = <declaration0> declaracion;
+                        declaration.tipoSim = TypeSym.let;
                         let value = declaration.execute(tablasimbolo);
                         switch (value[0])
                         {
@@ -3426,11 +3321,85 @@ class declarations extends statement
                                 return [-1,null];
                         }
                     }
+                    else if(this.tipo == TypeValue.var)
+                    {
+                        let declaration = <declaration0> declaracion;
+                        declaration.tipoSim = TypeSym.var;
+                        let value = declaration.execute(tablasimbolo);
+                        switch (value[0])
+                        {
+                            case -2: //-> error instanciar variable
+                                return [-2,null];
+                            case -1: //-> error
+                                return[-1,null];
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                this.value = value[1];
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                this.value = value[1];
+                                break;
+                            default:
+                                return [-1,null];
+                        }
+                    }
+                    else if(this.tipo == TypeValue.const)
+                    {
+                        let declaration = <declaration0> declaracion;
+                        declaration.tipoSim = TypeSym.const;
+                        let value = declaration.execute(tablasimbolo);
+                        switch (value[0])
+                        {
+                            case -2: //-> error instanciar variable
+                                return [-2,null];
+                            case -1: //-> error
+                                return[-1,null];
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                this.value = value[1];
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                this.value = value[1];
+                                break;
+                            default:
+                                return [-1,null];
+                        }
+                    }
+                    else
+                    {
+                        let declaration = <declaration0> declaracion;
+                        declaration.tipoSim = TypeSym.Variable;
+                        let value = declaration.execute(tablasimbolo);
+                            switch (value[0])
+                            {
+                                case -2: //-> error instanciar variable
+                                    return [-2,null];
+                                case -1: //-> error
+                                    return[-1,null];
+                                case 0: //-> finalizado
+                                    this.StateCode = 0;
+                                    this.value = value[1];
+                                    break;
+                                case 1: //-> sin errores
+                                    this.StateCode = 1;
+                                    this.value = value[1];
+                                    break;
+                                default:
+                                    return [-1,null];
+                            }
+                    }
                 }
             }
+
+            return [1,null];
+        }
+        catch(e)
+        {
+            return [-1,null]
         }
 
-        return [1,null];
     }
 
     grahp(): string {
@@ -3454,13 +3423,21 @@ class declaration0 extends statement
 
     execute(tablasimbolo: tablasimbolos): any
     {
-        let valor = this.Expression.execute(tablasimbolo);
-        if(valor[0]>0)
+        try
         {
-            return tablasimbolo.insert(this.name,valor[1],this.tipoSim, this.tipo);
+            let valor = this.Expression.execute(tablasimbolo);
+            if(valor[0]>0)
+            {
+                return tablasimbolo.insert(this.name,valor[1],this.tipoSim, this.tipo);
 
+            }
+            return [-1,null];
         }
-        return [-1,null];
+        catch(e)
+        {
+            return [-1,null]
+        }
+
     }
 
     grahp(): string {
@@ -3472,9 +3449,6 @@ class declaration0 extends statement
     }
 
 }
-///<reference path="Statements.ts"/>
-///<reference path="NativeStatements.ts"/>
-///<reference path="DeclarationStatements.ts"/>
 /*
     UNIVERSIDAD DE SAN CARLOS DE GUATEMALA
     JOSE WANNAN - 201612331 @2020
@@ -3650,38 +3624,47 @@ let jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
 
+let jsondata2 = '{"linea":"1","S":[{"linea":"1","statement":"console","expression":[{"linea":"1","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"1","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"1","tipo":"number", "value":"5"}],"Expression2":[{"linea":"1","tipo":"string3", "value":"hola"}]}],"Expression2":[{"linea":"1","statement":"logical","logical":"not","Expression":[{"linea":"1","tipo":"boolean", "value":"true"}]}]}]},\n' +
+    '{"linea":"1","statement":""}]}'
+
 let instrucciones: statement[] = [];
 let tablasimbolo: tablasimbolos = new tablasimbolos();
 let jsondata:string = '';
 let erroresSemanticos:string = '';
 let salida = '';
 let lineas = 0;
-
+generatinginformationExample();
+execute()
 function execute()
 {
+    tablasimbolo = new tablasimbolos();
     salida = '{\"salida\":[\n';
     if(erroresSemanticos=='')
     {
         for(let value of instrucciones)
         {
-            let result = value.execute(tablasimbolo);
-            if(result[0]>0)
+            if(value instanceof statement)
             {
-                if(value.type == TypeStatement.NativeStatement)
+                let result = value.execute(tablasimbolo);
+                if(result[0]>0)
                 {
-                    salida += result[1]+',\n';
+                    if(value.type == TypeStatement.NativeStatement)
+                    {
+                        salida += result[1]+',\n';
+                    }
+                }
+                else if(result[0]==0)
+                {
+                    console.log("finish without error...");
+                }
+                else
+                {
+                    salida += '{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Linea: '+value.linea+', '+result[1]+'\"},\n';
+                    console.log('finish with error...')
+                    break;
                 }
             }
-            else if(result[0]==0)
-            {
-                console.log("finish without error...");
-            }
-            else
-            {
-                salida += '{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"'+result[1]+'\"},\n';
-                console.log('finish with error...')
-                break;
-            }
+
         }
     }
     else
@@ -3693,7 +3676,7 @@ function execute()
 }
 function generatinginformationExample()
 {
-    let statement = JSON.parse(jsondataprueba);
+    let statement = JSON.parse(jsondata2);
     lineas = Number(statement.linea);
     let S = statement.S;
     for(let statement of S)
@@ -3704,6 +3687,10 @@ function generatinginformationExample()
 }
 function generatinginformation(jsondata)
 {
+    instrucciones = [];
+    erroresSemanticos = '';
+    salida = '';
+    lineas = 0;
     let statement = JSON.parse(jsondata);
     lineas = Number(statement.linea);
     let S = statement.S;
@@ -3713,7 +3700,6 @@ function generatinginformation(jsondata)
         if(stat!=null) instrucciones.push(stat);
     }
 }
-
 function getStatement(data):statement
 {
     switch (data.statement)
@@ -3775,17 +3761,32 @@ function getStatement(data):statement
         case "predecrement":
         case "positivo":
         case "negativo":
+            let negar:ArichmeticExpression = new ArichmeticExpression();
+            negar.type = TypeStatement.ExpresionStatement;
+            negar.linea = data.linea;
+            negar.Function = ArichmeticExpr.negacion;
+            negar.Expression1 = getExpressiones(data.Expression1[0]);
+            negar.Expression2 = null;
+            return negar;
         case "logical":
+            let not:LogialExpression = new LogialExpression();
+            not.type = TypeStatement.ExpresionStatement;
+            not.linea = data.linea;
+            not.Function = LogicalExpr.NOT;
+            not.Expression1 = getExpressiones(data.Expression1[0]);
+            not.Expression2 = null;
+            return not;
         case "Aritmetic":
+            return getArichmetic(data);
         case "Relational":
         case "Logical":
+            return getLogical(data);
         case "ternario":
         default:
             break;
     }
     return null;
 }
-
 function getTipo(datas):any
 {
     /*
@@ -3957,7 +3958,6 @@ function grahpStatement(data):statement
     }
 
 }
-
 function getVariable(data):statement
 {
     try
@@ -4009,6 +4009,14 @@ function getExpressiones(data):statement
                 case "return":
                 case "switch":
                 case "case":
+                case "typebody":
+                case "arreglo":
+                case "callMatriz":
+                case "callAtributo":
+                case "callFuncion":
+                case "nativeArray":
+                case "postincrement":
+                case "postdecrement":
                 case "default":
                 case "if":
                 case "dowhile":
@@ -4019,22 +4027,30 @@ function getExpressiones(data):statement
                 case "parameter":
                 case "array":
                 case "atributo":
-                case "typebody":
-                case "arreglo":
-                case "callMatriz":
-                case "callAtributo":
-                case "callFuncion":
-                case "nativeArray":
-                case "postincrement":
-                case "postdecrement":
                 case "preincrement":
                 case "predecrement":
                 case "positivo":
                 case "negativo":
+                    let negar:ArichmeticExpression = new ArichmeticExpression();
+                    negar.type = TypeStatement.ExpresionStatement;
+                    negar.linea = data.linea;
+                    negar.Function = ArichmeticExpr.negacion;
+                    negar.Expression1 = getExpressiones(data.Expression1[0]);
+                    negar.Expression2 = null;
+                    return negar;
                 case "logical":
+                    let not:LogialExpression = new LogialExpression();
+                    not.type = TypeStatement.ExpresionStatement;
+                    not.linea = data.linea;
+                    not.Function = LogicalExpr.NOT;
+                    not.Expression1 = getExpressiones(data.Expression[0]);
+                    not.Expression2 = null;
+                    return not;
                 case "Aritmetic":
+                    return getArichmetic(data);
                 case "Relational":
                 case "Logical":
+                    return getLogical(data);
                 case "ternario":
 
             }
@@ -4085,5 +4101,158 @@ function getExpressiones(data):statement
         return null;
     }
 }
+function getArichmetic(data):statement
+{
+    try
+    {
+        switch (data.Aritmetic)
+        {
+            case '+':
+                let suma:ArichmeticExpression = new ArichmeticExpression();
+                suma.type = TypeStatement.ExpresionStatement;
+                suma.linea = data.linea;
+                suma.Function = ArichmeticExpr.suma;
+                suma.Expression1 = getExpressiones(data.Expression1[0]);
+                suma.Expression2 = getExpressiones(data.Expression2[0]);
+                return suma;
+            case '-':
+                let resta:ArichmeticExpression = new ArichmeticExpression();
+                resta.type = TypeStatement.ExpresionStatement;
+                resta.linea = data.linea;
+                resta.Function = ArichmeticExpr.resta;
+                resta.Expression1 = getExpressiones(data.Expression1[0]);
+                resta.Expression2 = getExpressiones(data.Expression2[0]);
+                return resta;
+            case '*':
+                let operate:ArichmeticExpression = new ArichmeticExpression();
+                operate.type = TypeStatement.ExpresionStatement;
+                operate.linea = data.linea;
+                operate.Function = ArichmeticExpr.multiplicacion;
+                operate.Expression1 = getExpressiones(data.Expression1[0]);
+                operate.Expression2 = getExpressiones(data.Expression2[0]);
+                return operate;
+            case '**':
+                let poten:ArichmeticExpression = new ArichmeticExpression();
+                poten.type = TypeStatement.ExpresionStatement;
+                poten.linea = data.linea;
+                poten.Function = ArichmeticExpr.potenciacion;
+                poten.Expression1 = getExpressiones(data.Expression1[0]);
+                poten.Expression2 = getExpressiones(data.Expression2[0]);
+                return poten;
+            case '/':
+                let division:ArichmeticExpression = new ArichmeticExpression();
+                division.type = TypeStatement.ExpresionStatement;
+                division.linea = data.linea;
+                division.Function = ArichmeticExpr.division;
+                division.Expression1 = getExpressiones(data.Expression1[0]);
+                division.Expression2 = getExpressiones(data.Expression2[0]);
+                return division;
+            case '%':
+                let modulo:ArichmeticExpression = new ArichmeticExpression();
+                modulo.type = TypeStatement.ExpresionStatement;
+                modulo.linea = data.linea;
+                modulo.Function = ArichmeticExpr.modulo
+                modulo.Expression1 = getExpressiones(data.Expression1[0]);
+                modulo.Expression2 = getExpressiones(data.Expression2[0]);
+                return modulo;
+        }
+        return null;
 
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getLogical(data):statement
+{
+    try
+    {
+        switch (data.Logical)
+        {
+            case '&&':
+                let suma:LogialExpression = new LogialExpression();
+                suma.type = TypeStatement.ExpresionStatement;
+                suma.linea = data.linea;
+                suma.Function = LogicalExpr.Y;
+                suma.Expression1 = getExpressiones(data.Expression1[0]);
+                suma.Expression2 = getExpressiones(data.Expression2[0]);
+                return suma;
+            case '||':
+                let resta:LogialExpression = new LogialExpression();
+                resta.type = TypeStatement.ExpresionStatement;
+                resta.linea = data.linea;
+                resta.Function = LogicalExpr.O;
+                resta.Expression1 = getExpressiones(data.Expression1[0]);
+                resta.Expression2 = getExpressiones(data.Expression2[0]);
+                return resta;
+        }
+        return null;
+
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getRelational(data):statement
+{
+    try
+    {
+        switch (data.Aritmetic)
+        {
+            case '+':
+                let suma:ArichmeticExpression = new ArichmeticExpression();
+                suma.type = TypeStatement.ExpresionStatement;
+                suma.linea = data.linea;
+                suma.Function = ArichmeticExpr.suma;
+                suma.Expression1 = getExpressiones(data.Expression1[0]);
+                suma.Expression2 = getExpressiones(data.Expression2[0]);
+                return suma;
+            case '-':
+                let resta:ArichmeticExpression = new ArichmeticExpression();
+                resta.type = TypeStatement.ExpresionStatement;
+                resta.linea = data.linea;
+                resta.Function = ArichmeticExpr.resta;
+                resta.Expression1 = getExpressiones(data.Expression1[0]);
+                resta.Expression2 = getExpressiones(data.Expression2[0]);
+                return resta;
+            case '*':
+                let operate:ArichmeticExpression = new ArichmeticExpression();
+                operate.type = TypeStatement.ExpresionStatement;
+                operate.linea = data.linea;
+                operate.Function = ArichmeticExpr.multiplicacion;
+                operate.Expression1 = getExpressiones(data.Expression1[0]);
+                operate.Expression2 = getExpressiones(data.Expression2[0]);
+                return operate;
+            case '**':
+                let poten:ArichmeticExpression = new ArichmeticExpression();
+                poten.type = TypeStatement.ExpresionStatement;
+                poten.linea = data.linea;
+                poten.Function = ArichmeticExpr.potenciacion;
+                poten.Expression1 = getExpressiones(data.Expression1[0]);
+                poten.Expression2 = getExpressiones(data.Expression2[0]);
+                return poten;
+            case '/':
+                let division:ArichmeticExpression = new ArichmeticExpression();
+                division.type = TypeStatement.ExpresionStatement;
+                division.linea = data.linea;
+                division.Function = ArichmeticExpr.division;
+                division.Expression1 = getExpressiones(data.Expression1[0]);
+                division.Expression2 = getExpressiones(data.Expression2[0]);
+                return division;
+            case '%':
+                let modulo:ArichmeticExpression = new ArichmeticExpression();
+                modulo.type = TypeStatement.ExpresionStatement;
+                modulo.linea = data.linea;
+                modulo.Function = ArichmeticExpr.modulo
+                modulo.Expression1 = getExpressiones(data.Expression1[0]);
+                modulo.Expression2 = getExpressiones(data.Expression2[0]);
+                return modulo;
+        }
+        return null;
+
+    }
+    catch (e) {
+        return null;
+    }
+}
 
