@@ -43,7 +43,7 @@
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "wannancompile": "^1.0.1",
-    "wannancore": "^1.0.9",
+    "wannancore": "^1.0.10",
     "wannantraduction": "^1.0.6",
     "zone.js": "~0.10.2"
   },

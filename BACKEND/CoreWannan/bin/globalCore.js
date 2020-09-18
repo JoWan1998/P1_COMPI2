@@ -1335,7 +1335,7 @@ var ArichmeticExpression = /** @class */ (function (_super) {
                     case ArichmeticExpr.resta:
                         return [1, izq[1] - der[1]];
                     case ArichmeticExpr.potenciacion:
-                        return [1, izq[1] ^ der[1]];
+                        return [1, Math.pow(izq[1], der[1])];
                     case ArichmeticExpr.multiplicacion:
                         return [1, izq[1] * der[1]];
                     case ArichmeticExpr.modulo:
