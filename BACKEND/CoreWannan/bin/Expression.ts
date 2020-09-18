@@ -313,7 +313,9 @@ class expression extends statement
                         }
                         break;
                     case TypeValue.const:
+                        return this.Expresion.execute(tablasimbolo);
                     case TypeValue.let:
+                        return this.Expresion.execute(tablasimbolo);
                     case TypeValue.Number:
                         if(this.Expresion instanceof Numbers)
                         {
@@ -321,6 +323,7 @@ class expression extends statement
                         }
                         break;
                     case TypeValue.Object:
+                        return this.Expresion.execute(tablasimbolo);
                     case TypeValue.String:
                         if(this.Expresion instanceof Strings)
                         {

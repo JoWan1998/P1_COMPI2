@@ -12,6 +12,7 @@ class arrays extends statement
     tipoValue:TypeValue;
     values:any[];
     val:any;
+    size:number;
 
     execute(): any
     {

@@ -515,8 +515,6 @@ var arrays = /** @class */ (function (_super) {
     };
     return arrays;
 }(statement));
-///<reference path="Statements.ts"/>
-///<reference path="Expression.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -1032,9 +1030,6 @@ var OperatorTernario = /** @class */ (function (_super) {
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
         GUATEMALA
  */
-///<reference path="Statements.ts"/>
-///<reference path="Literal.ts"/>
-///<reference path="FunctionStatements.ts"/>
 var expression = /** @class */ (function (_super) {
     __extends(expression, _super);
     function expression() {
@@ -1258,13 +1253,16 @@ var expression = /** @class */ (function (_super) {
                         }
                         break;
                     case TypeValue["const"]:
+                        return this.Expresion.execute(tablasimbolo);
                     case TypeValue.let:
+                        return this.Expresion.execute(tablasimbolo);
                     case TypeValue.Number:
                         if (this.Expresion instanceof Numbers) {
                             return this.Expresion.getValue();
                         }
                         break;
                     case TypeValue.Object:
+                        return this.Expresion.execute(tablasimbolo);
                     case TypeValue.String:
                         if (this.Expresion instanceof Strings) {
                             return this.Expresion.getValue();
@@ -3080,12 +3078,22 @@ function getStatement(data) {
                 instrucciones.push(declaration);
             break;
         case "CallFunction":
+            break;
         case "asignation":
+            break;
         case "Argument":
+            break;
         case "ArrayList":
+            break;
         case "Object":
+            break;
         case "MatrizPosition":
+            break;
         case "variable":
+            var variable = getVariable(data);
+            if (variable != null)
+                instrucciones.push(variable);
+            break;
         case "variableArray":
         case "funcion":
         case "continue":
@@ -3125,11 +3133,110 @@ function getStatement(data) {
     }
     return null;
 }
+function getTipo(datas) {
+    /*
+    "tipoExpresion": [
+            {
+              "linea": "1",
+              "tipo": [
+                {
+                  "linea": "1",
+                  "tipo": "number"
+                }
+              ],
+              "size": [
+                {
+                  "linea": "1",
+                  "statement": "array",
+                  "elementos": []
+                },
+                {
+                  "linea": "1",
+                  "statement": "array",
+                  "elementos": []
+                }
+              ]
+            }
+          ]
+     */
+    try {
+        var data = void 0;
+        switch (datas[0].tipo[0].tipo) {
+            case "string":
+                data = TypeValue.String;
+                break;
+            case "number":
+                data = TypeValue.Number;
+                break;
+            case "boolean":
+                data = TypeValue.Boolean;
+                break;
+            case "void":
+                data = TypeValue["void"];
+                break;
+            case "var":
+                data = TypeValue["var"];
+                break;
+            case "const":
+                data = TypeValue["const"];
+                break;
+            case "type":
+                data = TypeValue.type;
+                break;
+            case "let":
+                data = TypeValue.let;
+                break;
+            default:
+                data = TypeValue.Object;
+                break;
+        }
+        var size = Number(datas[0].size.length);
+        return [data, size];
+    }
+    catch (e) {
+        return [null, 0];
+    }
+}
 function getDeclarations(data) {
     try {
+        //console.log(data)
+        var declaras = [];
+        var error = 0;
         for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
             var decla = data_1[_i];
+            var declarationes = new declaration0();
+            var resultado = getTipo(decla.tipoExpresion);
+            var tipo = resultado[0];
+            var tam = resultado[1];
+            declarationes.tipo = tipo;
+            declarationes.linea = Number(decla.linea);
+            declarationes.type = null;
+            declarationes.name = decla.name;
+            var value = getExpressiones(decla.ValExpression[0].Expression[0]);
+            if (value instanceof arrays) {
+                if (value.size == tam) {
+                    declarationes.Expression = value;
+                    declarationes.tipo = TypeValue.Array;
+                    declaras.push(declarationes);
+                }
+                else {
+                    error++;
+                    erroresSemanticos += '{\"valor\":\"MatrixError\",\"salida\":\"Linea:' + decla.linea + ', La matriz es mayor al tamaño declarado.\"},\n';
+                }
+            }
+            else {
+                declarationes.Expression = value;
+                if (value instanceof Strings || value instanceof Numbers || value instanceof Booleans || value instanceof Nulls) {
+                    declarationes.tipo = value.tipoValue;
+                }
+                else if (value instanceof types) {
+                    declarationes.tipo = TypeValue.type;
+                }
+                declaras.push(declarationes);
+            }
         }
+        if (error == 0)
+            return declaras;
         return [];
     }
     catch (e) {
@@ -3142,6 +3249,7 @@ function declarationStatement(data) {
         declaration.linea = Number(data.linea);
         declaration.type = TypeStatement.DeclarationStatement;
         declaration.Expression = getDeclarations(data.values);
+        return declaration;
     }
     catch (e) {
         return null;
@@ -3176,6 +3284,20 @@ function grahpStatement(data) {
         return null;
     }
 }
+function getVariable(data) {
+    try {
+        //console.log(data);
+        var variable = new expression();
+        variable.type = TypeStatement.ExpresionStatement;
+        variable.valueType = TypeValue.Object;
+        variable.linea = Number(data.linea);
+        variable.name = data.value;
+        return variable;
+    }
+    catch (e) {
+        return null;
+    }
+}
 function getExpressiones(data) {
     try {
         if (data.hasOwnProperty("statement")) {
@@ -3185,13 +3307,21 @@ function getExpressiones(data) {
                 case "graph":
                     return grahpStatement(data);
                 case "declaration":
+                    return declarationStatement(data);
                 case "CallFunction":
+                    break;
                 case "asignation":
+                    break;
                 case "Argument":
+                    break;
                 case "ArrayList":
+                    break;
                 case "Object":
+                    break;
                 case "MatrizPosition":
+                    break;
                 case "variable":
+                    return getVariable(data);
                 case "variableArray":
                 case "funcion":
                 case "continue":
@@ -3272,5 +3402,6 @@ function getExpressiones(data) {
         return null;
     }
 }
+
 module.exports.generate = function (jsondata) { generatinginformation(jsondata);};
 module.exports.exec = function(){execute(); return salida;};

@@ -11,3 +11,13 @@ atributo
 typebody
 variable
 arreglo
+
+
+case "string":
+case "number":
+case "boolean":
+case "void":
+case "var":
+case "const":
+case "type":
+case "let":

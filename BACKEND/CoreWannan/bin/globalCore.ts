@@ -377,7 +377,6 @@ enum typeAssigment
     division
 }
 
-
 class arrays extends statement
 {
     StateCode: number;
@@ -385,6 +384,7 @@ class arrays extends statement
     tipoValue:TypeValue;
     values:any[];
     val:any;
+    size:number;
 
     execute(): any
     {
@@ -651,8 +651,8 @@ class arrays extends statement
     }
 
 }
-///<reference path="Statements.ts"/>
-///<reference path="Expression.ts"/>
+
+
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -1301,9 +1301,6 @@ class OperatorTernario extends statement
         GUATEMALA
  */
 
-///<reference path="Statements.ts"/>
-///<reference path="Literal.ts"/>
-///<reference path="FunctionStatements.ts"/>
 class expression extends statement
 {
     StateCode: number;
@@ -1610,7 +1607,9 @@ class expression extends statement
                         }
                         break;
                     case TypeValue.const:
+                        return this.Expresion.execute(tablasimbolo);
                     case TypeValue.let:
+                        return this.Expresion.execute(tablasimbolo);
                     case TypeValue.Number:
                         if(this.Expresion instanceof Numbers)
                         {
@@ -1618,6 +1617,7 @@ class expression extends statement
                         }
                         break;
                     case TypeValue.Object:
+                        return this.Expresion.execute(tablasimbolo);
                     case TypeValue.String:
                         if(this.Expresion instanceof Strings)
                         {
@@ -3731,12 +3731,21 @@ function getStatement(data):statement
             if(declaration!=null) instrucciones.push(declaration);
             break;
         case "CallFunction":
+            break;
         case "asignation":
+            break;
         case "Argument":
+            break;
         case "ArrayList":
+            break;
         case "Object":
+            break;
         case "MatrizPosition":
+            break;
         case "variable":
+            let variable = getVariable(data);
+            if(variable!=null) instrucciones.push(variable);
+            break;
         case "variableArray":
         case "funcion":
         case "continue":
@@ -3776,13 +3785,123 @@ function getStatement(data):statement
     }
     return null;
 }
+
+function getTipo(datas):any
+{
+    /*
+    "tipoExpresion": [
+            {
+              "linea": "1",
+              "tipo": [
+                {
+                  "linea": "1",
+                  "tipo": "number"
+                }
+              ],
+              "size": [
+                {
+                  "linea": "1",
+                  "statement": "array",
+                  "elementos": []
+                },
+                {
+                  "linea": "1",
+                  "statement": "array",
+                  "elementos": []
+                }
+              ]
+            }
+          ]
+     */
+    try
+    {
+        let data:TypeValue;
+        switch (datas[0].tipo[0].tipo)
+        {
+            case "string":
+                data = TypeValue.String;
+                break;
+            case "number":
+                data = TypeValue.Number;
+                break;
+            case "boolean":
+                data = TypeValue.Boolean;
+                break;
+            case "void":
+                data = TypeValue.void;
+                break;
+            case "var":
+                data = TypeValue.var;
+                break;
+            case "const":
+                data = TypeValue.const;
+                break;
+            case "type":
+                data = TypeValue.type;
+                break;
+            case "let":
+                data = TypeValue.let;
+                break;
+            default:
+                data = TypeValue.Object;
+                break;
+        }
+        let size = Number(datas[0].size.length)
+        return [data,size];
+    }
+    catch (e) {
+        return [null,0];
+    }
+}
 function getDeclarations(data):statement[]
 {
     try
     {
+        //console.log(data)
+        let declaras = [];
+        let error = 0;
         for(let decla of data)
         {
+            let declarationes:declaration0 = new declaration0();
+            let resultado = getTipo(decla.tipoExpresion);
+            let tipo:TypeValue = resultado[0];
+            let tam = resultado[1];
+            declarationes.tipo = tipo;
+            declarationes.linea = Number(decla.linea)
+            declarationes.type = null
+            declarationes.name = decla.name
+            let value = getExpressiones(decla.ValExpression[0].Expression[0])
+            if(value instanceof arrays)
+            {
+                if(value.size == tam)
+                {
+                    declarationes.Expression = value;
+                    declarationes.tipo = TypeValue.Array;
+                    declaras.push(declarationes);
+                }
+                else
+                {
+                    error++;
+                    erroresSemanticos += '{\"valor\":\"MatrixError\",\"salida\":\"Linea:'+decla.linea+', La matriz es mayor al tamaño declarado.\"},\n';
+                }
+            }
+            else
+            {
+                declarationes.Expression = value;
+                if(value instanceof Strings || value instanceof Numbers || value instanceof Booleans || value instanceof Nulls)
+                {
+                    declarationes.tipo = value.tipoValue;
+                }
+                else if(value instanceof types)
+                {
+                    declarationes.tipo = TypeValue.type;
+                }
+
+                declaras.push(declarationes);
+            }
+
         }
+        if(error==0) return declaras
         return [];
     }
     catch (e)
@@ -3797,7 +3916,8 @@ function declarationStatement(data):statement
         let declaration:declarations = new declarations();
         declaration.linea = Number(data.linea);
         declaration.type = TypeStatement.DeclarationStatement;
-        declaration.Expression = getDeclarations(data.values);
+        declaration.Expression = getDeclarations(data.values)
+        return declaration;
     }
     catch (e) {
         return null;
@@ -3837,6 +3957,23 @@ function grahpStatement(data):statement
     }
 
 }
+
+function getVariable(data):statement
+{
+    try
+    {
+        //console.log(data);
+        let variable:expression = new expression();
+        variable.type = TypeStatement.ExpresionStatement;
+        variable.valueType = TypeValue.Object;
+        variable.linea = Number(data.linea);
+        variable.name = data.value;
+        return variable;
+    }
+    catch (e) {
+        return null;
+    }
+}
 function getExpressiones(data):statement
 {
     try
@@ -3850,13 +3987,21 @@ function getExpressiones(data):statement
                 case "graph":
                     return grahpStatement(data);
                 case "declaration":
+                    return declarationStatement(data);
                 case "CallFunction":
+                    break;
                 case "asignation":
+                    break;
                 case "Argument":
+                    break;
                 case "ArrayList":
+                    break;
                 case "Object":
+                    break;
                 case "MatrizPosition":
+                    break;
                 case "variable":
+                    return getVariable(data);
                 case "variableArray":
                 case "funcion":
                 case "continue":
