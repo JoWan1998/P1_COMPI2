@@ -357,7 +357,7 @@ ValStatement
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":[],\"name\":\"'+$1+'\",\"ValExpression\":['+$2+']}';
         }
-    | IDENT ArrayList ':' Type initialNo
+    | IDENT  ':' Type ArrayList initialNo
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":['+$4+'],\"name\":\"'+$1+'\",\"ValExpression\":['+$5+'],\"ArrayLength\":['+$2+']}';
         }
@@ -380,7 +380,7 @@ ValStatement1
 ;
 
 initialNo
-    : AssignmentOperator Expr
+    : AssignmentOperator AssignmentExpr
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"operator\":['+$1+'],\"Expression\":['+$2+']}';
     }
