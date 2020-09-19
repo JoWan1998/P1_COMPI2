@@ -228,6 +228,7 @@ class tablasimbolos
     }
 
 }
+
 class sym
 {
     name:string;
@@ -246,23 +247,32 @@ class sym
     }
     update(new_value:any,atributo?:any,position?:any):any
     {
-        if(atributo!=undefined && position == undefined)
+        try
         {
-            let valor:types = this.value;
-            valor.setValueAtributo(atributo,new_value);
-            this.value = valor;
+            if(atributo!=undefined && position == undefined)
+            {
+                let valor:types = this.value;
+                valor.setValueAtributo(atributo,new_value);
+                this.value = valor;
+                return [1,null];
+            }
+            else if(atributo==undefined && position != undefined)
+            {
+                let valor:arrays = this.value;
+                valor.setValue(position,new_value);
+                this.value = valor;
+                return [1,null];
+            }
+            else
+            {
+                this.value = new_value;
+                return [1,null];
+            }
         }
-        else if(atributo==undefined && position != undefined)
-        {
-            let valor:arrays = this.value;
-            valor.setValue(position,new_value);
-            this.value = valor;
+        catch (e) {
+            return [-1,null]
         }
-        else
-        {
-            this.value = new_value;
-            return [1,null];
-        }
+
 
     }
     getValue():any
@@ -271,7 +281,6 @@ class sym
     }
 }
 
-// @ts-ignore
 abstract class statement
 {
     abstract type: TypeStatement;
@@ -376,6 +385,701 @@ enum typeAssigment
     potencia,
     modulo,
     division
+}
+enum increments
+{
+    postincrement,
+    postdecrement,
+    preincreement,
+    predecrement
+
+}
+
+
+class autoincrements extends statement
+{
+    StateCode: number;
+    type: TypeStatement;
+    linea:number;
+    name:string;
+    atributo:string[];
+    position:statement[];
+    Assigment:increments;
+    isArr:boolean;
+    value:any;
+
+
+    execute(tablasimbolo): any[2] {
+        try
+        {
+            if(this.atributo.length>0 && this.position.length>0)
+            {
+                if(this.isArr)
+                {
+                    //array with type in object
+                    let simbolo = tablasimbolo.getsym(this.name);
+                    if (simbolo[0] > 0)
+                    {
+                        let simbolito:sym = simbolo[1];
+                        if(simbolito.getValue() instanceof arrays)
+                        {
+                            let arrs:arrays = simbolito.getValue();
+                            let atrs = arrs.getValue(this.position,tablasimbolo);
+                            if(atrs instanceof types)
+                            {
+                                let valesito = atrs.getValuesAtributo(this.atributo,tablasimbolo)[1]
+                                let numero:Numbers = new Numbers();
+                                numero.value = Number(valesito);
+                                numero.tipoValue = TypeValue.Number;
+                                let result = this.operateArrAtr(arrs,tablasimbolo,this.position,this.atributo,numero);
+                                if(result[0]>0)
+                                {
+                                    let m =  tablasimbolo.update(this.name,result[1]);
+                                    if(m[0]>0) return [1,this.value]
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+                else
+                {
+                    //type with array
+                    let simbolo = tablasimbolo.getsym(this.name);
+                    if (simbolo[0] > 0)
+                    {
+                        let simbolito:sym = simbolo[1];
+                        if(simbolito.getValue() instanceof types)
+                        {
+                            let arrs:types = simbolito.getValue();
+                            let arrt = arrs.getValuesAtributo(this.atributo,tablasimbolo);
+                            if(arrt instanceof arrays)
+                            {
+                                let valesito = arrt.getValue(this.position,tablasimbolo)[1]
+                                let numero:Numbers = new Numbers();
+                                numero.value = Number(valesito);
+                                numero.tipoValue = TypeValue.Number;
+                                let result = this.operateAtrArr(arrs,tablasimbolo,this.atributo,this.position,numero);
+                                if(result[0]>0)
+                                {
+                                    let m =  tablasimbolo.update(this.name,result[1]);
+                                    if(m[0]>0) return [1,this.value]
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            else if(this.atributo.length>0)
+            {
+
+                let simbolo = tablasimbolo.getsym(this.name);
+                if (simbolo[0] > 0) {
+                    let simbolito: sym = simbolo[1];
+                    if (simbolito.getValue() instanceof types) {
+                        let atr: types = simbolito.getValue();
+                        let valesito = atr.getValuesAtributo(this.atributo,tablasimbolo)[1];
+                        let numero:Numbers = new Numbers();
+                        numero.value = Number(valesito);
+                        numero.tipoValue = TypeValue.Number;
+                        let val = this.operateAtr(atr, tablasimbolo, this.atributo, numero);
+                        if (val[0] > 0) {
+                            let m = tablasimbolo.update(this.name, atr);
+                            if (m[0] > 0) return [1, this.value]
+                        }
+                    }
+                }
+            }
+            else if(this.position.length>0)
+            {
+                let simbolo = tablasimbolo.getsym(this.name);
+                if (simbolo[0] > 0)
+                {
+                    let simbolito:sym = simbolo[1];
+                    if(simbolito.getValue() instanceof arrays)
+                    {
+                        let arrs:arrays = simbolito.getValue();
+                        let valesito = arrs.getValue(this.position,tablasimbolo)[1]
+                        let numero:Numbers = new Numbers();
+                        numero.value = Number(valesito);
+                        numero.tipoValue = TypeValue.Number;
+                        let m =  arrs.setValue(tablasimbolo,this.position,numero);
+                        if(m[0]>0) return [1,this.value]
+                    }
+                }
+            }
+            else
+            {
+                switch (this.Assigment)
+                {
+                    case increments.postincrement:
+                        let oldvalue5 = tablasimbolo.get(this.name);
+                        if(oldvalue5 != null)
+                        {
+                            let numero:Numbers = new Numbers();
+                            numero.value = 1;
+                            numero.tipoValue = TypeValue.Number;
+                            let newvalue5 = new ArichmeticExpression();
+                            newvalue5.Expression1 = oldvalue5;
+                            newvalue5.Expression2 = numero;
+                            newvalue5.Function = ArichmeticExpr.suma;
+                            newvalue5.linea = this.linea
+                            let val5 = newvalue5.execute(tablasimbolo);
+                            if(val5[0]!=-1)
+                            {
+                                let result5 = tablasimbolo.update(this.name,val5[1]);
+                                if(result5[0]>0) return[1,oldvalue5];
+                                return [-1,null];
+                            }
+                            else
+                            {
+                                return [-1,null];
+                            }
+                        }
+                        else
+                        {
+                            return [-2,null];
+                        }
+                    case increments.preincreement:
+                        let oldvalue4 = tablasimbolo.get(this.name);
+                        if(oldvalue4 != null)
+                        {
+                            let numero:Numbers = new Numbers();
+                            numero.value = 1;
+                            numero.tipoValue = TypeValue.Number;
+                            let newvalue4 = new ArichmeticExpression();
+                            newvalue4.Expression1 = oldvalue4;
+                            newvalue4.Expression2 = numero;
+                            newvalue4.Function = ArichmeticExpr.suma;
+                            newvalue4.linea = this.linea
+                            let val4 = newvalue4.execute(tablasimbolo);
+                            if(val4[0]!=-1)
+                            {
+                                let result5 = tablasimbolo.update(this.name,val4[1]);
+                                if(result5[0]>0) return[1,val4[1]];
+                                return [-1,null];
+                            }
+                            else
+                            {
+                                return [-1,null];
+                            }
+                        }
+                        else
+                        {
+                            return [-2,null];
+                        }
+                    case increments.postdecrement:
+                        let oldvalue3 = tablasimbolo.get(this.name);
+                        if(oldvalue3 != null)
+                        {
+                            let numero2:Numbers = new Numbers();
+                            numero2.value = 1;
+                            numero2.tipoValue = TypeValue.Number;
+                            let newvalue3 = new ArichmeticExpression();
+                            newvalue3.Expression1 = oldvalue3;
+                            newvalue3.Expression2 = numero2;
+                            newvalue3.Function = ArichmeticExpr.resta;
+                            newvalue3.linea = this.linea
+                            let val3 = newvalue3.execute(tablasimbolo);
+                            if(val3[0]!=-1)
+                            {
+                                let result5 = tablasimbolo.update(this.name,val3[1]);
+                                if(result5[0]>0) return[1,oldvalue3];
+                                return [-1,null];
+                            }
+                            else
+                            {
+                                return [-1,null];
+                            }
+                        }
+                        else
+                        {
+                            return [-2,null];
+                        }
+                    case increments.predecrement:
+                        let oldvalue2 = tablasimbolo.get(this.name);
+                        if(oldvalue2 != null)
+                        {
+                            let numero:Numbers = new Numbers();
+                            numero.value = 1;
+                            numero.tipoValue = TypeValue.Number;
+                            let newvalue4 = new ArichmeticExpression();
+                            newvalue4.Expression1 = oldvalue2;
+                            newvalue4.Expression2 = numero;
+                            newvalue4.Function = ArichmeticExpr.resta;
+                            newvalue4.linea = this.linea
+                            let val4 = newvalue4.execute(tablasimbolo);
+                            if(val4[0]!=-1)
+                            {
+                                let result5 = tablasimbolo.update(this.name,val4[1]);
+                                if(result5[0]>0) return[1,val4[1]];
+                                return [-1,null];
+                            }
+                            else
+                            {
+                                return [-1,null];
+                            }
+                        }
+                        else
+                        {
+                            return [-2,null];
+                        }
+                }
+            }
+            return [-1,null]
+        }
+        catch (e) {
+            return [-2,null]
+        }
+
+    }
+
+    operateArrAtr(objeto:arrays,tablasimbolo:tablasimbolos,position:statement[],atributos:string[],value:any)
+    {
+        try
+        {
+            let tp = position.pop();
+            if(tp instanceof statement)
+            {
+                let tpr = tp.execute(tablasimbolo);
+                if(tpr[0]>0)
+                {
+                    if(tpr[1] instanceof Number)
+                    {
+                        if(position.length>0)
+                        {
+                            let arr = objeto.get(Number(tpr[1]));
+                            if(arr[0]>0)
+                            {
+                                let arrsub = this.operateArrAtr(arr[1],tablasimbolo,position,atributos,value);
+                                if(arrsub[0]>0)
+                                {
+                                    let result = objeto.set(Number(tpr[1]),arrsub[1]);
+                                    if(result[0]>0)
+                                    {
+                                        return [1,objeto];
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+
+                            let arr0 = objeto.get(Number(tpr[1]));
+                            if(arr0[0]>0)
+                            {
+                                if(arr0[1] instanceof types)
+                                {
+                                    let arr = this.operateAtr(arr0[1],tablasimbolo,atributos,value);
+                                    if(arr[0]>0)
+                                    {
+                                        let resultf = objeto.set(Number(tpr[1]),arr[1]);
+                                        if(resultf[0]>0)
+                                        {
+                                            return [1,objeto];
+                                        }
+                                    }
+                                }
+                            }
+                            /*
+                                let position:Numbers = new Numbers();
+                            position.value = Number(tpr[1]);
+                            position.tipoValue = TypeValue.Number;
+
+                            let numero:Numbers = new Numbers();
+                            numero.value = 1;
+                            numero.tipoValue = TypeValue.Number;
+
+                            let arichmetic:ArichmeticExpression = new ArichmeticExpression();
+                            switch (this.Assigment)
+                            {
+                                case increments.postincrement:
+                                    arichmetic.Expression1 = value;
+                                    arichmetic.Expression2 = numero;
+                                    arichmetic.Function = ArichmeticExpr.suma;
+                                    arichmetic.linea = this.linea;
+                                    let val = arichmetic.execute(tablasimbolo);
+                                    if(val[0]!=-1)
+                                    {
+                                        let arr0 = objeto.setValorA(tablasimbolo,objeto,[position],val[1]);
+                                        this.value = value;
+                                        if(arr0[0]>0) return[1,objeto];
+                                        return [-1,null];
+                                    }
+                                    else
+                                    {
+                                        return [-1,null];
+                                    }
+                                case increments.preincreement:
+                                    arichmetic.Expression1 = value;
+                                    arichmetic.Expression2 = numero;
+                                    arichmetic.Function = ArichmeticExpr.suma;
+                                    arichmetic.linea = this.linea;
+                                    let val1 = arichmetic.execute(tablasimbolo);
+                                    if(val1[0]!=-1)
+                                    {
+                                        let arr0 = objeto.setValorA(tablasimbolo,objeto,[position],val1[1]);
+                                        this.value = val1[1];
+                                        if(arr0[0]>0) return[1,objeto];
+                                        return [-1,null];
+                                    }
+                                    else
+                                    {
+                                        return [-1,null];
+                                    }
+                                case increments.postdecrement:
+                                    arichmetic.Expression1 = value;
+                                    arichmetic.Expression2 = numero;
+                                    arichmetic.Function = ArichmeticExpr.resta;
+                                    arichmetic.linea = this.linea;
+                                    let val2 = arichmetic.execute(tablasimbolo);
+                                    if(val2[0]!=-1)
+                                    {
+                                        let arr0 = objeto.setValorA(tablasimbolo,objeto,[position],val2[1]);
+                                        this.value = value;
+                                        if(arr0[0]>0) return[1,objeto];
+                                        return [-1,null];
+                                    }
+                                    else
+                                    {
+                                        return [-1,null];
+                                    }
+                                case increments.predecrement:
+                                    arichmetic.Expression1 = value;
+                                    arichmetic.Expression2 = numero;
+                                    arichmetic.Function = ArichmeticExpr.resta;
+                                    arichmetic.linea = this.linea;
+                                    let val3 = arichmetic.execute(tablasimbolo);
+                                    if(val3[0]!=-1)
+                                    {
+                                        let arr0 = objeto.setValorA(tablasimbolo,objeto,[position],val3[1]);
+                                        this.value = val3[1];
+                                        if(arr0[0]>0) return[1,objeto];
+                                        return [-1,null];
+                                    }
+                                    else
+                                    {
+                                        return [-1,null];
+                                    }
+                            }
+
+                            */
+
+
+                        }
+                    }
+                }
+            }
+            return [-1,null]
+        }
+        catch (e) {
+            return [-1,null]
+        }
+    }
+
+    operateAtrArr(objeto:types,tablasimbolo:tablasimbolos,atributos:string[],position:statement[],value:any):any
+    {
+        try
+        {
+            let atr = atributos.pop();
+            if(atributos.length>0)
+            {
+                let atrsub0 = objeto.getValueAtributo(atr);
+                if(atrsub0[0]>0)
+                {
+                    if(atrsub0[1] instanceof types)
+                    {
+                        let atrsub = this.operateAtrArr(atrsub0[1],tablasimbolo,atributos,position,value);
+                        if(atrsub[0]>0)
+                        {
+                            let rsult = objeto.setValueAtributo(atr,atrsub[1]);
+                            if(rsult[0]>0)
+                            {
+                                return [1,objeto];
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                let arrs = objeto.getValueAtributo(atr);
+                if(arrs[0]>0)
+                {
+                    if(arrs[1] instanceof arrays)
+                    {
+                        let atrs = this.operateArr(arrs[1],tablasimbolo,position,value);
+                        if(atrs[0]>0)
+                        {
+                            let atratr  = objeto.setValueAtributo(atr,atrs[1]);
+                            if(atratr[0]>0)
+                            {
+                                return [1,objeto];
+                            }
+                        }
+                    }
+                }
+            }
+            return [-1,null]
+        }
+        catch (e) {
+            return [-1, null]
+        }
+    }
+
+    operateAtr(objeto:types,tablasimbolo:tablasimbolos,atributos:string[],value:any):any
+    {
+        try
+        {
+            let atr = atributos.pop();
+            if(atributos.length>0)
+            {
+                let atrsub0 = objeto.getValueAtributo(atr);
+                if(atrsub0[0]>0)
+                {
+                    if(atrsub0[1] instanceof types)
+                    {
+                        let atrsub = this.operateAtr(atrsub0[1],tablasimbolo,atributos,value);
+                        if(atrsub[0]>0)
+                        {
+                            let rsult = objeto.setValueAtributo(atr,atrsub[1]);
+                            if(rsult[0]>0)
+                            {
+                                return [1,objeto];
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                /*
+                let atratr  = objeto.setValueAtributo(atr,value);
+                if(atratr[0]>0)
+                {
+                    return [1,objeto];
+                }
+                */
+                let numero:Numbers = new Numbers();
+                numero.value = 1;
+                numero.tipoValue = TypeValue.Number;
+
+                let arichmetic:ArichmeticExpression = new ArichmeticExpression();
+                switch (this.Assigment)
+                {
+                    case increments.postincrement:
+                        arichmetic.Expression1 = value;
+                        arichmetic.Expression2 = numero;
+                        arichmetic.Function = ArichmeticExpr.suma;
+                        arichmetic.linea = this.linea;
+                        let val0 = arichmetic.execute(tablasimbolo);
+                        if(val0[0]!=-1)
+                        {
+                            let arr0 = objeto.setValueAtributo(atr,val0[1]);
+                            this.value = value;
+                            if(arr0[0]>0) return[1,objeto];
+                            return [-1,null];
+                        }
+                        else
+                        {
+                            return [-1,null];
+                        }
+                    case increments.preincreement:
+                        arichmetic.Expression1 = value;
+                        arichmetic.Expression2 = numero;
+                        arichmetic.Function = ArichmeticExpr.suma;
+                        arichmetic.linea = this.linea;
+                        let val1 = arichmetic.execute(tablasimbolo);
+                        if(val1[0]!=-1)
+                        {
+                            let arr0 = objeto.setValueAtributo(atr,val1[1]);
+                            this.value = val1[1];
+                            if(arr0[0]>0) return[1,objeto];
+                            return [-1,null];
+                        }
+                        else
+                        {
+                            return [-1,null];
+                        }
+                    case increments.postdecrement:
+                        arichmetic.Expression1 = value;
+                        arichmetic.Expression2 = numero;
+                        arichmetic.Function = ArichmeticExpr.resta;
+                        arichmetic.linea = this.linea;
+                        let val2 = arichmetic.execute(tablasimbolo);
+                        if(val2[0]!=-1)
+                        {
+                            let arr0 = objeto.setValueAtributo(atr,val2[1]);
+                            this.value = value;
+                            if(arr0[0]>0) return[1,objeto];
+                            return [-1,null];
+                        }
+                        else
+                        {
+                            return [-1,null];
+                        }
+                    case increments.predecrement:
+                        arichmetic.Expression1 = value;
+                        arichmetic.Expression2 = numero;
+                        arichmetic.Function = ArichmeticExpr.resta;
+                        arichmetic.linea = this.linea;
+                        let val3 = arichmetic.execute(tablasimbolo);
+                        if(val3[0]!=-1)
+                        {
+                            let arr0 = objeto.setValueAtributo(atr,val3[1]);
+                            this.value = val3[1];
+                            if(arr0[0]>0) return[1,objeto];
+                            return [-1,null];
+                        }
+                        else
+                        {
+                            return [-1,null];
+                        }
+                }
+            }
+            return [-1,null]
+        }
+        catch (e) {
+            return [-1, null]
+        }
+    }
+
+    operateArr(objeto:arrays,tablasimbolo:tablasimbolos,position:statement[],value:any):any
+    {
+        try
+        {
+            let tp = position.pop();
+            if(tp instanceof statement)
+            {
+                let tpr = tp.execute(tablasimbolo);
+                if(tpr[0]>0)
+                {
+                    if(tpr[1] instanceof Number)
+                    {
+                        if(position.length>0)
+                        {
+                            let arr = objeto.get(Number(tpr[1]));
+                            if(arr[0]>0)
+                            {
+                                let arrsub = this.operateArr(arr[1],tablasimbolo,position,value);
+                                if(arrsub[0]>0)
+                                {
+                                    let result = objeto.set(Number(tpr[1]),arrsub[1]);
+                                    if(result[0]>0)
+                                    {
+                                        return [1,objeto];
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            /*
+                            let arr = objeto.set(Number(tpr[1]),value);
+                            if(arr[0]>0)
+                            {
+                                return [1,objeto];
+                            }
+                            */
+
+                            let numero:Numbers = new Numbers();
+                            numero.value = 1;
+                            numero.tipoValue = TypeValue.Number;
+
+                            let arichmetic:ArichmeticExpression = new ArichmeticExpression();
+                            switch (this.Assigment)
+                            {
+                                case increments.postincrement:
+                                    arichmetic.Expression1 = value;
+                                    arichmetic.Expression2 = numero;
+                                    arichmetic.Function = ArichmeticExpr.suma;
+                                    arichmetic.linea = this.linea;
+                                    let val0 = arichmetic.execute(tablasimbolo);
+                                    if(val0[0]!=-1)
+                                    {
+                                        let arr0 = objeto.set(Number(tpr[1]),val0[1]);
+                                        this.value = value;
+                                        if(arr0[0]>0) return[1,objeto];
+                                        return [-1,null];
+                                    }
+                                    else
+                                    {
+                                        return [-1,null];
+                                    }
+                                case increments.preincreement:
+                                    arichmetic.Expression1 = value;
+                                    arichmetic.Expression2 = numero;
+                                    arichmetic.Function = ArichmeticExpr.suma;
+                                    arichmetic.linea = this.linea;
+                                    let val1 = arichmetic.execute(tablasimbolo);
+                                    if(val1[0]!=-1)
+                                    {
+                                        let arr0 = objeto.set(Number(tpr[1]),val1[1]);
+                                        this.value = val1[1];
+                                        if(arr0[0]>0) return[1,objeto];
+                                        return [-1,null];
+                                    }
+                                    else
+                                    {
+                                        return [-1,null];
+                                    }
+                                case increments.postdecrement:
+                                    arichmetic.Expression1 = value;
+                                    arichmetic.Expression2 = numero;
+                                    arichmetic.Function = ArichmeticExpr.resta;
+                                    arichmetic.linea = this.linea;
+                                    let val2 = arichmetic.execute(tablasimbolo);
+                                    if(val2[0]!=-1)
+                                    {
+                                        let arr0 = objeto.set(Number(tpr[1]),val2[1]);
+                                        this.value = value;
+                                        if(arr0[0]>0) return[1,objeto];
+                                        return [-1,null];
+                                    }
+                                    else
+                                    {
+                                        return [-1,null];
+                                    }
+                                case increments.predecrement:
+                                    arichmetic.Expression1 = value;
+                                    arichmetic.Expression2 = numero;
+                                    arichmetic.Function = ArichmeticExpr.resta;
+                                    arichmetic.linea = this.linea;
+                                    let val3 = arichmetic.execute(tablasimbolo);
+                                    if(val3[0]!=-1)
+                                    {
+                                        let arr0 = objeto.set(Number(tpr[1]),val3[1]);
+                                        this.value = val3[1];
+                                        if(arr0[0]>0) return[1,objeto];
+                                        return [-1,null];
+                                    }
+                                    else
+                                    {
+                                        return [-1,null];
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
+            return [-1,null]
+        }
+        catch (e) {
+            return [-1,null]
+        }
+
+    }
+
+    grahp(): string {
+        return "";
+    }
+
+    traduction(): string {
+        return "";
+    }
+
 }
 
 class arrays extends statement
@@ -687,7 +1391,7 @@ class Asignation extends statement
             if(this.atributo.length>0 && this.position.length>0)
             {
                 let value = this.Expression.execute(tablasimbolo);
-                if(value[0]==1)
+                if(value[0]>0)
                 {
                     if(this.isArr)
                     {
@@ -731,10 +1435,10 @@ class Asignation extends statement
             else if(this.atributo.length>0)
             {
                 let value = this.Expression.execute(tablasimbolo);
-                if(value[0]==1)
+                if(value[0]>0)
                 {
                     let value = this.Expression.execute(tablasimbolo);
-                    if(value[0]==1)
+                    if(value[0]>0)
                     {
                         let simbolo = tablasimbolo.getsym(this.name);
                         if(simbolo[0]>0)
@@ -756,10 +1460,10 @@ class Asignation extends statement
             else if(this.position.length>0)
             {
                 let value = this.Expression.execute(tablasimbolo);
-                if(value[0]==1)
+                if(value[0]>0)
                 {
                     let value = this.Expression.execute(tablasimbolo);
-                    if(value[0]==1)
+                    if(value[0]>0)
                     {
                         let simbolo = tablasimbolo.getsym(this.name);
                         if (simbolo[0] > 0)
@@ -791,7 +1495,7 @@ class Asignation extends statement
                                 newvalue5.Function = ArichmeticExpr.division;
                                 newvalue5.linea = this.linea
                                 let val5 = newvalue5.execute(tablasimbolo);
-                                if(val5[0]!=-1)
+                                if(val5[0]>0)
                                 {
                                     let result5 = tablasimbolo.update(this.name,val5[1]);
                                     if(result5==1)return[1,null];
@@ -808,7 +1512,7 @@ class Asignation extends statement
                             }
                         case typeAssigment.igual:
                             let val0 = this.Expression.execute(tablasimbolo);
-                            if(val0[0]!=-1)
+                            if(val0[0]>0)
                             {
                                 let result0 = tablasimbolo.update(this.name,val0[1]);
                                 if(result0==1)return[1,null];
@@ -828,7 +1532,7 @@ class Asignation extends statement
                                 newvalue4.Function = ArichmeticExpr.modulo;
                                 newvalue4.linea = this.linea
                                 let val4 = newvalue4.execute(tablasimbolo);
-                                if(val4[0]!=-1)
+                                if(val4[0]>0)
                                 {
                                     let result4 = tablasimbolo.update(this.name,val4[1]);
                                     if(result4==1)return[1,null];
@@ -853,7 +1557,7 @@ class Asignation extends statement
                                 newvalue3.Function = ArichmeticExpr.multiplicacion;
                                 newvalue3.linea = this.linea
                                 let val3 = newvalue3.execute(tablasimbolo);
-                                if(val3[0]!=-1)
+                                if(val3[0]>0)
                                 {
                                     let result3 = tablasimbolo.update(this.name,val3[1]);
                                     if(result3==1)return[1,null];
@@ -878,7 +1582,7 @@ class Asignation extends statement
                                 newvalue2.Function = ArichmeticExpr.potenciacion;
                                 newvalue2.linea = this.linea
                                 let val2 = newvalue2.execute(tablasimbolo);
-                                if(val2[0]!=-1)
+                                if(val2[0]>0)
                                 {
                                     let result2 = tablasimbolo.update(this.name,val2[1]);
                                     if(result2==1)return[1,null];
@@ -903,7 +1607,7 @@ class Asignation extends statement
                                 newvalue1.Function = ArichmeticExpr.resta;
                                 newvalue1.linea = this.linea
                                 let val1 = newvalue1.execute(tablasimbolo);
-                                if(val1[0]!=-1)
+                                if(val1[0]>0)
                                 {
                                     let result1 = tablasimbolo.update(this.name,val1[1]);
                                     if(result1==1)return[1,null];
@@ -928,7 +1632,7 @@ class Asignation extends statement
                                 newvalue.Function = ArichmeticExpr.suma;
                                 newvalue.linea = this.linea
                                 let val = newvalue.execute(tablasimbolo);
-                                if(val[0]!=-1)
+                                if(val[0]>0)
                                 {
                                     let result = tablasimbolo.update(this.name,val[1]);
                                     if(result==1)return[1,null];
@@ -3624,8 +4328,10 @@ let jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
 
-let jsondata2 = '{"linea":"1","S":[{"linea":"1","statement":"console","expression":[{"linea":"1","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"1","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"1","tipo":"number", "value":"5"}],"Expression2":[{"linea":"1","tipo":"string3", "value":"hola"}]}],"Expression2":[{"linea":"1","statement":"logical","logical":"not","Expression":[{"linea":"1","tipo":"boolean", "value":"true"}]}]}]},\n' +
-    '{"linea":"1","statement":""}]}'
+let jsondata2 = '{"linea":"3","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"Relational","Relational":">=","Expression1":[{"linea":"1","tipo":"number", "value":"5"}],"Expression2":[{"linea":"1","tipo":"number", "value":"6"}]}]}]}]},\n' +
+    '{"linea":"2","statement":"console","expression":[{"linea":"2","statement":"variable","value":"a"}]},\n' +
+    '{"linea":"3","statement":"console","expression":[{"linea":"3","statement":"Relational","Relational":"==","Expression1":[{"linea":"3","statement":"variable","value":"a"}],"Expression2":[{"linea":"3","tipo":"boolean", "value":"true"}]}]},\n' +
+    '{"linea":"3","statement":""}]}'
 
 let instrucciones: statement[] = [];
 let tablasimbolo: tablasimbolos = new tablasimbolos();
@@ -3760,13 +4466,26 @@ function getStatement(data):statement
         case "preincrement":
         case "predecrement":
         case "positivo":
+            let numero1:Numbers = new Numbers();
+            numero1.value = 1;
+            numero1.tipoValue = TypeValue.Number;
+            let sum:ArichmeticExpression = new ArichmeticExpression();
+            sum.type = TypeStatement.ExpresionStatement;
+            sum.linea = data.linea;
+            sum.Function = ArichmeticExpr.suma;
+            sum.Expression1 = getExpressiones(data.Expression1[0]);
+            sum.Expression2 = numero1;
+            return sum;
         case "negativo":
+            let numero:Numbers = new Numbers();
+            numero.value = 1;
+            numero.tipoValue = TypeValue.Number;
             let negar:ArichmeticExpression = new ArichmeticExpression();
             negar.type = TypeStatement.ExpresionStatement;
             negar.linea = data.linea;
             negar.Function = ArichmeticExpr.negacion;
             negar.Expression1 = getExpressiones(data.Expression1[0]);
-            negar.Expression2 = null;
+            negar.Expression2 = numero;
             return negar;
         case "logical":
             let not:LogialExpression = new LogialExpression();
@@ -3779,6 +4498,7 @@ function getStatement(data):statement
         case "Aritmetic":
             return getArichmetic(data);
         case "Relational":
+            return getRelational(data);
         case "Logical":
             return getLogical(data);
         case "ternario":
@@ -4030,13 +4750,26 @@ function getExpressiones(data):statement
                 case "preincrement":
                 case "predecrement":
                 case "positivo":
+                    let numero1:Numbers = new Numbers();
+                    numero1.value = 1;
+                    numero1.tipoValue = TypeValue.Number;
+                    let sum:ArichmeticExpression = new ArichmeticExpression();
+                    sum.type = TypeStatement.ExpresionStatement;
+                    sum.linea = data.linea;
+                    sum.Function = ArichmeticExpr.suma;
+                    sum.Expression1 = getExpressiones(data.Expression1[0]);
+                    sum.Expression2 = numero1;
+                    return sum;
                 case "negativo":
+                    let numero:Numbers = new Numbers();
+                    numero.value = 1;
+                    numero.tipoValue = TypeValue.Number;
                     let negar:ArichmeticExpression = new ArichmeticExpression();
                     negar.type = TypeStatement.ExpresionStatement;
                     negar.linea = data.linea;
                     negar.Function = ArichmeticExpr.negacion;
                     negar.Expression1 = getExpressiones(data.Expression1[0]);
-                    negar.Expression2 = null;
+                    negar.Expression2 = numero;
                     return negar;
                 case "logical":
                     let not:LogialExpression = new LogialExpression();
@@ -4049,6 +4782,7 @@ function getExpressiones(data):statement
                 case "Aritmetic":
                     return getArichmetic(data);
                 case "Relational":
+                    return getRelational(data);
                 case "Logical":
                     return getLogical(data);
                 case "ternario":
@@ -4200,50 +4934,50 @@ function getRelational(data):statement
         switch (data.Relational)
         {
             case '>=':
-                let suma:ArichmeticExpression = new ArichmeticExpression();
+                let suma:RelationalExpression = new RelationalExpression();
                 suma.type = TypeStatement.ExpresionStatement;
                 suma.linea = data.linea;
-                suma.Function = ArichmeticExpr.suma;
+                suma.Function = RelationalExpr.MayorQue;
                 suma.Expression1 = getExpressiones(data.Expression1[0]);
                 suma.Expression2 = getExpressiones(data.Expression2[0]);
                 return suma;
             case '<=':
-                let resta:ArichmeticExpression = new ArichmeticExpression();
+                let resta:RelationalExpression = new RelationalExpression();
                 resta.type = TypeStatement.ExpresionStatement;
                 resta.linea = data.linea;
-                resta.Function = ArichmeticExpr.resta;
+                resta.Function = RelationalExpr.MenorQue
                 resta.Expression1 = getExpressiones(data.Expression1[0]);
                 resta.Expression2 = getExpressiones(data.Expression2[0]);
                 return resta;
             case '>':
-                let operate:ArichmeticExpression = new ArichmeticExpression();
+                let operate:RelationalExpression = new RelationalExpression();
                 operate.type = TypeStatement.ExpresionStatement;
                 operate.linea = data.linea;
-                operate.Function = ArichmeticExpr.multiplicacion;
+                operate.Function = RelationalExpr.Mayor
                 operate.Expression1 = getExpressiones(data.Expression1[0]);
                 operate.Expression2 = getExpressiones(data.Expression2[0]);
                 return operate;
             case '<':
-                let poten:ArichmeticExpression = new ArichmeticExpression();
+                let poten:RelationalExpression = new RelationalExpression();
                 poten.type = TypeStatement.ExpresionStatement;
                 poten.linea = data.linea;
-                poten.Function = ArichmeticExpr.potenciacion;
+                poten.Function = RelationalExpr.Menor;
                 poten.Expression1 = getExpressiones(data.Expression1[0]);
                 poten.Expression2 = getExpressiones(data.Expression2[0]);
                 return poten;
             case '==':
-                let division:ArichmeticExpression = new ArichmeticExpression();
+                let division:RelationalExpression = new RelationalExpression();
                 division.type = TypeStatement.ExpresionStatement;
                 division.linea = data.linea;
-                division.Function = ArichmeticExpr.division;
+                division.Function = RelationalExpr.Igual
                 division.Expression1 = getExpressiones(data.Expression1[0]);
                 division.Expression2 = getExpressiones(data.Expression2[0]);
                 return division;
             case '!=':
-                let modulo:ArichmeticExpression = new ArichmeticExpression();
+                let modulo:RelationalExpression = new RelationalExpression();
                 modulo.type = TypeStatement.ExpresionStatement;
                 modulo.linea = data.linea;
-                modulo.Function = ArichmeticExpr.modulo
+                modulo.Function = RelationalExpr.NoIgual
                 modulo.Expression1 = getExpressiones(data.Expression1[0]);
                 modulo.Expression2 = getExpressiones(data.Expression2[0]);
                 return modulo;

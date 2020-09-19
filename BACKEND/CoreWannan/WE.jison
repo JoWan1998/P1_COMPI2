@@ -145,11 +145,15 @@ Source1
 ;
 
 Statement
-    : Declaration_statements
+    : Expr1_statements
+    {
+        $$ = $1;
+    }
+    |Expr_statements
       {
         $$ = $1;
       }
-    | Expr_statements
+    | Declaration_statements
       {
         $$ = $1;
       }
@@ -262,6 +266,7 @@ Declaration_statements
         {
              $$ =  '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"CallFunction\",\"name\":\"'+$1+'\", \"parameters\":['+$2+']}';
         }
+
 ;
 
 Assignation_statements
@@ -305,18 +310,70 @@ CallExprNoIn
         }
 ;
 
-/*
-CallExprNoIn
-    : MemberExpr
-    | CallExprNoIn Arguments
-    | CallExprNoIn ArrList
-    | CallExprNoIn '.' IDENT
-    | CallExprNoIn '.' LENGTH
-    | '.' IDENT
-    | '.' LENGTH
-    | ArrList
+Expr1_statements
+    : IDENT  PLUSPLUS
+    {
+        var m = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\",\"hijo\":[]}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement1\",\"padre\":['+m+']}';
+    }
+    | IDENT  MINSMINS
+    {
+        var m = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\",\"hijo\":[]}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement1\",\"padre\":['+m+']}';
+    }
+    | MINSMINS IDENT
+    {
+            var m = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\",\"hijo\":[]}';
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"predecrement1\",\"padre\":['+m+']}';
+    }
+    | PLUSPLUS IDENT
+    {
+            var m = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\",\"hijo\":[]}';
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"pretincrement1\",\"padre\":['+m+']}';
+    }
+    | IDENT Expr1_statement PLUSPLUS
+    {
+            var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\", \"hijo\":['+$2+']}';
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement1\",\"padre\":['+$1+']}';
+    }
+    | IDENT Expr1_statement MINSMINS
+    {
+                var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\", \"hijo\":['+$2+']}';
+                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement1\",\"padre\":['+$1+']}';
+    }
+    | MINSMINS IDENT Expr1_statement
+    {
+                    var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\", \"hijo\":['+$2+']}';
+                    $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"predecrement1\",\"padre\":['+$1+']}';
+    }
+    | PLUSPLUS IDENT Expr1_statement
+    {
+                    var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\", \"hijo\":['+$2+']}';
+                    $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement1\",\"padre\":['+$1+']}';
+    }
 ;
-*/
+
+Expr1_statement
+    : Expr1_statement ArrList
+        {
+            $$ = $1 + ',{\"statement\":\"ArrayList\",\"value\":['+$2+']}';
+        }
+    | Expr1_statement '.' IDENT
+        {
+            $$ = $1 + ',{\"statement\":\"Object\",\"value\":\"'+$3+'\"]}';
+        }
+    | '.' IDENT
+        {
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"Object\",\"value\":\"'+$2+'\"}';
+        }
+    | ArrList
+        {
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"ArrayList\",\"value\":['+$1+']}';
+        }
+;
+
+
+
 ArrList
     : Arr ArrList
         {
@@ -357,7 +414,7 @@ ValStatement
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":[],\"name\":\"'+$1+'\",\"ValExpression\":['+$2+']}';
         }
-    | IDENT  ArrayList ':' Type  initialNo
+    | IDENT ArrayList ':' Type initialNo
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":['+$4+'],\"name\":\"'+$1+'\",\"ValExpression\":['+$5+'],\"ArrayLength\":['+$2+']}';
         }
@@ -501,7 +558,11 @@ Source2
 ;
 
 Statement1
-    : Declaration_statements
+    : Expr1_statements
+    {
+        $$ = $1;
+    }
+    | Declaration_statements
       {
         $$ = $1;
       }
@@ -550,6 +611,7 @@ Statement1
         $$ = $1;
       }
 ;
+
 
 Continue_statements
     : CONTINUE ';'
@@ -1177,14 +1239,6 @@ PostfixExprNoBF
     : LeftHandSideExprNoBF
     {
         $$ = $1;
-    }
-    | LeftHandSideExprNoBF PLUSPLUS
-    {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement\",\"padre\":['+$1+']}';
-    }
-    | LeftHandSideExprNoBF MINSMINS
-    {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement\",\"padre\":['+$1+']}';
     }
     ;
 

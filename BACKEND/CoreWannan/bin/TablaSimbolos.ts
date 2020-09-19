@@ -251,23 +251,32 @@ class sym
     }
     update(new_value:any,atributo?:any,position?:any):any
     {
-        if(atributo!=undefined && position == undefined)
+        try
         {
-            let valor:types = this.value;
-            valor.setValueAtributo(atributo,new_value);
-            this.value = valor;
+            if(atributo!=undefined && position == undefined)
+            {
+                let valor:types = this.value;
+                valor.setValueAtributo(atributo,new_value);
+                this.value = valor;
+                return [1,null];
+            }
+            else if(atributo==undefined && position != undefined)
+            {
+                let valor:arrays = this.value;
+                valor.setValue(position,new_value);
+                this.value = valor;
+                return [1,null];
+            }
+            else
+            {
+                this.value = new_value;
+                return [1,null];
+            }
         }
-        else if(atributo==undefined && position != undefined)
-        {
-            let valor:arrays = this.value;
-            valor.setValue(position,new_value);
-            this.value = valor;
+        catch (e) {
+            return [-1,null]
         }
-        else
-        {
-            this.value = new_value;
-            return [1,null];
-        }
+
 
     }
     getValue():any

@@ -69,6 +69,14 @@ enum LogicalExpr
     Y,
     NOT
 }
+enum increments
+{
+    postincrement,
+    postdecrement,
+    preincreement,
+    predecrement
+
+}
 enum RelationalExpr
 {
     MayorQue,
