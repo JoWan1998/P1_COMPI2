@@ -329,7 +329,7 @@ Expr1_statements
     | PLUSPLUS IDENT
     {
             var m = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\",\"hijo\":[]}';
-            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"pretincrement1\",\"padre\":['+m+']}';
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"preincrement1\",\"padre\":['+m+']}';
     }
     | IDENT Expr1_statement PLUSPLUS
     {
@@ -339,7 +339,7 @@ Expr1_statements
     | IDENT Expr1_statement MINSMINS
     {
                 var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$1+'\", \"hijo\":['+$2+']}';
-                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement1\",\"padre\":['+m+']}';
+                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement1\",\"padre\":['+m+']}';
     }
     | MINSMINS IDENT Expr1_statement
     {
@@ -349,7 +349,7 @@ Expr1_statements
     | PLUSPLUS IDENT Expr1_statement
     {
                     var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$2+'\", \"hijo\":['+$3+']}';
-                    $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement1\",\"padre\":['+m+']}';
+                    $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"preincrement1\",\"padre\":['+m+']}';
     }
 ;
 

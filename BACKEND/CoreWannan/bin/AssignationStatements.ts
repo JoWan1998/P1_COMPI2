@@ -11,7 +11,7 @@ class Asignation extends statement
     StateCode: number;
     type: TypeStatement;
     linea:number;
-    name:string;
+    name:expression;
     atributo:string[];
     position:statement[];
     Expression:statement;
@@ -36,7 +36,7 @@ class Asignation extends statement
                     if(this.isArr)
                     {
                         //array with type in object
-                        let simbolo = tablasimbolo.getsym(this.name);
+                        let simbolo = tablasimbolo.getsym(this.name.getValue(tablasimbolo));
                         if (simbolo[0] > 0)
                         {
                             let simbolito:sym = simbolo[1];
@@ -55,7 +55,7 @@ class Asignation extends statement
                     else
                     {
                         //type with array
-                        let simbolo = tablasimbolo.getsym(this.name);
+                        let simbolo = tablasimbolo.getsym(this.name.getValue(tablasimbolo));
                         if (simbolo[0] > 0)
                         {
                             let simbolito:sym = simbolo[1];
@@ -75,12 +75,9 @@ class Asignation extends statement
             else if(this.atributo.length>0)
             {
                 let value = this.Expression.execute(tablasimbolo);
-                if(value[0]==1)
-                {
-                    let value = this.Expression.execute(tablasimbolo);
-                    if(value[0]==1)
+                    if(value[0]>0)
                     {
-                        let simbolo = tablasimbolo.getsym(this.name);
+                        let simbolo = tablasimbolo.getsym(this.name.getValue(tablasimbolo));
                         if(simbolo[0]>0)
                         {
                             let simbolito:sym = simbolo[1];
@@ -95,17 +92,14 @@ class Asignation extends statement
                             }
                         }
                     }
-                }
+
             }
             else if(this.position.length>0)
             {
                 let value = this.Expression.execute(tablasimbolo);
-                if(value[0]==1)
-                {
-                    let value = this.Expression.execute(tablasimbolo);
-                    if(value[0]==1)
+                    if(value[0]>0)
                     {
-                        let simbolo = tablasimbolo.getsym(this.name);
+                        let simbolo = tablasimbolo.getsym(this.name.getValue(tablasimbolo));
                         if (simbolo[0] > 0)
                         {
                             let simbolito:sym = simbolo[1];
@@ -116,7 +110,7 @@ class Asignation extends statement
                             }
                         }
                     }
-                }
+
             }
             else
             {
@@ -126,11 +120,9 @@ class Asignation extends statement
                     switch (this.Assigment)
                     {
                         case typeAssigment.division:
-                            let oldvalue5 = tablasimbolo.get(this.name);
-                            if(oldvalue5 != null)
-                            {
+
                                 let newvalue5 = new ArichmeticExpression();
-                                newvalue5.Expression1 = oldvalue5;
+                                newvalue5.Expression1 = this.name;
                                 newvalue5.Expression2 = value[1];
                                 newvalue5.Function = ArichmeticExpr.division;
                                 newvalue5.linea = this.linea
@@ -145,16 +137,11 @@ class Asignation extends statement
                                 {
                                     return [-1,null];
                                 }
-                            }
-                            else
-                            {
-                                return [-2,null];
-                            }
                         case typeAssigment.igual:
                             let val0 = this.Expression.execute(tablasimbolo);
                             if(val0[0]!=-1)
                             {
-                                let result0 = tablasimbolo.update(this.name,val0[1]);
+                                let result0 = tablasimbolo.update(this.name.getValue(tablasimbolo),val0[1]);
                                 if(result0==1)return[1,null];
                                 return [-1,null];
                             }
@@ -163,11 +150,8 @@ class Asignation extends statement
                                 return [-1,null];
                             }
                         case typeAssigment.modulo:
-                            let oldvalue4 = tablasimbolo.get(this.name);
-                            if(oldvalue4 != null)
-                            {
                                 let newvalue4 = new ArichmeticExpression();
-                                newvalue4.Expression1 = oldvalue4;
+                            newvalue4.Expression1 = this.name;
                                 newvalue4.Expression2 = value[1];
                                 newvalue4.Function = ArichmeticExpr.modulo;
                                 newvalue4.linea = this.linea
@@ -182,17 +166,9 @@ class Asignation extends statement
                                 {
                                     return [-1,null];
                                 }
-                            }
-                            else
-                            {
-                                return [-2,null];
-                            }
                         case typeAssigment.multiplicacion:
-                            let oldvalue3 = tablasimbolo.get(this.name);
-                            if(oldvalue3 != null)
-                            {
-                                let newvalue3 = new ArichmeticExpression();
-                                newvalue3.Expression1 = oldvalue3;
+                            let newvalue3 = new ArichmeticExpression();
+                            newvalue3.Expression1 = this.name;
                                 newvalue3.Expression2 = value[1];
                                 newvalue3.Function = ArichmeticExpr.multiplicacion;
                                 newvalue3.linea = this.linea
@@ -207,17 +183,9 @@ class Asignation extends statement
                                 {
                                     return [-1,null];
                                 }
-                            }
-                            else
-                            {
-                                return [-2,null];
-                            }
                         case typeAssigment.potencia:
-                            let oldvalue2 = tablasimbolo.get(this.name);
-                            if(oldvalue2 != null)
-                            {
-                                let newvalue2 = new ArichmeticExpression();
-                                newvalue2.Expression1 = oldvalue2;
+                            let newvalue2 = new ArichmeticExpression();
+                            newvalue2.Expression1 = this.name;
                                 newvalue2.Expression2 = value[1];
                                 newvalue2.Function = ArichmeticExpr.potenciacion;
                                 newvalue2.linea = this.linea
@@ -232,17 +200,9 @@ class Asignation extends statement
                                 {
                                     return [-1,null];
                                 }
-                            }
-                            else
-                            {
-                                return [-2,null];
-                            }
                         case typeAssigment.resta:
-                            let oldvalue1 = tablasimbolo.get(this.name);
-                            if(oldvalue1 != null)
-                            {
-                                let newvalue1 = new ArichmeticExpression();
-                                newvalue1.Expression1 = oldvalue1;
+                            let newvalue1 = new ArichmeticExpression();
+                            newvalue1.Expression1 = this.name;
                                 newvalue1.Expression2 = value[1];
                                 newvalue1.Function = ArichmeticExpr.resta;
                                 newvalue1.linea = this.linea
@@ -257,17 +217,9 @@ class Asignation extends statement
                                 {
                                     return [-1,null];
                                 }
-                            }
-                            else
-                            {
-                                return [-2,null];
-                            }
                         case typeAssigment.suma:
-                            let oldvalue = tablasimbolo.get(this.name);
-                            if(oldvalue != null)
-                            {
-                                let newvalue = new ArichmeticExpression();
-                                newvalue.Expression1 = oldvalue;
+                            let newvalue = new ArichmeticExpression();
+                            newvalue.Expression1 = this.name;
                                 newvalue.Expression2 = value[1];
                                 newvalue.Function = ArichmeticExpr.suma;
                                 newvalue.linea = this.linea
@@ -282,11 +234,6 @@ class Asignation extends statement
                                 {
                                     return [-1,null];
                                 }
-                            }
-                            else
-                            {
-                                return [-2,null];
-                            }
                     }
                 }
             }

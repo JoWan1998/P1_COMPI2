@@ -235,7 +235,7 @@ break;
 case 45:
 
             var m = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$$[$0-1]+'\",\"hijo\":[]}';
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"pretincrement1\",\"padre\":['+m+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"preincrement1\",\"padre\":['+m+']}';
     
 break;
 case 46:
@@ -247,7 +247,7 @@ break;
 case 47:
 
                 var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$$[$0-2]+'\", \"hijo\":['+$$[$0-1]+']}';
-                this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement1\",\"padre\":['+m+']}';
+                this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement1\",\"padre\":['+m+']}';
     
 break;
 case 48:
@@ -259,7 +259,7 @@ break;
 case 49:
 
                     var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$$[$0-1]+'\", \"hijo\":['+$$[$0]+']}';
-                    this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement1\",\"padre\":['+m+']}';
+                    this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"preincrement1\",\"padre\":['+m+']}';
     
 break;
 case 54:
