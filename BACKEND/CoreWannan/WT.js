@@ -241,25 +241,25 @@ break;
 case 46:
 
             var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$$[$0-2]+'\", \"hijo\":['+$$[$0-1]+']}';
-            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement1\",\"padre\":['+$$[$0-2]+']}';
+            this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement1\",\"padre\":['+m+']}';
     
 break;
 case 47:
 
                 var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$$[$0-2]+'\", \"hijo\":['+$$[$0-1]+']}';
-                this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement1\",\"padre\":['+$$[$0-2]+']}';
+                this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement1\",\"padre\":['+m+']}';
     
 break;
 case 48:
 
-                    var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$$[$0-2]+'\", \"hijo\":['+$$[$0-1]+']}';
-                    this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"predecrement1\",\"padre\":['+$$[$0-2]+']}';
+                    var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$$[$0-1]+'\", \"hijo\":['+$$[$0]+']}';
+                    this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"predecrement1\",\"padre\":['+m+']}';
     
 break;
 case 49:
 
-                    var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$$[$0-2]+'\", \"hijo\":['+$$[$0-1]+']}';
-                    this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement1\",\"padre\":['+$$[$0-2]+']}';
+                    var m ='{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"value\":\"'+$$[$0-1]+'\", \"hijo\":['+$$[$0]+']}';
+                    this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement1\",\"padre\":['+m+']}';
     
 break;
 case 54:
