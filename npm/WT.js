@@ -201,7 +201,7 @@ case 38: case 50:
 break;
 case 39: case 51:
 
-            this.$ = $$[$0-2] + ',{\"statement\":\"Object\",\"value\":\"'+$$[$0]+'\"]}';
+            this.$ = $$[$0-2] + ',{\"statement\":\"Object\",\"value\":\"'+$$[$0]+'\"}';
         
 break;
 case 40: case 52:

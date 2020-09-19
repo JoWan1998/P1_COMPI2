@@ -298,7 +298,7 @@ CallExprNoIn
         }
     | CallExprNoIn '.' IDENT
         {
-            $$ = $1 + ',{\"statement\":\"Object\",\"value\":\"'+$3+'\"]}';
+            $$ = $1 + ',{\"statement\":\"Object\",\"value\":\"'+$3+'\"}';
         }
     | '.' IDENT
         {
@@ -360,7 +360,7 @@ Expr1_statement
         }
     | Expr1_statement '.' IDENT
         {
-            $$ = $1 + ',{\"statement\":\"Object\",\"value\":\"'+$3+'\"]}';
+            $$ = $1 + ',{\"statement\":\"Object\",\"value\":\"'+$3+'\"}';
         }
     | '.' IDENT
         {
