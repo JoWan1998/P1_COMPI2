@@ -559,9 +559,9 @@ Source2
 
 Statement1
     : Expr1_statements
-    {
-        $$ = $1;
-    }
+            {
+              $$ = $1;
+            }
     | Declaration_statements
       {
         $$ = $1;
@@ -611,7 +611,6 @@ Statement1
         $$ = $1;
       }
 ;
-
 
 Continue_statements
     : CONTINUE ';'
@@ -1226,10 +1225,10 @@ PostfixExpr
         $$ = $1;
     }
     | Expr1_statements
-        {
-            $$ = $1;
-        }
-        ;
+    {
+        $$ = $1;
+    }
+    ;
 
 PostfixExprNoBF
     : LeftHandSideExprNoBF
@@ -1237,17 +1236,16 @@ PostfixExprNoBF
         $$ = $1;
     }
     | Expr1_statements
-         {
-             $$ = $1;
-         }
-         ;
+        {
+            $$ = $1;
+        }
+    ;
 
 UnaryExprCommon
     : Expr1_statements
-         {
-             $$ = $1;
-         }
-
+    {
+        $$ = $1;
+    }
     | '+' UnaryExpr
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"positivo\",\"Expression\":['+$2+']}';

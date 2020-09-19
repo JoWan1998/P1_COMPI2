@@ -109,7 +109,7 @@ case 6: case 91:
         this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
       
 break;
-case 7: case 92: case 117: case 120: case 138: case 140: case 141: case 143: case 145: case 148: case 164: case 167: case 172: case 173: case 184: case 186: case 189: case 190: case 193: case 195: case 196: case 199: case 218: case 220: case 221: case 223: case 224: case 226: case 232: case 233: case 234: case 235: case 236: case 241: case 246: case 249: case 252: case 255: case 258: case 261: case 271: case 276: case 278: case 282: case 286: case 288:
+case 7: case 117: case 120: case 138: case 140: case 141: case 143: case 145: case 148: case 164: case 167: case 172: case 173: case 184: case 186: case 189: case 190: case 193: case 195: case 196: case 199: case 218: case 220: case 221: case 223: case 224: case 225: case 226: case 228: case 232: case 233: case 234: case 235: case 236: case 241: case 246: case 249: case 252: case 255: case 258: case 261: case 271: case 276: case 278: case 282: case 286: case 288:
 
         this.$ = $$[$0];
     
@@ -267,7 +267,7 @@ case 54:
             this.$ = $$[$0-1] +',\n'+ $$[$0]
         
 break;
-case 55: case 58: case 225:
+case 55: case 58: case 227:
 
             this.$ = $$[$0];
         
@@ -391,6 +391,11 @@ case 88:
 
         this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"funcion\",\"name\":\"'+$$[$0-5]+'\",\"type\":[],\"params\":['+$$[$0-3]+'],\"body\":[]}';
     
+break;
+case 92:
+
+              this.$ = $$[$0];
+            
 break;
 case 105: case 106:
 
@@ -726,11 +731,6 @@ case 222: case 280: case 284: case 290: case 292: case 294: case 296:
 
         this.$ =$$[$0];
     
-break;
-case 227: case 228:
-
-             this.$ = $$[$0];
-         
 break;
 case 229:
 
