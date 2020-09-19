@@ -4546,10 +4546,7 @@ function getStatement(data):statement
         case "callAtributo":
         case "callFuncion":
         case "nativeArray":
-        case "postincrement":
-        case "postdecrement":
-        case "preincrement":
-        case "predecrement":
+            break;
         case "postincrement1":
             return getPostIncrement1(data);
         case "postdecrement1":
@@ -4840,8 +4837,7 @@ function getExpressiones(data):statement
                 case "parameter":
                 case "array":
                 case "atributo":
-                case "preincrement":
-                case "predecrement":
+                    break;
                 case "postincrement1":
                     return getPostIncrement1(data);
                 case "postdecrement1":

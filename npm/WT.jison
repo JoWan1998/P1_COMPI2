@@ -1156,13 +1156,9 @@ PostfixExpr
     {
         $$ = $1;
     }
-    | LeftHandSideExpr PLUSPLUS
+    | Expr1_statements
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postincrement\",\"padre\":['+$1+']}';
-    }
-    | LeftHandSideExpr MINSMINS
-    {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"postdecrement\",\"padre\":['+$1+']}';
+        $$ = $1;
     }
     ;
 
@@ -1171,16 +1167,16 @@ PostfixExprNoBF
     {
         $$ = $1;
     }
+    | Expr1_statements
+        {
+            $$ = $1;
+        }
     ;
 
 UnaryExprCommon
-    : PLUSPLUS UnaryExpr
+    : Expr1_statements
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"preincrement\",\"padre\":['+$2+']}';
-    }
-    | MINSMINS UnaryExpr
-    {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"predecrement\",\"padre\":['+$2+']}';
+        $$ = $1;
     }
     | '+' UnaryExpr
     {
