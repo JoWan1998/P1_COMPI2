@@ -118,12 +118,10 @@ export class AppComponent implements OnInit{
         this.traduction = ParserE.parse(value.value);
         this.progreso = 50;
         Core.jsondata = this.traduction;
-        console.log(JSON.parse(this.traduction));
+        console.log(this.traduction);
         Core.generate(this.traduction);
         this.core = Core.exec();
-
         this.jsonsalida = JSON.parse(this.core);
-        console.log(this.jsonsalida.salida);
         for (const values of this.jsonsalida.salida) {
           if (values.hasOwnProperty('linea')) {
             this.salida += '[JoWan1998][' + formatDate(new Date(), 'yyyy/MM/dd  HH:mm:ss', 'en') + '] Linea: [' + values.linea + '] Output: ' + values.valor + '\n';
@@ -156,12 +154,10 @@ export class AppComponent implements OnInit{
         this.traduction = Parser.parse(value.value);
         this.progreso = 50;
         Core.jsondata = this.traduction;
-        console.log(JSON.parse(this.traduction));
         this.obj2 = this.traduction;
         Core.generate(this.traduction);
         this.core = Core.exec();
         this.jsonsalida = JSON.parse(this.core);
-        console.log(this.jsonsalida);
         for (const values of this.jsonsalida.salida) {
           if (values.hasOwnProperty('linea')) {
             this.salida += '[JoWan1998][' + formatDate(new Date(), 'yyyy/MM/dd  HH:mm:ss', 'en') + '] Linea: [' + values.linea + '] Output: ' + values.valor + '\n';
