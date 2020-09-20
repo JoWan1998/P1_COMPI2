@@ -1014,7 +1014,7 @@ PrimaryExprNoBrace
 ArrayLiteral
     : IDENT '[' ElementList ']'
     {
-      $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callMatriz\", \"name\":\"'+$1+'\" \"padre\":[],\"posicion\":['+$3+']}';
+      $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callMatriz\", \"name\":\"'+$1+'\" ,\"padre\":[],\"posicion\":['+$3+']}';
     }
     |'[' ']'
     {

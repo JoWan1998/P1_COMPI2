@@ -639,7 +639,7 @@ case 158:
 break;
 case 159:
 
-      this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callMatriz\", \"name\":\"'+$$[$0-3]+'\" \"padre\":[],\"posicion\":['+$$[$0-1]+']}';
+      this.$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callMatriz\", \"name\":\"'+$$[$0-3]+'\" ,\"padre\":[],\"posicion\":['+$$[$0-1]+']}';
     
 break;
 case 160:
@@ -1569,7 +1569,7 @@ module.exports.main = function commonjsMain (args) {
         process.exit(1);
     }
     var source = require('fs').readFileSync(require('path').normalize(args[1]), "utf8");
-    return moduke.exports.parser.parse(source);
+    return module.exports.parser.parse(source);
 };
 if (typeof module !== 'undefined' && require.main === module) {
   module.exports.main(process.argv.slice(1));
