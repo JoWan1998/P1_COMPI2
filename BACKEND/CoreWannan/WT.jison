@@ -868,6 +868,10 @@ ArrayList
     {
         $$ = $1+',\n'+$2;
     }
+    | Array
+    {
+        $$ =$1;
+    }
 ;
 ArrayList1
     : Array ArrayList1
@@ -1090,13 +1094,13 @@ CallExpr
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":\"'+$3+'\"}';
     }
-    | CallExpr '.' POP '(' Element ')'
+    | CallExpr '.' PUSH '(' Element ')'
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"nativeArray\", \"padre\":['+$1+'],\"native\":\"pop\",\"value\":['+$5+']}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"nativeArray\", \"padre\":['+$1+'],\"native\":\"push\",\"value\":['+$5+']}';
     }
-    | CallExpr '.' PUSH '(' ')'
+    | CallExpr '.' POP '(' ')'
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"nativeArray\", \"padre\":['+$1+'],\"native\":\"push\"}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"nativeArray\", \"padre\":['+$1+'],\"native\":\"pop\"}';
     }
     | CallExpr '.' LENGTH
     {
@@ -1121,13 +1125,13 @@ CallExprNoBF
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callAtributo\", \"padre\":['+$1+'],\"atributo\":\"'+$3+'\"}';
     }
-    | CallExprNoBF '.' POP '(' Element ')'
+    | CallExprNoBF '.' PUSH '(' Element ')'
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"nativeArray\", \"padre\":['+$1+'],\"native\":\"pop\",\"value\":['+$5+']}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"nativeArray\", \"padre\":['+$1+'],\"native\":\"push\",\"value\":['+$5+']}';
     }
-    | CallExprNoBF '.' PUSH '(' ')'
+    | CallExprNoBF '.' POP '(' ')'
     {
-        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"nativeArray\", \"padre\":['+$1+'],\"native\":\"push\"}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"nativeArray\", \"padre\":['+$1+'],\"native\":\"pop\"}';
     }
     | CallExprNoBF '.' LENGTH
     {

@@ -102,17 +102,25 @@ class expression extends statement
             {
                 if(this.position.length>0)
                 {
-                    let valors =  <arrays> this.Expresion;
-                    let val =  valors.getValue(this.position,tablasimbolo);
+                    let valors =  <expression> this.Expresion;
+                    let val =  valors.execute(tablasimbolo);
                     if(val[0]>0)
                     {
-                        return val[1];
+                        let resu = (<arrays>val[1]).getValue(this.position,tablasimbolo);
+                        if(resu[0]>0)
+                        {
+                            return resu[1];
+                        }
                     }
                 }
                 else
                 {
-                    let valors =  <arrays> this.Expresion;
-                    return valors.getAll();
+                    let valors =  <expression> this.Expresion;
+                    let val =  valors.execute(tablasimbolo);
+                    if(val[0]>0)
+                    {
+                        return (<arrays>val[1]).getAll();
+                    }
                 }
             }
             return null;

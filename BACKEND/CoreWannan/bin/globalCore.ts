@@ -1246,7 +1246,7 @@ class arrays extends statement
                 }
                 else
                 {
-                    return [1,result[1]]
+                    return [1,this.values[result[1]]]
                 }
             }
         }
@@ -1267,7 +1267,7 @@ class arrays extends statement
                 }
                 else
                 {
-                    return [1,result[1]]
+                    return [1,objeto[result[1]]]
                 }
             }
         }
@@ -2125,7 +2125,7 @@ class expression extends statement
         try {
             if(this.atributo.length>0)
             {
-                if(name!="")
+                if(this.name!="")
                 {
                     let simbolo = tablasimbolo.getsym(this.name);
                     if (simbolo[0] > 0)
@@ -2157,7 +2157,7 @@ class expression extends statement
     {
         //get all values array
         try {
-            if(name!="")
+            if(this.name!="")
             {
                 let simbolo = tablasimbolo.getsym(this.name);
                 if (simbolo[0] > 0)
@@ -2173,7 +2173,8 @@ class expression extends statement
                                 let val =  valors.getValue(this.position,tablasimbolo);
                                 if(val[0]>0)
                                 {
-                                    return val[1];
+                                    let result = val[1].execute(tablasimbolo);
+                                    if(result[0]>0) return result[1];
                                 }
                             }
                             else
@@ -2189,17 +2190,26 @@ class expression extends statement
             {
                 if(this.position.length>0)
                 {
-                    let valors =  <arrays> this.Expresion;
-                    let val =  valors.getValue(this.position,tablasimbolo);
+                    let valors =  <expression> this.Expresion;
+                    let val =  valors.execute(tablasimbolo);
                     if(val[0]>0)
                     {
-                        return val[1];
+                        let resu = (<arrays>val[1]).getValue(this.position,tablasimbolo);
+                        if(resu[0]>0)
+                        {
+                            let result = resu[1].execute(tablasimbolo);
+                            if(result[0]>0) return result[1];
+                        }
                     }
                 }
                 else
                 {
-                    let valors =  <arrays> this.Expresion;
-                    return valors.getAll();
+                    let valors =  <expression> this.Expresion;
+                    let val =  valors.execute(tablasimbolo);
+                    if(val[0]>0)
+                    {
+                        return (<arrays>val[1]).getAll();
+                    }
                 }
             }
             return null;
@@ -2458,7 +2468,7 @@ class expression extends statement
         try
         {
             let data = this.getValue(tablasimbolo);
-            console.log(data)
+            //console.log(data)
             if(data!=null)
             {
                 if(data == '__jw__') return [1,null]
@@ -4423,8 +4433,20 @@ let jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
 
-let jsondata2 = '{"linea":"2","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[]}]},\n' +
-    '{"linea":"2","statement":"console","expression":[{"linea":"2","statement":"variable","value":"a"}]},\n' +
+let jsondata2 = '{"linea":"2","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"5"},\n' +
+    '{"linea":"1","tipo":"number", "value":"6"},\n' +
+    '{"linea":"1","tipo":"number", "value":"7"},\n' +
+    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"5"},\n' +
+    '{"linea":"1","tipo":"number", "value":"6"},\n' +
+    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"8"},\n' +
+    '{"linea":"1","tipo":"number", "value":"9"},\n' +
+    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"8"},\n' +
+    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"8"},\n' +
+    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"8"}]}]}]}]}]},\n' +
+    '{"linea":"1","tipo":"number", "value":"9"}]}]}]}]},\n' +
+    '{"linea":"2","statement":"console","expression":[{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "name":"a" ,"padre":[],"posicion":[{"linea":"2","tipo":"number", "value":"3"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"1"}]},\n' +
+    '{"linea":"2","tipo":"string3", "value":" - "},\n' +
+    '{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "name":"a" ,"padre":[],"posicion":[{"linea":"2","tipo":"number", "value":"3"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"2"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"2"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"1"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"0"}]}]},\n' +
     '{"linea":"2","statement":""}]}'
 
 let instrucciones: statement[] = [];
@@ -4533,6 +4555,7 @@ function getStatement(data):statement
             if(variable!=null) instrucciones.push(variable);
             break;
         case "variableArray":
+            break;
         case "funcion":
         case "continue":
         case "break":
@@ -4554,8 +4577,10 @@ function getStatement(data):statement
         case "arreglo":
             return getArreglo(data);
         case "callMatriz":
+            return callMatriz(data);
         case "callAtributo":
         case "callFuncion":
+            break;
         case "nativeArray":
             break;
         case "postincrement1":
@@ -4836,11 +4861,10 @@ function getExpressiones(data):statement
                 case "arreglo":
                     return getArreglo(data);
                 case "callMatriz":
+                    return callMatriz(data);
                 case "callAtributo":
                 case "callFuncion":
                 case "nativeArray":
-                case "postincrement":
-                case "postdecrement":
                 case "default":
                 case "if":
                 case "dowhile":
@@ -5549,5 +5573,84 @@ function getArreglo(data):statement
     }
     catch (e) {
         return null
+    }
+}
+function callMatriz(data):statement
+{
+    /*
+    "linea": "1",
+          "statement": "callMatriz",
+          "name": "a",
+          "padre": [],
+          "posicion": [
+            {
+              "linea": "1",
+              "tipo": "number",
+              "value": "0"
+            }
+          ]
+     */
+    try
+    {
+        let mat:expression = new expression()
+        mat.linea = data.linea;
+        if(data.padre.length==0)
+        {
+            mat.name = data.name;
+        }
+        else
+        {
+            mat.Expresion = getExpressiones(data.padre[0]);
+        }
+        mat.position = [];
+        for(let pos of data.posicion)
+        {
+            let m = getExpressiones(pos);
+            if(m!=null) mat.position.push(m);
+        }
+        return mat;
+    }
+    catch (e) {
+        return null;
+    }
+}
+
+function nativeMatriz(data):statement
+{
+    /*
+    "linea": "1",
+          "statement": "callMatriz",
+          "name": "a",
+          "padre": [],
+          "posicion": [
+            {
+              "linea": "1",
+              "tipo": "number",
+              "value": "0"
+            }
+          ]
+     */
+    try
+    {
+        let mat:expression = new expression()
+        mat.linea = data.linea;
+        if(data.padre.length==0)
+        {
+            mat.name = data.name;
+        }
+        else
+        {
+            mat.Expresion = getExpressiones(data.padre[0]);
+        }
+        mat.position = [];
+        for(let pos of data.posicion)
+        {
+            let m = getExpressiones(pos);
+            if(m!=null) mat.position.push(m);
+        }
+        return mat;
+    }
+    catch (e) {
+        return null;
     }
 }

@@ -936,6 +936,10 @@ ArrayList
     {
         $$ = $1+',\n'+$2;
     }
+    | Array
+    {
+        $$ = $1;
+    }
 ;
 ArrayList1
     : Array ArrayList1

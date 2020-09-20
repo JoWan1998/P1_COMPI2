@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import Parser from 'node_modules/wannantraduction/WT';
 import * as ParserE from 'node_modules/wannancompile/WE';
 import Core from 'node_modules/wannancore/globalCore';
 import {formatDate} from '@angular/common';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 
 function delay(ms: number) {
@@ -19,7 +20,7 @@ function delay(ms: number) {
 
 export class AppComponent implements OnInit{
   title = 'JWEditor';
-
+  constructor(private modalService: NgbModal) {}
   faCoffee = faCoffee;
 
   obj: string;
@@ -104,6 +105,10 @@ export class AppComponent implements OnInit{
   }
   setEditorContent1(event) {
     this.s1 = this.obj2;
+  }
+
+  openScrollableContent(longContent) {
+    this.modalService.open(longContent, { scrollable: true , size: 'xl'});
   }
 
   Ejecutar(event, value)
