@@ -1902,6 +1902,8 @@ var expression = /** @class */ (function (_super) {
                     if (simbolo[0] > 0) {
                         if (simbolo[1] instanceof sym) {
                             var simbolito1 = simbolo[1];
+                            if (simbolito1.getValue() == null)
+                                return '__jw__';
                             return simbolito1.getValue();
                         }
                     }
@@ -1968,6 +1970,7 @@ var expression = /** @class */ (function (_super) {
         //get all data from all version of types
         try {
             var data = this.getValue(tablasimbolo);
+            console.log(data);
             if (data != null) {
                 if (data == '__jw__')
                     return [1, null];
@@ -3200,7 +3203,12 @@ var NativeStatement = /** @class */ (function (_super) {
                     if (value[0] < 0)
                         return [-1, null];
                     //this.htmlYouWantToAdd = "<p><b>value[1]</b></p>";
-                    resultado += value[1].toString();
+                    if (value[1] == null) {
+                        resultado += "null";
+                    }
+                    else {
+                        resultado += value[1].toString();
+                    }
                 }
                 return [1, '{\"linea\":\"' + this.linea + '\", \"valor\":\"' + resultado + '\"}'];
             }
@@ -3640,15 +3648,9 @@ var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":"CallFunction","name":"sumarColumnas", "parameters":[{"linea":"195","statement":"variable","value":"matrixA"}]},\n' +
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
-var jsondata2 = '{"linea":"3","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[{"linea":"1","statement":"arreglo","value":[]},\n' +
-    '{"linea":"1","statement":"arreglo","value":[]}]}]}]}]},\n' +
-    '{"linea":"2","statement":"declaration","type":[{"linea":"2","tipo":[{"linea":"2","tipo":"let"}],"size":[]}], "values":[{"linea":"2","statement":"variable","tipoExpresion":[],"name":"b","ValExpression":[{"linea":"2","operator":[{"linea":"2","v":"="}],"Expression":[{"linea":"2","statement":"arreglo","value":[{"linea":"2","tipo":"number", "value":"5"},\n' +
-    '{"linea":"2","tipo":"number", "value":"6"},\n' +
-    '{"linea":"2","statement":"arreglo","value":[]}]}]}]}]},\n' +
-    '{"linea":"3","statement":"console","expression":[{"linea":"3","statement":"variable","value":"a"},\n' +
-    '{"linea":"3","tipo":"string3", "value":" - "},\n' +
-    '{"linea":"3","statement":"variable","value":"b"}]},\n' +
-    '{"linea":"3","statement":""}]}';
+var jsondata2 = '{"linea":"2","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[]}]},\n' +
+    '{"linea":"2","statement":"console","expression":[{"linea":"2","statement":"variable","value":"a"}]},\n' +
+    '{"linea":"2","statement":""}]}';
 var instrucciones = [];
 var tablasimbolo = new tablasimbolos();
 var jsondata = '';
@@ -4686,6 +4688,5 @@ function getArreglo(data) {
         return null;
     }
 }
-
 module.exports.generate = function (jsondata) { generatinginformation(jsondata);};
 module.exports.exec = function(){execute(); return salida;};

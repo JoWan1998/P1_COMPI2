@@ -1,6 +1,6 @@
 {
   "name": "wannancore",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Core Wannan, by wannantraduction",
   "main": "globalCore.js",
   "scripts": {
