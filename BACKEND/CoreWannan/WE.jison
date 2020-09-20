@@ -406,7 +406,27 @@ ValStatementL
 ;
 
 ValStatement
-    : IDENT ':' Type initialNo
+    : IDENT ':' Type
+        {
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":['+$3+'],\"name\":\"'+$1+'\",\"ValExpression\":[]}';
+        }
+    | IDENT
+        {
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":[],\"name\":\"'+$1+'\",\"ValExpression\":[]}';
+        }
+    | IDENT ArrayList ':' Type
+        {
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":['+$4+'],\"name\":\"'+$1+'\",\"ValExpression\":[],\"ArrayLength\":['+$2+']}';
+        }
+    | IDENT  ':' Type ArrayList
+            {
+                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":['+$4+'],\"name\":\"'+$1+'\",\"ValExpression\":[],\"ArrayLength\":['+$3+']}';
+            }
+    | IDENT ArrayList
+        {
+            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":[],\"name\":\"'+$1+'\",\"ValExpression\":[],\"ArrayLength\":['+$2+']}';
+        }
+    | IDENT ':' Type initialNo
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variable\",\"tipoExpresion\":['+$3+'],\"name\":\"'+$1+'\",\"ValExpression\":['+$4+']}';
         }
@@ -418,6 +438,10 @@ ValStatement
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":['+$4+'],\"name\":\"'+$1+'\",\"ValExpression\":['+$5+'],\"ArrayLength\":['+$2+']}';
         }
+    | IDENT  ':' Type ArrayList initialNo
+            {
+                $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":['+$4+'],\"name\":\"'+$1+'\",\"ValExpression\":['+$5+'],\"ArrayLength\":['+$3+']}';
+            }
     | IDENT ArrayList initialNo
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"variableArray\",\"tipoExpresion\":[],\"name\":\"'+$1+'\",\"ValExpression\":['+$3+'],\"ArrayLength\":['+$2+']}';
@@ -936,13 +960,17 @@ Array
 ;
 
 ArrayLiteral
-    : Array
+    : IDENT '[' ElementList ']'
     {
-        $$ = $1;
+      $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"callMatriz\", \"name\":\"'+$1+'\" \"padre\":[],\"posicion\":['+$3+']}';
     }
-    | '[' Elements ']'
+    |'[' ']'
     {
-         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"array\",\"elementos\":['+$2+']}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"arreglo\",\"value\":[]}';
+    }
+    | '[' ElementList ']'
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"arreglo\",\"value\":['+$2+']}';
     }
 ;
 

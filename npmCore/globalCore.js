@@ -3220,6 +3220,12 @@ var NativeStatement = /** @class */ (function (_super) {
     };
     return NativeStatement;
 }(statement));
+///<reference path="Statements.ts"/>
+/*
+        UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
+        JOSE ORLANDO WANNAN ESCOBAR - 201612331
+        GUATEMALA
+ */
 var types = /** @class */ (function (_super) {
     __extends(types, _super);
     function types() {
@@ -3634,9 +3640,14 @@ var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":"CallFunction","name":"sumarColumnas", "parameters":[{"linea":"195","statement":"variable","value":"matrixA"}]},\n' +
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
-var jsondata2 = '{"linea":"3","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"b","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","tipo":"number", "value":"10"}]}]}]},\n' +
-    '{"linea":"2","statement":"postincrement1","padre":[{"linea":"2","statement":"variable","value":"b","hijo":[]}]},\n' +
-    '{"linea":"3","statement":"console","expression":[{"linea":"3","statement":"variable","value":"b"}]},\n' +
+var jsondata2 = '{"linea":"3","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[{"linea":"1","statement":"arreglo","value":[]},\n' +
+    '{"linea":"1","statement":"arreglo","value":[]}]}]}]}]},\n' +
+    '{"linea":"2","statement":"declaration","type":[{"linea":"2","tipo":[{"linea":"2","tipo":"let"}],"size":[]}], "values":[{"linea":"2","statement":"variable","tipoExpresion":[],"name":"b","ValExpression":[{"linea":"2","operator":[{"linea":"2","v":"="}],"Expression":[{"linea":"2","statement":"arreglo","value":[{"linea":"2","tipo":"number", "value":"5"},\n' +
+    '{"linea":"2","tipo":"number", "value":"6"},\n' +
+    '{"linea":"2","statement":"arreglo","value":[]}]}]}]}]},\n' +
+    '{"linea":"3","statement":"console","expression":[{"linea":"3","statement":"variable","value":"a"},\n' +
+    '{"linea":"3","tipo":"string3", "value":" - "},\n' +
+    '{"linea":"3","statement":"variable","value":"b"}]},\n' +
     '{"linea":"3","statement":""}]}';
 var instrucciones = [];
 var tablasimbolo = new tablasimbolos();
@@ -3754,7 +3765,9 @@ function getStatement(data) {
         case "array":
         case "atributo":
         case "typebody":
+            break;
         case "arreglo":
+            return getArreglo(data);
         case "callMatriz":
         case "callAtributo":
         case "callFuncion":
@@ -3883,34 +3896,43 @@ function getDeclarations(data) {
             var decla = data_1[_i];
             var declarationes = new declaration0();
             var resultado = getTipo(decla.tipoExpresion);
-            var tipo = resultado[0];
-            var tam = resultado[1];
-            declarationes.tipo = tipo;
+            declarationes.tipo = resultado[0];
             declarationes.linea = Number(decla.linea);
             declarationes.type = null;
             declarationes.name = decla.name;
-            var value = getExpressiones(decla.ValExpression[0].Expression[0]);
-            if (value instanceof arrays) {
-                if (value.size == tam) {
+            if (decla.statement != 'variable')
+                declarationes.tipo = TypeValue.Array;
+            if (decla.ValExpression.length > 0) {
+                var value = getExpressiones(decla.ValExpression[0].Expression[0]);
+                if (value instanceof arrays) {
                     declarationes.Expression = value;
                     declarationes.tipo = TypeValue.Array;
-                    declaras.push(declarationes);
                 }
                 else {
-                    error++;
-                    erroresSemanticos += '{\"valor\":\"MatrixError\",\"salida\":\"Linea:' + decla.linea + ', La matriz es mayor al tamaño declarado.\"},\n';
+                    declarationes.Expression = value;
+                    if (value instanceof Strings || value instanceof Numbers || value instanceof Booleans || value instanceof Nulls) {
+                        if (declarationes.tipo == null)
+                            declarationes.tipo = value.tipoValue;
+                    }
+                    else if (value instanceof types) {
+                        declarationes.tipo = TypeValue.type;
+                    }
                 }
             }
             else {
-                declarationes.Expression = value;
-                if (value instanceof Strings || value instanceof Numbers || value instanceof Booleans || value instanceof Nulls) {
-                    declarationes.tipo = value.tipoValue;
+                if (decla.statement != 'variable') {
+                    var Arreglito = new arrays();
+                    Arreglito.tipoValue = TypeValue.Array;
+                    Arreglito.values = [];
+                    declarationes.Expression = Arreglito;
                 }
-                else if (value instanceof types) {
-                    declarationes.tipo = TypeValue.type;
+                else {
+                    var Nullable = new Nulls();
+                    Nullable.tipoValue = TypeValue["null"];
+                    declarationes.Expression = Nullable;
                 }
-                declaras.push(declarationes);
             }
+            declaras.push(declarationes);
         }
         if (error == 0)
             return declaras;
@@ -4007,7 +4029,9 @@ function getExpressiones(data) {
                 case "switch":
                 case "case":
                 case "typebody":
+                    break;
                 case "arreglo":
+                    return getArreglo(data);
                 case "callMatriz":
                 case "callAtributo":
                 case "callFuncion":
@@ -4022,6 +4046,7 @@ function getExpressiones(data) {
                 case "while":
                 case "forof":
                 case "parameter":
+                    break;
                 case "array":
                 case "atributo":
                     break;
@@ -4602,5 +4627,65 @@ function getPredecrement1(data) {
         return null;
     }
 }
+function getArreglo(data) {
+    /*
+
+    "Expression": [
+                {
+                  "linea": "2",
+                  "statement": "arreglo",
+                  "value": [
+                    {
+                      "linea": "2",
+                      "tipo": "number",
+                      "value": "5"
+                    },
+                    {
+                      "linea": "2",
+                      "tipo": "number",
+                      "value": "6"
+                    },
+                    {
+                      "linea": "2",
+                      "tipo": "number",
+                      "value": "7"
+                    },
+                    {
+                      "linea": "2",
+                      "tipo": "number",
+                      "value": "8"
+                    }
+                  ]
+                }
+              ]
+              "Expression": [
+                {
+                  "linea": "1",
+                  "statement": "arreglo",
+                  "value": []
+                }
+              ]
+            }
+          ]
+     */
+    try {
+        var Arreglito = new arrays();
+        Arreglito.values = [];
+        Arreglito.tipoValue = TypeValue.Array;
+        if (data.value.length > 0) {
+            for (var _i = 0, _a = data.value; _i < _a.length; _i++) {
+                var datito = _a[_i];
+                var datitos = getExpressiones(datito);
+                if (datitos != null)
+                    Arreglito.values.push(datitos);
+            }
+        }
+        return Arreglito;
+    }
+    catch (e) {
+        return null;
+    }
+}
+
 module.exports.generate = function (jsondata) { generatinginformation(jsondata);};
 module.exports.exec = function(){execute(); return salida;};
