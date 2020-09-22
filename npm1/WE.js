@@ -1598,7 +1598,7 @@ if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
 module.exports.parser = WE;
 module.exports.Parser = WE.Parser;
 module.exports.parse = function () { return WE.parse.apply(WE, arguments); };
-moduleexports.main = function commonjsMain (args) {
+module.exports.main = function commonjsMain (args) {
     if (!args[1]) {
         console.log('Usage: '+args[0]+' FILE');
         process.exit(1);
