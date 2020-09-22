@@ -82,11 +82,7 @@ Source2
 ;
 
 Statement1
-    : Expr1_statements
-            {
-              $$ = $1;
-            }
-    | Declaration_statements
+    : Declaration_statements
       {
         $$ = $1;
       }
