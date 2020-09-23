@@ -274,6 +274,10 @@ class expression extends statement
                         break;
                 }
             }
+            else if(this.atributo.length>0 && this.atributo.length>0)
+            {
+
+            }
             else if(this.atributo.length>0)
             {
                 return this.getValueAtributo(tablasimbolo);

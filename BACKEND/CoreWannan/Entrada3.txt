@@ -1,0 +1,21 @@
+let a = [5];
+console.log(a.length)
+console.log(a.pop())
+a.push([5,6])
+console.log(a.length);
+a[0].push([5,6]);
+a[0].pop();
+console.log(a[0].length);
+type AVLNode = {
+    left: AVLNode,
+    right: AVLNode,
+    height: number,
+    value: number
+}
+
+type AVLTree = {
+    root: AVLNode
+}
+let tree : AVLTree = {
+    root: null
+};

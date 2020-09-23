@@ -470,6 +470,16 @@ var autoincrements = /** @class */ (function (_super) {
     }
     autoincrements.prototype.execute = function (tablasimbolo) {
         try {
+            var positions = [];
+            for (var _i = 0, _a = this.position; _i < _a.length; _i++) {
+                var valss = _a[_i];
+                positions.push(valss);
+            }
+            var atributos = [];
+            for (var _b = 0, _c = this.atributo; _b < _c.length; _b++) {
+                var valss = _c[_b];
+                atributos.push(valss);
+            }
             if (this.atributo.length > 0 && this.position.length > 0) {
                 if (this.isArr && this.firstArr) {
                     //array with type in object
@@ -478,18 +488,123 @@ var autoincrements = /** @class */ (function (_super) {
                         var simbolito = simbolo[1];
                         if (simbolito.getValue() instanceof arrays) {
                             var arrs = simbolito.getValue();
-                            var atrs = arrs.getValue(this.position, tablasimbolo);
+                            var atrs = arrs.getValue(positions, tablasimbolo);
                             if (atrs instanceof types) {
-                                var valesito = atrs.getValuesAtributo(this.atributo, tablasimbolo)[1];
-                                var numero = new Numbers();
+                                var valesito = atrs.getValuesAtributo(atributos, tablasimbolo)[1];
+                                var newvalue = new ArichmeticExpression();
+                                var old = valesito;
+                                switch (this.Assigment) {
+                                    case increments.postincrement:
+                                        var numero = new Numbers();
+                                        numero.value = 1;
+                                        numero.tipoValue = TypeValue.Number;
+                                        newvalue.Expression1 = this.name;
+                                        newvalue.Expression2 = numero;
+                                        newvalue.Function = ArichmeticExpr.suma;
+                                        newvalue.linea = this.linea;
+                                        var val5 = newvalue.execute(tablasimbolo);
+                                        if (val5[0] > 0) {
+                                            var numero_1 = new Numbers();
+                                            numero_1.value = Number(val5[1]);
+                                            numero_1.tipoValue = TypeValue.Number;
+                                            var m = this.operateArrAtr(arrs, tablasimbolo, this.position, this.atributo, numero_1);
+                                            if (m[0] > 0) {
+                                                var k = tablasimbolo.update(this.name.name, m[1]);
+                                                if (k[0] > 0)
+                                                    return [1, valesito];
+                                            }
+                                            return [-1, null];
+                                        }
+                                        else {
+                                            return [-1, null];
+                                        }
+                                    case increments.preincreement:
+                                        var numero1 = new Numbers();
+                                        numero1.value = 1;
+                                        numero1.tipoValue = TypeValue.Number;
+                                        old = this.name.execute(tablasimbolo);
+                                        newvalue.Expression1 = this.name;
+                                        newvalue.Expression2 = numero1;
+                                        newvalue.Function = ArichmeticExpr.suma;
+                                        newvalue.linea = this.linea;
+                                        var val4 = newvalue.execute(tablasimbolo);
+                                        if (val4[0] > 0) {
+                                            var numero_2 = new Numbers();
+                                            numero_2.value = Number(val4[1]);
+                                            numero_2.tipoValue = TypeValue.Number;
+                                            var m = this.operateArrAtr(arrs, tablasimbolo, this.position, this.atributo, numero_2);
+                                            if (m[0] > 0) {
+                                                var k = tablasimbolo.update(this.name.name, m[1]);
+                                                if (k[0] > 0)
+                                                    return [1, numero_2];
+                                            }
+                                            return [-1, null];
+                                        }
+                                        else {
+                                            return [-1, null];
+                                        }
+                                    case increments.postdecrement:
+                                        var numero2 = new Numbers();
+                                        numero2.value = 1;
+                                        numero2.tipoValue = TypeValue.Number;
+                                        old = this.name.execute(tablasimbolo);
+                                        newvalue.Expression1 = this.name;
+                                        newvalue.Expression2 = numero2;
+                                        newvalue.Function = ArichmeticExpr.resta;
+                                        newvalue.linea = this.linea;
+                                        var val3 = newvalue.execute(tablasimbolo);
+                                        if (val3[0] > 0) {
+                                            var numero_3 = new Numbers();
+                                            numero_3.value = Number(val3[1]);
+                                            numero_3.tipoValue = TypeValue.Number;
+                                            var m = this.operateArrAtr(arrs, tablasimbolo, this.position, this.atributo, numero_3);
+                                            if (m[0] > 0) {
+                                                var k = tablasimbolo.update(this.name.name, m[1]);
+                                                if (k[0] > 0)
+                                                    return [1, valesito];
+                                            }
+                                            return [-1, null];
+                                        }
+                                        else {
+                                            return [-1, null];
+                                        }
+                                    case increments.predecrement:
+                                        var numero3 = new Numbers();
+                                        numero3.value = 1;
+                                        numero3.tipoValue = TypeValue.Number;
+                                        old = this.name.execute(tablasimbolo);
+                                        newvalue.Expression1 = this.name;
+                                        newvalue.Expression2 = numero3;
+                                        newvalue.Function = ArichmeticExpr.resta;
+                                        newvalue.linea = this.linea;
+                                        var val2 = newvalue.execute(tablasimbolo);
+                                        if (val2[0] > 0) {
+                                            var numero_4 = new Numbers();
+                                            numero_4.value = Number(val2[1]);
+                                            numero_4.tipoValue = TypeValue.Number;
+                                            var m = this.operateArrAtr(arrs, tablasimbolo, this.position, this.atributo, numero_4);
+                                            if (m[0] > 0) {
+                                                var k = tablasimbolo.update(this.name.name, m[1]);
+                                                if (k[0] > 0)
+                                                    return [1, numero_4];
+                                            }
+                                            return [-1, null];
+                                        }
+                                        else {
+                                            return [-1, null];
+                                        }
+                                }
+                                /*
+                                let numero:Numbers = new Numbers();
                                 numero.value = Number(valesito);
                                 numero.tipoValue = TypeValue.Number;
-                                var result = this.operateArrAtr(arrs, tablasimbolo, this.position, this.atributo, numero);
-                                if (result[0] > 0) {
-                                    var m = tablasimbolo.update(this.name.name, result[1]);
-                                    if (m[0] > 0)
-                                        return [1, this.value];
+                                let result = this.operateArrAtr(arrs,tablasimbolo,this.position,this.atributo,numero);
+                                if(result[0]>0)
+                                {
+                                    let m =  tablasimbolo.update(this.name.name,result[1]);
+                                    if(m[0]>0) return [1,this.value]
                                 }
+                                */
                             }
                         }
                     }
@@ -501,18 +616,122 @@ var autoincrements = /** @class */ (function (_super) {
                         var simbolito = simbolo[1];
                         if (simbolito.getValue() instanceof types) {
                             var arrs = simbolito.getValue();
-                            var arrt = arrs.getValuesAtributo(this.atributo, tablasimbolo);
+                            var arrt = arrs.getValuesAtributo(atributos, tablasimbolo);
                             if (arrt instanceof arrays) {
-                                var valesito = arrt.getValue(this.position, tablasimbolo)[1];
-                                var numero = new Numbers();
+                                var valesito = arrt.getValue(positions, tablasimbolo)[1];
+                                var newvalue = new ArichmeticExpression();
+                                var old = valesito;
+                                switch (this.Assigment) {
+                                    case increments.postincrement:
+                                        var numero = new Numbers();
+                                        numero.value = 1;
+                                        numero.tipoValue = TypeValue.Number;
+                                        newvalue.Expression1 = this.name;
+                                        newvalue.Expression2 = numero;
+                                        newvalue.Function = ArichmeticExpr.suma;
+                                        newvalue.linea = this.linea;
+                                        var val5 = newvalue.execute(tablasimbolo);
+                                        if (val5[0] > 0) {
+                                            var numero_5 = new Numbers();
+                                            numero_5.value = Number(val5[1]);
+                                            numero_5.tipoValue = TypeValue.Number;
+                                            var m = this.operateAtrArr(arrs, tablasimbolo, this.atributo, this.position, numero_5);
+                                            if (m[0] > 0) {
+                                                var k = tablasimbolo.update(this.name.name, m[1]);
+                                                if (k[0] > 0)
+                                                    return [1, valesito];
+                                            }
+                                            return [-1, null];
+                                        }
+                                        else {
+                                            return [-1, null];
+                                        }
+                                    case increments.preincreement:
+                                        var numero1 = new Numbers();
+                                        numero1.value = 1;
+                                        numero1.tipoValue = TypeValue.Number;
+                                        old = this.name.execute(tablasimbolo);
+                                        newvalue.Expression1 = this.name;
+                                        newvalue.Expression2 = numero1;
+                                        newvalue.Function = ArichmeticExpr.suma;
+                                        newvalue.linea = this.linea;
+                                        var val4 = newvalue.execute(tablasimbolo);
+                                        if (val4[0] > 0) {
+                                            var numero_6 = new Numbers();
+                                            numero_6.value = Number(val4[1]);
+                                            numero_6.tipoValue = TypeValue.Number;
+                                            var m = this.operateAtrArr(arrs, tablasimbolo, this.atributo, this.position, numero_6);
+                                            if (m[0] > 0) {
+                                                var k = tablasimbolo.update(this.name.name, m[1]);
+                                                if (k[0] > 0)
+                                                    return [1, numero_6];
+                                            }
+                                            return [-1, null];
+                                        }
+                                        else {
+                                            return [-1, null];
+                                        }
+                                    case increments.postdecrement:
+                                        var numero2 = new Numbers();
+                                        numero2.value = 1;
+                                        numero2.tipoValue = TypeValue.Number;
+                                        old = this.name.execute(tablasimbolo);
+                                        newvalue.Expression1 = this.name;
+                                        newvalue.Expression2 = numero2;
+                                        newvalue.Function = ArichmeticExpr.resta;
+                                        newvalue.linea = this.linea;
+                                        var val3 = newvalue.execute(tablasimbolo);
+                                        if (val3[0] > 0) {
+                                            var numero_7 = new Numbers();
+                                            numero_7.value = Number(val3[1]);
+                                            numero_7.tipoValue = TypeValue.Number;
+                                            var m = this.operateAtrArr(arrs, tablasimbolo, this.atributo, this.position, numero_7);
+                                            if (m[0] > 0) {
+                                                var k = tablasimbolo.update(this.name.name, m[1]);
+                                                if (k[0] > 0)
+                                                    return [1, valesito];
+                                            }
+                                            return [-1, null];
+                                        }
+                                        else {
+                                            return [-1, null];
+                                        }
+                                    case increments.predecrement:
+                                        var numero3 = new Numbers();
+                                        numero3.value = 1;
+                                        numero3.tipoValue = TypeValue.Number;
+                                        old = this.name.execute(tablasimbolo);
+                                        newvalue.Expression1 = this.name;
+                                        newvalue.Expression2 = numero3;
+                                        newvalue.Function = ArichmeticExpr.resta;
+                                        newvalue.linea = this.linea;
+                                        var val2 = newvalue.execute(tablasimbolo);
+                                        if (val2[0] > 0) {
+                                            var numero_8 = new Numbers();
+                                            numero_8.value = Number(val2[1]);
+                                            numero_8.tipoValue = TypeValue.Number;
+                                            var m = this.operateAtrArr(arrs, tablasimbolo, this.atributo, this.position, numero_8);
+                                            if (m[0] > 0) {
+                                                var k = tablasimbolo.update(this.name.name, m[1]);
+                                                if (k[0] > 0)
+                                                    return [1, numero_8];
+                                            }
+                                            return [-1, null];
+                                        }
+                                        else {
+                                            return [-1, null];
+                                        }
+                                }
+                                /*
+                                let numero:Numbers = new Numbers();
                                 numero.value = Number(valesito);
                                 numero.tipoValue = TypeValue.Number;
-                                var result = this.operateAtrArr(arrs, tablasimbolo, this.atributo, this.position, numero);
-                                if (result[0] > 0) {
-                                    var m = tablasimbolo.update(this.name.name, result[1]);
-                                    if (m[0] > 0)
-                                        return [1, this.value];
-                                }
+                                let result = this.operateAtrArr(arrs,tablasimbolo,this.atributo,this.position,numero);
+                                if(result[0]>0)
+                                {
+                                    let m =  tablasimbolo.update(this.name.name,result[1]);
+                                    if(m[0]>0) return [1,this.value]
+                                }*/
                             }
                         }
                     }
@@ -524,15 +743,109 @@ var autoincrements = /** @class */ (function (_super) {
                     var simbolito = simbolo[1];
                     if (simbolito.getValue() instanceof types) {
                         var atr = simbolito.getValue();
-                        var valesito = atr.getValuesAtributo(this.atributo, tablasimbolo)[1];
-                        var numero = new Numbers();
-                        numero.value = Number(valesito);
-                        numero.tipoValue = TypeValue.Number;
-                        var val = this.operateAtr(atr, tablasimbolo, this.atributo, numero);
-                        if (val[0] > 0) {
-                            var m = tablasimbolo.update(this.name.name, atr);
-                            if (m[0] > 0)
-                                return [1, this.value];
+                        var valesito = atr.getValuesAtributo(atributos, tablasimbolo)[1];
+                        var newvalue = new ArichmeticExpression();
+                        var old = valesito;
+                        switch (this.Assigment) {
+                            case increments.postincrement:
+                                var numero = new Numbers();
+                                numero.value = 1;
+                                numero.tipoValue = TypeValue.Number;
+                                newvalue.Expression1 = this.name;
+                                newvalue.Expression2 = numero;
+                                newvalue.Function = ArichmeticExpr.suma;
+                                newvalue.linea = this.linea;
+                                var val5 = newvalue.execute(tablasimbolo);
+                                if (val5[0] > 0) {
+                                    var numero_9 = new Numbers();
+                                    numero_9.value = Number(val5[1]);
+                                    numero_9.tipoValue = TypeValue.Number;
+                                    var m = this.operateAtr(atr, tablasimbolo, this.atributo, numero_9);
+                                    if (m[0] > 0) {
+                                        var k = tablasimbolo.update(this.name.name, atr);
+                                        if (k[0] > 0)
+                                            return [1, valesito];
+                                    }
+                                    return [-1, null];
+                                }
+                                else {
+                                    return [-1, null];
+                                }
+                            case increments.preincreement:
+                                var numero1 = new Numbers();
+                                numero1.value = 1;
+                                numero1.tipoValue = TypeValue.Number;
+                                old = this.name.execute(tablasimbolo);
+                                newvalue.Expression1 = this.name;
+                                newvalue.Expression2 = numero1;
+                                newvalue.Function = ArichmeticExpr.suma;
+                                newvalue.linea = this.linea;
+                                var val4 = newvalue.execute(tablasimbolo);
+                                if (val4[0] > 0) {
+                                    var numero_10 = new Numbers();
+                                    numero_10.value = Number(val4[1]);
+                                    numero_10.tipoValue = TypeValue.Number;
+                                    var m = this.operateAtr(atr, tablasimbolo, this.atributo, numero_10);
+                                    if (m[0] > 0) {
+                                        var k = tablasimbolo.update(this.name.name, atr);
+                                        if (k[0] > 0)
+                                            return [1, numero_10];
+                                    }
+                                    return [-1, null];
+                                }
+                                else {
+                                    return [-1, null];
+                                }
+                            case increments.postdecrement:
+                                var numero2 = new Numbers();
+                                numero2.value = 1;
+                                numero2.tipoValue = TypeValue.Number;
+                                old = this.name.execute(tablasimbolo);
+                                newvalue.Expression1 = this.name;
+                                newvalue.Expression2 = numero2;
+                                newvalue.Function = ArichmeticExpr.resta;
+                                newvalue.linea = this.linea;
+                                var val3 = newvalue.execute(tablasimbolo);
+                                if (val3[0] > 0) {
+                                    var numero_11 = new Numbers();
+                                    numero_11.value = Number(val3[1]);
+                                    numero_11.tipoValue = TypeValue.Number;
+                                    var m = this.operateAtr(atr, tablasimbolo, this.atributo, numero_11);
+                                    if (m[0] > 0) {
+                                        var k = tablasimbolo.update(this.name.name, atr);
+                                        if (k[0] > 0)
+                                            return [1, valesito];
+                                    }
+                                    return [-1, null];
+                                }
+                                else {
+                                    return [-1, null];
+                                }
+                            case increments.predecrement:
+                                var numero3 = new Numbers();
+                                numero3.value = 1;
+                                numero3.tipoValue = TypeValue.Number;
+                                old = this.name.execute(tablasimbolo);
+                                newvalue.Expression1 = this.name;
+                                newvalue.Expression2 = numero3;
+                                newvalue.Function = ArichmeticExpr.resta;
+                                newvalue.linea = this.linea;
+                                var val2 = newvalue.execute(tablasimbolo);
+                                if (val2[0] > 0) {
+                                    var numero_12 = new Numbers();
+                                    numero_12.value = Number(val2[1]);
+                                    numero_12.tipoValue = TypeValue.Number;
+                                    var m = this.operateAtr(atr, tablasimbolo, this.atributo, numero_12);
+                                    if (m[0] > 0) {
+                                        var k = tablasimbolo.update(this.name.name, atr);
+                                        if (k[0] > 0)
+                                            return [1, numero_12];
+                                    }
+                                    return [-1, null];
+                                }
+                                else {
+                                    return [-1, null];
+                                }
                         }
                     }
                 }
@@ -543,13 +856,110 @@ var autoincrements = /** @class */ (function (_super) {
                     var simbolito = simbolo[1];
                     if (simbolito.getValue() instanceof arrays) {
                         var arrs = simbolito.getValue();
-                        var valesito = arrs.getValue(this.position, tablasimbolo)[1];
-                        var numero = new Numbers();
-                        numero.value = Number(valesito);
-                        numero.tipoValue = TypeValue.Number;
-                        var m = arrs.setValue(tablasimbolo, this.position, numero);
-                        if (m[0] > 0)
-                            return [1, this.value];
+                        var valesito = arrs.getValue(positions, tablasimbolo)[1];
+                        var newvalue = new ArichmeticExpression();
+                        var old = valesito;
+                        switch (this.Assigment) {
+                            case increments.postincrement:
+                                var numero = new Numbers();
+                                numero.value = 1;
+                                numero.tipoValue = TypeValue.Number;
+                                newvalue.Expression1 = valesito;
+                                newvalue.Expression2 = numero;
+                                newvalue.Function = ArichmeticExpr.suma;
+                                newvalue.linea = this.linea;
+                                var val5 = newvalue.execute(tablasimbolo);
+                                if (val5[0] > 0) {
+                                    var numero_13 = new Numbers();
+                                    numero_13.value = Number(val5[1]);
+                                    numero_13.tipoValue = TypeValue.Number;
+                                    var m = arrs.setValue(tablasimbolo, this.position, numero_13);
+                                    if (m[0] > 0) {
+                                        var k = tablasimbolo.update(this.name.name, arrs);
+                                        if (k[0] > 0)
+                                            return [1, valesito];
+                                    }
+                                    return [-1, null];
+                                }
+                                else {
+                                    return [-1, null];
+                                }
+                            case increments.preincreement:
+                                var numero1 = new Numbers();
+                                numero1.value = 1;
+                                numero1.tipoValue = TypeValue.Number;
+                                old = this.name.execute(tablasimbolo);
+                                newvalue.Expression1 = valesito;
+                                newvalue.Expression2 = numero1;
+                                newvalue.Function = ArichmeticExpr.suma;
+                                newvalue.linea = this.linea;
+                                var val4 = newvalue.execute(tablasimbolo);
+                                if (val4[0] > 0) {
+                                    var numero_14 = new Numbers();
+                                    numero_14.value = Number(val4[1]);
+                                    numero_14.tipoValue = TypeValue.Number;
+                                    var m = arrs.setValue(tablasimbolo, this.position, numero_14);
+                                    if (m[0] > 0) {
+                                        var k = tablasimbolo.update(this.name.name, arrs);
+                                        if (k[0] > 0)
+                                            return [1, numero_14];
+                                    }
+                                    return [-1, null];
+                                }
+                                else {
+                                    return [-1, null];
+                                }
+                            case increments.postdecrement:
+                                var numero2 = new Numbers();
+                                numero2.value = 1;
+                                numero2.tipoValue = TypeValue.Number;
+                                old = this.name.execute(tablasimbolo);
+                                newvalue.Expression1 = valesito;
+                                newvalue.Expression2 = numero2;
+                                newvalue.Function = ArichmeticExpr.resta;
+                                newvalue.linea = this.linea;
+                                var val3 = newvalue.execute(tablasimbolo);
+                                if (val3[0] > 0) {
+                                    var numero_15 = new Numbers();
+                                    numero_15.value = Number(val3[1]);
+                                    numero_15.tipoValue = TypeValue.Number;
+                                    var m = arrs.setValue(tablasimbolo, this.position, numero_15);
+                                    if (m[0] > 0) {
+                                        var k = tablasimbolo.update(this.name.name, arrs);
+                                        if (k[0] > 0)
+                                            return [1, valesito];
+                                    }
+                                    return [-1, null];
+                                }
+                                else {
+                                    return [-1, null];
+                                }
+                            case increments.predecrement:
+                                var numero3 = new Numbers();
+                                numero3.value = 1;
+                                numero3.tipoValue = TypeValue.Number;
+                                old = this.name.execute(tablasimbolo);
+                                newvalue.Expression1 = valesito;
+                                newvalue.Expression2 = numero3;
+                                newvalue.Function = ArichmeticExpr.resta;
+                                newvalue.linea = this.linea;
+                                var val2 = newvalue.execute(tablasimbolo);
+                                if (val2[0] > 0) {
+                                    var numero_16 = new Numbers();
+                                    numero_16.value = Number(val2[1]);
+                                    numero_16.tipoValue = TypeValue.Number;
+                                    var m = arrs.setValue(tablasimbolo, this.position, numero_16);
+                                    if (m[0] > 0) {
+                                        var k = tablasimbolo.update(this.name.name, arrs);
+                                        if (k[0] > 0)
+                                            return [1, numero_16];
+                                    }
+                                    return [-1, null];
+                                }
+                                else {
+                                    return [-1, null];
+                                }
+                        }
                     }
                 }
             }
@@ -1204,6 +1614,7 @@ var arrays = /** @class */ (function (_super) {
     arrays.prototype.push = function (value) {
         try {
             this.values.push(value);
+            return [1, null];
         }
         catch (e) {
             return [-1, null];
@@ -1709,6 +2120,7 @@ var expression = /** @class */ (function (_super) {
         _this.ArrayType = null;
         _this.isCallFunction = false;
         _this.parameters = [];
+        _this.farray = false;
         return _this;
     }
     expression.prototype.getValueAtributo = function (tablasimbolo) {
@@ -1724,10 +2136,139 @@ var expression = /** @class */ (function (_super) {
                                 var valors = simbolito1.getValue();
                                 var val = valors.getValuesAtributo(this.atributo, tablasimbolo);
                                 if (val[0] > 0) {
-                                    return val[1];
+                                    try {
+                                        if (val[1].value instanceof Nulls) {
+                                            return '__jw__';
+                                        }
+                                        else {
+                                            var result = val[1].value.execute(tablasimbolo);
+                                            if (result[0] > 0)
+                                                return result[1];
+                                        }
+                                    }
+                                    catch (e) {
+                                        return val[1];
+                                    }
                                 }
                             }
                         }
+                    }
+                }
+            }
+            return null;
+        }
+        catch (e) {
+            return null;
+        }
+    };
+    expression.prototype.getValueAtributoArray = function (tablasimbolo) {
+        //get all atributes
+        try {
+            if (this.atributo.length > 0) {
+                if (this.name != "") {
+                    var simbolo = tablasimbolo.getsym(this.name);
+                    if (simbolo[0] > 0) {
+                        if (simbolo[1] instanceof sym) {
+                            var simbolito1 = simbolo[1];
+                            if (simbolito1.getValue() instanceof types) {
+                                var valors = simbolito1.getValue();
+                                var val = valors.getValuesAtributo(this.atributo, tablasimbolo);
+                                if (val[0] > 0) {
+                                    try {
+                                        if (val[1].value instanceof arrays) {
+                                            var valors2 = val[1].value;
+                                            if (this.position.length > 0) {
+                                                var vae = valors2.getValue(this.position, tablasimbolo);
+                                                if (vae[0] > 0) {
+                                                    try {
+                                                        var result = vae[1].execute(tablasimbolo);
+                                                        if (result[0] > 0)
+                                                            return result[1];
+                                                    }
+                                                    catch (e) {
+                                                        return val[1];
+                                                    }
+                                                }
+                                            }
+                                            else {
+                                                return valors2.getAll();
+                                            }
+                                        }
+                                    }
+                                    catch (e) {
+                                        return null;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        catch (e) {
+            return null;
+        }
+    };
+    expression.prototype.getValuesArrayAtributo = function (tablasimbolo) {
+        //get all values array
+        try {
+            if (this.name != "") {
+                var simbolo = tablasimbolo.getsym(this.name);
+                if (simbolo[0] > 0) {
+                    if (simbolo[1] instanceof sym) {
+                        var simbolito1 = simbolo[1];
+                        if (simbolito1.getValue() instanceof arrays) {
+                            var valors = simbolito1.getValue();
+                            if (this.position.length > 0) {
+                                var val = valors.getValue(this.position, tablasimbolo);
+                                if (val[0] > 0) {
+                                    if (val[1] instanceof types) {
+                                        var valors2 = val[1];
+                                        var vae = valors2.getValuesAtributo(this.atributo, tablasimbolo);
+                                        if (vae[0] > 0) {
+                                            try {
+                                                if (vae[1].value instanceof Nulls) {
+                                                    return '__jw__';
+                                                }
+                                                else {
+                                                    var result = vae[1].value.execute(tablasimbolo);
+                                                    if (result[0] > 0)
+                                                        return result[1];
+                                                }
+                                            }
+                                            catch (e) {
+                                                return null;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                return valors.getAll();
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                if (this.position.length > 0) {
+                    var valors = this.Expresion;
+                    var val = valors.execute(tablasimbolo);
+                    if (val[0] > 0) {
+                        var resu = val[1].getValue(this.position, tablasimbolo);
+                        if (resu[0] > 0) {
+                            var result = resu[1].execute(tablasimbolo);
+                            if (result[0] > 0)
+                                return result[1];
+                        }
+                    }
+                }
+                else {
+                    var valors = this.Expresion;
+                    var val = valors.execute(tablasimbolo);
+                    if (val[0] > 0) {
+                        return val[1].getAll();
                     }
                 }
             }
@@ -1750,9 +2291,14 @@ var expression = /** @class */ (function (_super) {
                             if (this.position.length > 0) {
                                 var val = valors.getValue(this.position, tablasimbolo);
                                 if (val[0] > 0) {
-                                    var result = val[1].execute(tablasimbolo);
-                                    if (result[0] > 0)
-                                        return result[1];
+                                    try {
+                                        var result = val[1].execute(tablasimbolo);
+                                        if (result[0] > 0)
+                                            return result[1];
+                                    }
+                                    catch (e) {
+                                        return val[1];
+                                    }
                                 }
                             }
                             else {
@@ -1808,6 +2354,16 @@ var expression = /** @class */ (function (_super) {
     };
     expression.prototype.getValue = function (tablasimbolo) {
         //get data in especific
+        var positions = [];
+        var atributos = [];
+        for (var _i = 0, _a = this.position; _i < _a.length; _i++) {
+            var pos = _a[_i];
+            positions.push(pos);
+        }
+        for (var _b = 0, _c = this.atributo; _b < _c.length; _b++) {
+            var atr = _c[_b];
+            atributos.push(atr);
+        }
         try {
             if (this.ArrayType != null) {
                 switch (this.ArrayType) {
@@ -1842,13 +2398,18 @@ var expression = /** @class */ (function (_super) {
                                 if (simbolito1.getValue() instanceof arrays) {
                                     var valors = simbolito1.getValue();
                                     if (this.position.length > 0) {
-                                        var val1 = valors.getValue(this.position, tablasimbolo);
+                                        var val1 = valors.getValue(positions, tablasimbolo);
                                         if (val1[0] > 0) {
                                             if (val1[1] instanceof arrays) {
                                                 var retorno = val1[1];
                                                 var retorno1 = retorno.pop();
                                                 if (retorno1[0] > 0) {
-                                                    return retorno1[1];
+                                                    var m = valors.setValue(tablasimbolo, this.position, retorno);
+                                                    if (m[0] > 0) {
+                                                        var k = tablasimbolo.update(this.name, valors);
+                                                        if (k[0] > 0)
+                                                            return retorno1[1].execute(tablasimbolo)[1];
+                                                    }
                                                 }
                                             }
                                         }
@@ -1856,7 +2417,9 @@ var expression = /** @class */ (function (_super) {
                                     else {
                                         var retorno = valors.pop();
                                         if (retorno[0] > 0) {
-                                            return retorno[1];
+                                            var k = tablasimbolo.update(this.name, valors);
+                                            if (k[0] > 0)
+                                                return retorno[1].execute(tablasimbolo)[1];
                                         }
                                     }
                                 }
@@ -1873,21 +2436,30 @@ var expression = /** @class */ (function (_super) {
                                     if (simbolito1.getValue() instanceof arrays) {
                                         var valors = simbolito1.getValue();
                                         if (this.position.length > 0) {
-                                            var val1 = valors.getValue(this.position, tablasimbolo);
+                                            var val1 = valors.getValue(positions, tablasimbolo);
                                             if (val1[0] > 0) {
                                                 if (val1[1] instanceof arrays) {
                                                     var retorno = val1[1];
-                                                    var bb = retorno.push(value[1]);
+                                                    var bb = retorno.push(this.Expresion);
                                                     if (bb[0] > 0) {
-                                                        return retorno.length();
+                                                        var m = valors.setValue(tablasimbolo, this.position, retorno);
+                                                        console.log(valors);
+                                                        if (m[0] > 0) {
+                                                            var k = tablasimbolo.update(this.name, valors);
+                                                            if (k[0] > 0)
+                                                                return retorno.length();
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                         else {
-                                            var bb = valors.push(value[1]);
+                                            var bb = valors.push(this.Expresion);
+                                            //console.log(bb);
                                             if (bb[0] > 0) {
-                                                return valors.length();
+                                                var k = tablasimbolo.update(this.name, valors);
+                                                if (k[0] > 0)
+                                                    return valors.length() + 1;
                                             }
                                         }
                                     }
@@ -1895,6 +2467,14 @@ var expression = /** @class */ (function (_super) {
                             }
                         }
                         break;
+                }
+            }
+            else if (this.atributo.length > 0 && this.position.length > 0) {
+                if (this.farray) {
+                    return this.getValuesArrayAtributo(tablasimbolo);
+                }
+                else {
+                    return this.getValueAtributoArray(tablasimbolo);
                 }
             }
             else if (this.atributo.length > 0) {
@@ -1973,6 +2553,7 @@ var expression = /** @class */ (function (_super) {
             return null;
         }
         catch (e) {
+            //console.log(e)
             return null;
         }
     };
@@ -3217,7 +3798,26 @@ var NativeStatement = /** @class */ (function (_super) {
                         resultado += "null";
                     }
                     else {
-                        resultado += value[1].toString();
+                        if (value[1] instanceof arrays) {
+                            try {
+                                resultado += '[ ';
+                                var a = 0;
+                                for (var _b = 0, _c = value[1].getAll(); _b < _c.length; _b++) {
+                                    var m = _c[_b];
+                                    a++;
+                                    resultado += m.execute(tablasimbolo)[1];
+                                    if (a < value[1].getAll().length)
+                                        resultado += ' , ';
+                                }
+                                resultado += ' ]';
+                            }
+                            catch (e) {
+                                resultado += value[1];
+                            }
+                        }
+                        else {
+                            resultado += value[1];
+                        }
                     }
                 }
                 return [1, '{\"linea\":\"' + this.linea + '\", \"valor\":\"' + resultado + '\"}'];
@@ -3227,6 +3827,7 @@ var NativeStatement = /** @class */ (function (_super) {
             }
         }
         catch (e) {
+            console.log(e);
             return [-1, null];
         }
     };
@@ -3359,7 +3960,6 @@ var declarations = /** @class */ (function (_super) {
                 for (var _i = 0, _a = this.Expression; _i < _a.length; _i++) {
                     var declaracion = _a[_i];
                     if (this.tipo == TypeValue.let) {
-                        console.log(declaracion);
                         var declaration = declaracion;
                         declaration.tipoSim = TypeSym.let;
                         var value = declaration.execute(tablasimbolo);
@@ -3462,17 +4062,40 @@ var declarations = /** @class */ (function (_super) {
 var declaration0 = /** @class */ (function (_super) {
     __extends(declaration0, _super);
     function declaration0() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.nameType = '';
+        return _this;
     }
     declaration0.prototype.execute = function (tablasimbolo) {
         try {
-            var valor = this.Expression.execute(tablasimbolo);
-            if (valor[0] > 0) {
-                return tablasimbolo.insert(this.name, valor[1], this.tipoSim, this.tipo);
+            //console.log(this);
+            if (this.nameType != '') {
+                var typer = tablasimbolo.getsym(this.nameType);
+                //console.log(typer);
+                if (typer[0] > 0) {
+                    if (typer[1] instanceof sym) {
+                        var type = typer[1].getValue();
+                        //console.log(type);
+                        if (type instanceof types && this.Expression instanceof types) {
+                            //console.log('validate');
+                            //console.log(this.Expression.atributos.length == type.atributos.length)
+                            if (this.Expression.atributos.length == type.atributos.length) {
+                                return tablasimbolo.insert(this.name, this.Expression, TypeSym["class"], this.tipo);
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                var valor = this.Expression.execute(tablasimbolo);
+                if (valor[0] > 0) {
+                    return tablasimbolo.insert(this.name, valor[1], this.tipoSim, this.tipo);
+                }
             }
             return [-1, null];
         }
         catch (e) {
+            //console.log(e)
             return [-1, null];
         }
     };
@@ -3658,35 +4281,59 @@ var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":"CallFunction","name":"sumarColumnas", "parameters":[{"linea":"195","statement":"variable","value":"matrixA"}]},\n' +
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
-var jsondata2 = '{"linea":"2","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"5"},\n' +
-    '{"linea":"1","tipo":"number", "value":"6"},\n' +
-    '{"linea":"1","tipo":"number", "value":"7"},\n' +
-    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"5"},\n' +
-    '{"linea":"1","tipo":"number", "value":"6"},\n' +
-    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"8"},\n' +
-    '{"linea":"1","tipo":"number", "value":"9"},\n' +
-    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"8"},\n' +
-    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"8"},\n' +
-    '{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"8"}]}]}]}]}]},\n' +
-    '{"linea":"1","tipo":"number", "value":"9"}]}]}]}]},\n' +
-    '{"linea":"2","statement":"console","expression":[{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "name":"a" ,"padre":[],"posicion":[{"linea":"2","tipo":"number", "value":"3"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"1"}]},\n' +
-    '{"linea":"2","tipo":"string3", "value":" - "},\n' +
-    '{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "padre":[{"linea":"2","statement":"callMatriz", "name":"a" ,"padre":[],"posicion":[{"linea":"2","tipo":"number", "value":"3"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"2"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"2"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"1"}]}],"posicion":[{"linea":"2","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"2","statement":""}]}';
+var jsondata2 = '{"linea":"9","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"5"}]}]}]}]},\n' +
+    '{"linea":"2","statement":"console","expression":[{"linea":"2","statement":"nativeArray", "name":"a" ,"hijo":[],"native":"length"}]},\n' +
+    '{"linea":"3","statement":"console","expression":[{"linea":"3","statement":"nativeArray", "name":"a", "hijo":[],"native":"pop"}]},\n' +
+    '{"linea":"4","statement":"nativeArray", "name":"a" ,"hijo":[],"native":"push","value":[{"linea":"4","statement":"arreglo","value":[{"linea":"4","tipo":"number", "value":"5"},\n' +
+    '{"linea":"4","tipo":"number", "value":"6"}]}]},\n' +
+    '{"linea":"5","statement":"console","expression":[{"linea":"5","statement":"nativeArray", "name":"a" ,"hijo":[],"native":"length"}]},\n' +
+    '{"linea":"6","statement":"nativeArray", "name":"a" ,"hijo":[{"linea":"6","statement":"ArrayList","value":[{"linea":"6","statement":"MatrizPosition","value":[{"linea":"6","tipo":"number", "value":"0"}]}]}],"native":"push","value":[{"linea":"6","statement":"arreglo","value":[{"linea":"6","tipo":"number", "value":"5"},\n' +
+    '{"linea":"6","tipo":"number", "value":"6"}]}]},\n' +
+    '{"linea":"6","statement":""},\n' +
+    '{"linea":"7","statement":"nativeArray", "name":"a", "hijo":[{"linea":"7","statement":"ArrayList","value":[{"linea":"7","statement":"MatrizPosition","value":[{"linea":"7","tipo":"number", "value":"0"}]}]}],"native":"pop"},\n' +
+    '{"linea":"7","statement":""},\n' +
+    '{"linea":"8","statement":"console","expression":[{"linea":"8","statement":"nativeArray", "name":"a" ,"hijo":[{"linea":"8","statement":"ArrayList","value":[{"linea":"8","statement":"MatrizPosition","value":[{"linea":"8","tipo":"number", "value":"0"}]}]}],"native":"length"}]},\n' +
+    '{"linea":"9","statement":""}]}';
 var instrucciones = [];
 var tablasimbolo = new tablasimbolos();
 var jsondata = '';
 var erroresSemanticos = '';
 var salida = '';
 var lineas = 0;
+var ts = '';
 generatinginformationExample();
 execute();
+function getTs() {
+    ts = '{ \"simbolos\":[';
+    var m = 0;
+    for (var _i = 0, _a = tablasimbolo.simbolos; _i < _a.length; _i++) {
+        var simbolo = _a[_i];
+        var string = '{';
+        string += '\"name\":\"' + simbolo.name + '\",';
+        string += '\"ambito\":\"' + simbolo.ambito + '\",';
+        string += '\"tipo\":\"' + TypeSym[simbolo.tipo] + '\",';
+        string += '\"type\":\"' + TypeValue[simbolo.tipoValue] + '\"';
+        string += '}';
+        m++;
+        if (m < tablasimbolo.simbolos.length)
+            string += ',';
+        ts += string;
+    }
+    ts += ']}';
+    console.log(ts);
+}
 function execute() {
     tablasimbolo = new tablasimbolos();
     salida = '{\"salida\":[\n';
     if (erroresSemanticos == '') {
         for (var _i = 0, instrucciones_1 = instrucciones; _i < instrucciones_1.length; _i++) {
             var value = instrucciones_1[_i];
+            if (value instanceof functions) {
+                value.execute(tablasimbolo);
+            }
+        }
+        for (var _a = 0, instrucciones_2 = instrucciones; _a < instrucciones_2.length; _a++) {
+            var value = instrucciones_2[_a];
             if (value instanceof statement) {
                 var result = value.execute(tablasimbolo);
                 if (result[0] > 0) {
@@ -3761,11 +4408,11 @@ function getStatement(data) {
         case "Argument":
             break;
         case "ArrayList":
-            break;
+            return getArrayList(data);
         case "Object":
-            break;
+            return getObject(data);
         case "MatrizPosition":
-            break;
+            return MatrizPosition(data);
         case "variable":
             var variable = getVariable(data);
             if (variable != null)
@@ -3788,18 +4435,23 @@ function getStatement(data) {
         case "forof":
         case "parameter":
         case "array":
-        case "atributo":
-        case "typebody":
+            //no usado
             break;
+        case "atributo":
+            //no usado
+            break;
+        case "typebody":
+            return typeBody(data);
         case "arreglo":
             return getArreglo(data);
         case "callMatriz":
             return callMatriz(data);
         case "callAtributo":
+            return callAtributo(data);
         case "callFuncion":
             break;
         case "nativeArray":
-            break;
+            return nativeMatriz(data);
         case "postincrement1":
             return getPostIncrement1(data);
         case "postdecrement1":
@@ -3916,47 +4568,107 @@ function getTipo(datas) {
 }
 function getDeclarations(data) {
     try {
-        //console.log(data)
         var declaras = [];
         var error = 0;
         for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
             var decla = data_1[_i];
             var declarationes = new declaration0();
-            var resultado = getTipo(decla.tipoExpresion);
-            declarationes.tipo = resultado[0];
             declarationes.linea = Number(decla.linea);
-            declarationes.type = null;
             declarationes.name = decla.name;
-            if (decla.statement != 'variable')
-                declarationes.tipo = TypeValue.Array;
-            if (decla.ValExpression.length > 0) {
-                var value = getExpressiones(decla.ValExpression[0].Expression[0]);
-                if (value instanceof arrays) {
-                    declarationes.Expression = value;
-                    declarationes.tipo = TypeValue.Array;
+            declarationes.type = TypeStatement.DeclarationStatement;
+            if (decla.tipoExpresion.length > 0) {
+                var resultado = getTipo(decla.tipoExpresion);
+                if (resultado[0] == TypeValue.Object) {
+                    declarationes.tipo = TypeValue.type;
+                    if (decla.ValExpression.length > 0) {
+                        var value = getExpressiones(decla.ValExpression[0].Expression[0]);
+                        if (value instanceof types) {
+                            declarationes.nameType = decla.tipoExpresion[0].tipo[0].tipo;
+                            value.name = decla.name;
+                            declarationes.Expression = value;
+                        }
+                    }
                 }
                 else {
-                    declarationes.Expression = value;
-                    if (value instanceof Strings || value instanceof Numbers || value instanceof Booleans || value instanceof Nulls) {
-                        if (declarationes.tipo == null)
-                            declarationes.tipo = value.tipoValue;
+                    declarationes.tipo = resultado[0];
+                    if (decla.statement != 'variable')
+                        declarationes.tipo = TypeValue.Array;
+                    if (decla.ValExpression.length > 0) {
+                        var value = getExpressiones(decla.ValExpression[0].Expression[0]);
+                        if (value instanceof arrays) {
+                            declarationes.Expression = value;
+                            declarationes.tipo = TypeValue.Array;
+                        }
+                        else {
+                            declarationes.Expression = value;
+                            if (value instanceof Strings || value instanceof Numbers || value instanceof Booleans || value instanceof Nulls) {
+                                if (declarationes.tipo == null)
+                                    declarationes.tipo = value.tipoValue;
+                            }
+                            else if (value instanceof types) {
+                                declarationes.tipo = TypeValue.type;
+                            }
+                        }
                     }
-                    else if (value instanceof types) {
-                        declarationes.tipo = TypeValue.type;
+                    else {
+                        if (decla.statement != 'variable') {
+                            var Arreglito = new arrays();
+                            Arreglito.tipoValue = TypeValue.Array;
+                            Arreglito.values = [];
+                            declarationes.Expression = Arreglito;
+                        }
+                        else {
+                            var Nullable = new Nulls();
+                            Nullable.tipoValue = TypeValue["null"];
+                            declarationes.Expression = Nullable;
+                        }
                     }
                 }
             }
             else {
-                if (decla.statement != 'variable') {
-                    var Arreglito = new arrays();
-                    Arreglito.tipoValue = TypeValue.Array;
-                    Arreglito.values = [];
-                    declarationes.Expression = Arreglito;
+                if (decla.ValExpression[0].Expression[0].statement == 'typebody') {
+                    declarationes.tipo = TypeValue.type;
+                    if (decla.ValExpression.length > 0) {
+                        var value = getExpressiones(decla.ValExpression[0].Expression[0]);
+                        if (value instanceof types) {
+                            value.name = decla.name;
+                            declarationes.Expression = value;
+                        }
+                    }
                 }
                 else {
-                    var Nullable = new Nulls();
-                    Nullable.tipoValue = TypeValue["null"];
-                    declarationes.Expression = Nullable;
+                    if (decla.statement != 'variable')
+                        declarationes.tipo = TypeValue.Array;
+                    if (decla.ValExpression.length > 0) {
+                        var value = getExpressiones(decla.ValExpression[0].Expression[0]);
+                        if (value instanceof arrays) {
+                            declarationes.Expression = value;
+                            declarationes.tipo = TypeValue.Array;
+                        }
+                        else {
+                            declarationes.Expression = value;
+                            if (value instanceof Strings || value instanceof Numbers || value instanceof Booleans || value instanceof Nulls) {
+                                if (declarationes.tipo == null)
+                                    declarationes.tipo = value.tipoValue;
+                            }
+                            else if (value instanceof types) {
+                                declarationes.tipo = TypeValue.type;
+                            }
+                        }
+                    }
+                    else {
+                        if (decla.statement != 'variable') {
+                            var Arreglito = new arrays();
+                            Arreglito.tipoValue = TypeValue.Array;
+                            Arreglito.values = [];
+                            declarationes.Expression = Arreglito;
+                        }
+                        else {
+                            var Nullable = new Nulls();
+                            Nullable.tipoValue = TypeValue["null"];
+                            declarationes.Expression = Nullable;
+                        }
+                    }
                 }
             }
             declaras.push(declarationes);
@@ -3969,12 +4681,66 @@ function getDeclarations(data) {
         return [];
     }
 }
+function getTipo1(datas) {
+    /*
+    "type": [
+        {
+          "linea": "1",
+          "tipo": [
+            {
+              "linea": "1",
+              "tipo": "type"
+            }
+          ],
+          "size": []
+        }
+      ],
+     */
+    try {
+        var data = void 0;
+        switch (datas[0].tipo[0].tipo) {
+            case "string":
+                data = TypeValue.String;
+                break;
+            case "number":
+                data = TypeValue.Number;
+                break;
+            case "boolean":
+                data = TypeValue.Boolean;
+                break;
+            case "void":
+                data = TypeValue["void"];
+                break;
+            case "var":
+                data = TypeValue["var"];
+                break;
+            case "const":
+                data = TypeValue["const"];
+                break;
+            case "type":
+                data = TypeValue.type;
+                break;
+            case "let":
+                data = TypeValue.let;
+                break;
+            default:
+                data = TypeValue.Object;
+                break;
+        }
+        var size = Number(datas[0].size.length);
+        return [data, size];
+    }
+    catch (e) {
+        return [null, 0];
+    }
+}
 function declarationStatement(data) {
     try {
         var declaration = new declarations();
         declaration.linea = Number(data.linea);
         declaration.type = TypeStatement.DeclarationStatement;
         declaration.Expression = getDeclarations(data.values);
+        declaration.tipo = getTipo1(data.type)[0];
         return declaration;
     }
     catch (e) {
@@ -4041,11 +4807,11 @@ function getExpressiones(data) {
                 case "Argument":
                     break;
                 case "ArrayList":
-                    break;
+                    return getArrayList(data);
                 case "Object":
-                    break;
+                    return getObject(data);
                 case "MatrizPosition":
-                    break;
+                    return MatrizPosition(data);
                 case "variable":
                     return getVariable(data);
                 case "variableArray":
@@ -4056,14 +4822,17 @@ function getExpressiones(data) {
                 case "switch":
                 case "case":
                 case "typebody":
-                    break;
+                    return typeBody(data);
                 case "arreglo":
                     return getArreglo(data);
                 case "callMatriz":
                     return callMatriz(data);
                 case "callAtributo":
+                    return callAtributo(data);
                 case "callFuncion":
+                    break;
                 case "nativeArray":
+                    return nativeMatriz(data);
                 case "default":
                 case "if":
                 case "dowhile":
@@ -4074,7 +4843,10 @@ function getExpressiones(data) {
                 case "parameter":
                     break;
                 case "array":
+                    //no usado
+                    break;
                 case "atributo":
+                    // no usado
                     break;
                 case "postincrement1":
                     return getPostIncrement1(data);
@@ -4162,6 +4934,55 @@ function getExpressiones(data) {
             }
         }
         return null;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getObject(data) {
+    try {
+        return data.value.toString();
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getArrayList(data) {
+    /*
+    "linea": "3",
+              "statement": "ArrayList",
+              "value": [
+                {
+                  "linea": "3",
+                  "statement": "MatrizPosition",
+                  "value": [
+                    {
+                      "linea": "3",
+                      "tipo": "number",
+                      "value": "0"
+                    }
+                  ]
+                },
+                {
+                  "linea": "3",
+                  "statement": "MatrizPosition",
+                  "value": [
+                    {
+                      "linea": "3",
+                      "tipo": "number",
+                      "value": "1"
+                    }
+                  ]
+     */
+    try {
+        var positions = [];
+        for (var _i = 0, _a = data.value; _i < _a.length; _i++) {
+            var datas = _a[_i];
+            var k = getExpressiones(datas);
+            if (k != null)
+                positions.push(k);
+        }
+        return positions;
     }
     catch (e) {
         return null;
@@ -4647,9 +5468,11 @@ function getPredecrement1(data) {
         autoin.Assigment = increments.predecrement;
         autoin.atributo = atributos;
         autoin.position = position;
+        console.log(autoin);
         return autoin;
     }
     catch (e) {
+        console.log(e);
         return null;
     }
 }
@@ -4712,6 +5535,155 @@ function getArreglo(data) {
         return null;
     }
 }
+function callAtributo(data) {
+    try {
+        if (data.hijo.length > 0) {
+            if (data.hijo[0].statement == 'ArrayList') {
+                return callMatriz1(data);
+            }
+            else {
+                return callAtributo1(data);
+            }
+        }
+    }
+    catch (e) {
+        return null;
+    }
+}
+function callAtributo1(data) {
+    try {
+        /*
+        "linea": "16",
+          "statement": "callAtributo",
+          "value": "tree",
+          "hijo": [
+            {
+              "linea": "16",
+              "statement": "Object",
+              "value": "root"
+            },
+            {
+              "statement": "Object",
+              "value": "left"
+            }
+          ]
+         */
+        var mat = new expression();
+        mat.linea = data.linea;
+        mat.name = data.value;
+        mat.position = [];
+        mat.atributo = [];
+        mat.farray = false;
+        if (data.hijo.length > 0) {
+            for (var _i = 0, _a = data.hijo; _i < _a.length; _i++) {
+                var pos = _a[_i];
+                var k = getExpressiones(pos);
+                if (k != null) {
+                    if (k instanceof Array) {
+                        for (var _b = 0, k_1 = k; _b < k_1.length; _b++) {
+                            var m = k_1[_b];
+                            mat.position.push(m);
+                        }
+                    }
+                    else {
+                        mat.atributo.push(k);
+                    }
+                }
+            }
+        }
+        return mat;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function MatrizPosition(data) {
+    try {
+        /*
+        "linea": "3",
+                  "statement": "MatrizPosition",
+                  "value": [
+                    {
+                      "linea": "3",
+                      "tipo": "number",
+                      "value": "0"
+                    }
+                  ]
+         */
+        if (data.value.length > 0) {
+            return getExpressiones(data.value[0]);
+        }
+    }
+    catch (e) {
+        return null;
+    }
+}
+function callMatriz1(data) {
+    /*
+    "linea": "3",
+          "statement": "callAtributo",
+          "value": "a",
+          "hijo": [
+            {
+              "linea": "3",
+              "statement": "ArrayList",
+              "value": [
+                {
+                  "linea": "3",
+                  "statement": "MatrizPosition",
+                  "value": [
+                    {
+                      "linea": "3",
+                      "tipo": "number",
+                      "value": "0"
+                    }
+                  ]
+                },
+                {
+                  "linea": "3",
+                  "statement": "MatrizPosition",
+                  "value": [
+                    {
+                      "linea": "3",
+                      "tipo": "number",
+                      "value": "1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+     */
+    try {
+        var mat = new expression();
+        mat.linea = data.linea;
+        mat.name = data.value;
+        mat.position = [];
+        mat.atributo = [];
+        mat.farray = true;
+        if (data.hijo.length > 0) {
+            for (var _i = 0, _a = data.hijo; _i < _a.length; _i++) {
+                var pos = _a[_i];
+                var k = getExpressiones(pos);
+                if (k != null) {
+                    if (k instanceof Array) {
+                        for (var _b = 0, k_2 = k; _b < k_2.length; _b++) {
+                            var m = k_2[_b];
+                            mat.position.push(m);
+                        }
+                    }
+                    else {
+                        mat.atributo.push(k);
+                    }
+                }
+            }
+        }
+        return mat;
+    }
+    catch (e) {
+        return null;
+    }
+}
 function callMatriz(data) {
     /*
     "linea": "1",
@@ -4750,35 +5722,158 @@ function callMatriz(data) {
 }
 function nativeMatriz(data) {
     /*
-    "linea": "1",
-          "statement": "callMatriz",
+    "linea": "2",
+          "statement": "nativeArray",
           "name": "a",
-          "padre": [],
-          "posicion": [
+          "hijo": [],
+          "native": "length"
+
+          "linea": "9",
+          "statement": "nativeArray",
+          "name": "a",
+          "hijo": [
             {
-              "linea": "1",
-              "tipo": "number",
-              "value": "0"
+              "linea": "9",
+              "statement": "ArrayList",
+              "value": [
+                {
+                  "linea": "9",
+                  "statement": "MatrizPosition",
+                  "value": [
+                    {
+                      "linea": "9",
+                      "tipo": "number",
+                      "value": "0"
+                    }
+                  ]
+                }
+              ]
             }
-          ]
+          ],
+          "native": "length"
      */
     try {
         var mat = new expression();
-        mat.linea = data.linea;
-        if (data.padre.length == 0) {
-            mat.name = data.name;
-        }
-        else {
-            mat.Expresion = getExpressiones(data.padre[0]);
-        }
-        mat.position = [];
-        for (var _i = 0, _a = data.posicion; _i < _a.length; _i++) {
-            var pos = _a[_i];
-            var m = getExpressiones(pos);
-            if (m != null)
-                mat.position.push(m);
+        switch (data.native) {
+            case "length":
+                mat.linea = data.linea;
+                mat.ArrayType = NativeArray.Length;
+                mat.name = 'a';
+                mat.position = [];
+                if (data.hijo.length > 0) {
+                    if (data.hijo[0].value.length > 0) {
+                        for (var _i = 0, _a = data.hijo[0].value; _i < _a.length; _i++) {
+                            var positions = _a[_i];
+                            var k = getExpressiones(positions);
+                            if (k != null)
+                                mat.position.push(k);
+                        }
+                    }
+                }
+                break;
+            case "pop":
+                mat.linea = data.linea;
+                mat.ArrayType = NativeArray.Pop;
+                mat.name = 'a';
+                mat.position = [];
+                if (data.hijo.length > 0) {
+                    if (data.hijo[0].value.length > 0) {
+                        for (var _b = 0, _c = data.hijo[0].value; _b < _c.length; _b++) {
+                            var positions = _c[_b];
+                            var k = getExpressiones(positions);
+                            if (k != null)
+                                mat.position.push(k);
+                        }
+                    }
+                }
+                break;
+            case "push":
+                mat.linea = data.linea;
+                mat.ArrayType = NativeArray.Push;
+                mat.name = 'a';
+                mat.position = [];
+                if (data.hijo.length > 0) {
+                    if (data.hijo[0].value.length > 0) {
+                        for (var _d = 0, _e = data.hijo[0].value; _d < _e.length; _d++) {
+                            var positions = _e[_d];
+                            var k = getExpressiones(positions);
+                            if (k != null)
+                                mat.position.push(k);
+                        }
+                    }
+                }
+                mat.Expresion = null;
+                if (data.value.length > 0) {
+                    mat.Expresion = getExpressiones(data.value[0]);
+                }
+                break;
         }
         return mat;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function typeBody(data) {
+    /*
+    "linea": "9",
+                  "statement": "typebody",
+                  "values": [
+                    {
+                      "linea": "8",
+                      "statement": "atributo",
+                      "name": "root",
+                      "valor": [
+                        {
+                          "linea": "8",
+                          "tipo": "null",
+                          "value": "null"
+                        }
+                      ]
+                    }
+                  ]
+     */
+    try {
+        var typebo = new types();
+        typebo.atributos = [];
+        typebo.linea = data.linea;
+        typebo.type = TypeStatement.DeclarationStatement;
+        if (data.values.length > 0) {
+            for (var _i = 0, _a = data.values; _i < _a.length; _i++) {
+                var datito = _a[_i];
+                var k = getAtributo(datito);
+                if (k != null)
+                    typebo.atributos.push(k);
+            }
+        }
+        return typebo;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getAtributo(data) {
+    try {
+        /*
+        "linea": "8",
+                      "statement": "atributo",
+                      "name": "root",
+                      "valor": [
+                        {
+                          "linea": "8",
+                          "tipo": "null",
+                          "value": "null"
+                        }
+         */
+        var atr = new atributo();
+        atr.name = data.name;
+        if (data.tipo.length > 0) {
+            atr.tipo = data.tipo[0].tipo;
+        }
+        else {
+            atr.value = getExpressiones(data.valor[0]);
+        }
+        return atr;
     }
     catch (e) {
         return null;

@@ -167,17 +167,21 @@
                       <tr>
                         <th scope="col">#</th>
                         <th scope="col">nombre</th>
-                        <th scope="col">Last</th>
-                        <th scope="col">Handle</th>
+                        <th scope="col">ambito</th>
+                        <th scope="col">tipo</th>
+                        <th scope="col">type</th>
                       </tr>
                       </thead>
-                      <tbody>
+                      <tbody *ngFor="let row of simbolos">
                       <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
+                        <th scope="row">{{row.no}}</th>
+                        <td>{{row.name}}</td>
+                        <td>{{row.ambito}}</td>
+                        <td>{{row.tipo}}</td>
+                        <td>{{row.type}}</td>
                       </tr>
+                      <!--
+
                       <tr>
                         <th scope="row">2</th>
                         <td>Jacob</td>
@@ -189,6 +193,7 @@
                         <td colspan="2">Larry the Bird</td>
                         <td>@twitter</td>
                       </tr>
+                      -->
                       </tbody>
                     </table>
                 </div>

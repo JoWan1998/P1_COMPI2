@@ -12,7 +12,7 @@ class types extends statement
     StateCode: number;
     type: TypeStatement;
     atributos:atributo[];
-    identificador:string;
+    name:string;
     tipoValue:TypeValue;
 
     execute(tablasimbolo: tablasimbolos): any {

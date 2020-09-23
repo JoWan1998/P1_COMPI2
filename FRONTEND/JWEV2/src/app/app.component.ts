@@ -39,6 +39,8 @@ export class AppComponent implements OnInit{
   salida: string;
   s: string;
   s1: string;
+  simbolos: any[];
+  rows1:any;
 
   codeMirrorOptions: any = {
     theme: 'lucario',
@@ -82,6 +84,7 @@ export class AppComponent implements OnInit{
   showTraduction: boolean;
   isMenuCollapsed: boolean;
   private jsonsalida: any;
+  rows: string;
 
   ngOnInit() {
     this.obj = 'console.log("HELLO WORLD, ",2020," this is jowan and jowan says, ",1998);';
@@ -95,6 +98,9 @@ export class AppComponent implements OnInit{
     this.cargadescarga = false;
     this.showTraduction = true;
     this.isMenuCollapsed = true;
+    this.rows = '';
+    this.rows1 = '';
+    this.simbolos = [];
   }
   ShowTraduction()
   {
@@ -113,6 +119,7 @@ export class AppComponent implements OnInit{
 
   Ejecutar(event, value)
   {
+    this.simbolos = [];
     (async () => {
       this.ejecutar = true;
       this.progreso = 10;
@@ -123,9 +130,10 @@ export class AppComponent implements OnInit{
         this.traduction = ParserE.parse(value.value);
         this.progreso = 50;
         Core.jsondata = this.traduction;
-        console.log(this.traduction);
         Core.generate(this.traduction);
+        this.progreso = 25;
         this.core = Core.exec();
+        this.progreso = 75;
         this.jsonsalida = JSON.parse(this.core);
         for (const values of this.jsonsalida.salida) {
           if (values.hasOwnProperty('linea')) {
@@ -136,6 +144,16 @@ export class AppComponent implements OnInit{
           }
         }
         this.obj1 = this.salida;
+        this.rows1 = Core.tablasimbolos();
+        const val = JSON.parse(this.rows1);
+        let a = 1;
+        this.rows = '';
+        for (const values of val.simbolos)
+        {
+          const valor = { no: a.toString(), name: values.name, ambito: values.ambito, tipo: values.tipo, type: values.type };
+          this.simbolos.push(valor);
+          a++;
+        }
         this.progreso = 100;
       } catch (e) {
         console.error(e);
@@ -149,6 +167,7 @@ export class AppComponent implements OnInit{
   }
   Traductor(event, value)
   {
+    this.simbolos = [];
     (async () => {
       this.traduce = true;
       this.progreso = 10;
@@ -161,7 +180,9 @@ export class AppComponent implements OnInit{
         Core.jsondata = this.traduction;
         this.obj2 = this.traduction;
         Core.generate(this.traduction);
+        this.progreso = 25;
         this.core = Core.exec();
+        this.progreso = 75;
         this.jsonsalida = JSON.parse(this.core);
         for (const values of this.jsonsalida.salida) {
           if (values.hasOwnProperty('linea')) {
@@ -172,6 +193,16 @@ export class AppComponent implements OnInit{
           }
         }
         this.obj1 = this.salida;
+        this.rows1 = Core.tablasimbolos();
+        const val = JSON.parse(this.rows1);
+        let a = 1;
+        this.rows = '';
+        for (const values of val.simbolos)
+        {
+          const valor = { no: a.toString(), name: values.name, ambito: values.ambito, tipo: values.tipo, type: values.type };
+          this.simbolos.push(valor);
+          a++;
+        }
         this.progreso = 100;
       } catch (e) {
         console.error(e);
@@ -181,6 +212,7 @@ export class AppComponent implements OnInit{
       await delay(1000);
       this.traduce = false;
       this.progreso = 0;
+
     })();
   }
 
