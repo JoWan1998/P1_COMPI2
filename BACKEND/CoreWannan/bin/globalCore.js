@@ -55,7 +55,7 @@ var tablasimbolos = /** @class */ (function () {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot get information of the variable'];
         }
     };
     tablasimbolos.prototype.update = function (name, new_value, atributo, posicion) {
@@ -79,7 +79,7 @@ var tablasimbolos = /** @class */ (function () {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     //metodo el cual a diferencia de otros al no tener una ejecucion correcta devuelve null
@@ -108,7 +108,7 @@ var tablasimbolos = /** @class */ (function () {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     tablasimbolos.prototype.getsym = function (name) {
@@ -120,7 +120,7 @@ var tablasimbolos = /** @class */ (function () {
                 }
             }
         }
-        return [-1, null];
+        return [-1, 'the object doesn\'t exists'];
     };
     tablasimbolos.prototype.getType = function (name) {
         try {
@@ -132,10 +132,10 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
-            return [-1, null];
+            return [-1, 'the object doesn\'t exists'];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     tablasimbolos.prototype.getTypeValue = function (name) {
@@ -148,10 +148,10 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
-            return [-1, null];
+            return [-1, 'the object doesn\'t exists'];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     tablasimbolos.prototype.insert = function (name, value, tipo, tipovalue) {
@@ -172,10 +172,10 @@ var tablasimbolos = /** @class */ (function () {
                 this.simbolos.push(simbolo);
                 return [1, null];
             }
-            return [-2, null];
+            return [-2, 'we can\'t locate the variable, it\'s probably the variable doesn\'t exists'];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     return tablasimbolos;
@@ -207,7 +207,7 @@ var sym = /** @class */ (function () {
             }
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     sym.prototype.getValue = function () {
@@ -1655,185 +1655,156 @@ var Asignation = /** @class */ (function (_super) {
     Asignation.prototype.execute = function (tablasimbolo) {
         try {
             if (this.atributo.length > 0 && this.position.length > 0) {
-                var value = this.Expression.execute(tablasimbolo);
-                if (value[0] == 1) {
-                    if (this.isArr) {
-                        //array with type in object
-                        var simbolo = tablasimbolo.getsym(this.name.name);
+                if (this.Assigment == typeAssigment.igual) {
+                    var value = this.Expression.execute(tablasimbolo);
+                    if (value[0] > 0) {
+                        if (this.isArr) {
+                            //array with type in object
+                            var simbolo = tablasimbolo.getsym(this.name);
+                            if (simbolo[0] > 0) {
+                                var simbolito = simbolo[1];
+                                if (simbolito.getValue() instanceof arrays) {
+                                    var arrs = simbolito.getValue();
+                                    var result = this.operateArrAtr(arrs, tablasimbolo, this.position, this.atributo, this.Expression);
+                                    if (result[0] > 0) {
+                                        return tablasimbolo.update(this.name, result[1]);
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            //type with array
+                            var simbolo = tablasimbolo.getsym(this.name);
+                            if (simbolo[0] > 0) {
+                                var simbolito = simbolo[1];
+                                if (simbolito.getValue() instanceof types) {
+                                    var arrs = simbolito.getValue();
+                                    var result = this.operateAtrArr(arrs, tablasimbolo, this.atributo, this.position, this.Expression);
+                                    if (result[0] > 0) {
+                                        return tablasimbolo.update(this.name, result[1]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return [-2, 'We can\'t does aplied the instruccion, the object can\'t have the atribute or position'];
+                }
+                return [-1, 'cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object'];
+            }
+            else if (this.atributo.length > 0) {
+                if (this.Assigment == typeAssigment.igual) {
+                    var value = this.Expression.execute(tablasimbolo);
+                    if (value[0] > 0) {
+                        var simbolo = tablasimbolo.getsym(this.name);
+                        if (simbolo[0] > 0) {
+                            var simbolito = simbolo[1];
+                            if (simbolito.getValue() instanceof types) {
+                                var atr = simbolito.getValue();
+                                var val = this.operateAtr(atr, tablasimbolo, this.atributo, this.Expression);
+                                if (val[0] > 0) {
+                                    return tablasimbolo.update(this.name, atr);
+                                }
+                            }
+                        }
+                    }
+                    return [-2, 'We can\'t does aplied the instruccion, the object can\'t have the atribute'];
+                }
+                return [-1, 'cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object'];
+            }
+            else if (this.position.length > 0) {
+                if (this.Assigment == typeAssigment.igual) {
+                    var value = this.Expression.execute(tablasimbolo);
+                    if (value[0] > 0) {
+                        var simbolo = tablasimbolo.getsym(this.name);
                         if (simbolo[0] > 0) {
                             var simbolito = simbolo[1];
                             if (simbolito.getValue() instanceof arrays) {
                                 var arrs = simbolito.getValue();
-                                var result = this.operateArrAtr(arrs, tablasimbolo, this.position, this.atributo, value[1]);
-                                if (result[0] > 0) {
-                                    return tablasimbolo.update(this.name.name, result[1]);
-                                }
+                                var k = arrs.setValue(tablasimbolo, this.position, this.Expression);
+                                if (k[0] > 0)
+                                    return tablasimbolo.update(this.name, arrs);
                             }
                         }
                     }
-                    else {
-                        //type with array
-                        var simbolo = tablasimbolo.getsym(this.name.name);
-                        if (simbolo[0] > 0) {
-                            var simbolito = simbolo[1];
-                            if (simbolito.getValue() instanceof types) {
-                                var arrs = simbolito.getValue();
-                                var result = this.operateAtrArr(arrs, tablasimbolo, this.atributo, this.position, value[1]);
-                                if (result[0] > 0) {
-                                    return tablasimbolo.update(this.name.name, result[1]);
-                                }
-                            }
-                        }
-                    }
+                    return [-2, 'We can\'t does aplied the instruccion,  the object can\'t have the position'];
                 }
-            }
-            else if (this.atributo.length > 0) {
-                var value = this.Expression.execute(tablasimbolo);
-                if (value[0] > 0) {
-                    var simbolo = tablasimbolo.getsym(this.name.name);
-                    if (simbolo[0] > 0) {
-                        var simbolito = simbolo[1];
-                        if (simbolito.getValue() instanceof types) {
-                            var atr = simbolito.getValue();
-                            var val = this.operateAtr(atr, tablasimbolo, this.atributo, value[1]);
-                            if (val[0] > 0) {
-                                return tablasimbolo.update(this.name.name, atr);
-                            }
-                        }
-                    }
-                }
-            }
-            else if (this.position.length > 0) {
-                var value = this.Expression.execute(tablasimbolo);
-                if (value[0] > 0) {
-                    var simbolo = tablasimbolo.getsym(this.name.name);
-                    if (simbolo[0] > 0) {
-                        var simbolito = simbolo[1];
-                        if (simbolito.getValue() instanceof arrays) {
-                            var arrs = simbolito.getValue();
-                            return arrs.setValue(tablasimbolo, this.position, value[1]);
-                        }
-                    }
-                }
+                return [-1, 'cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object'];
             }
             else {
-                var value = this.Expression.execute(tablasimbolo);
-                if (value[0] == 1) {
-                    switch (this.Assigment) {
-                        case typeAssigment.division:
-                            var newvalue5 = new ArichmeticExpression();
-                            newvalue5.Expression1 = this.name;
-                            newvalue5.Expression2 = value[1];
-                            newvalue5.Function = ArichmeticExpr.division;
-                            newvalue5.linea = this.linea;
-                            var val5 = newvalue5.execute(tablasimbolo);
-                            if (val5[0] != -1) {
-                                var result5 = tablasimbolo.update(this.name.name, val5[1]);
-                                if (result5 == 1)
-                                    return [1, null];
-                                return [-1, null];
-                            }
-                            else {
-                                return [-1, null];
-                            }
-                        case typeAssigment.igual:
-                            var val0 = this.Expression.execute(tablasimbolo);
-                            if (val0[0] != -1) {
-                                var result0 = tablasimbolo.update(this.name.name, val0[1]);
-                                if (result0 == 1)
-                                    return [1, null];
-                                return [-1, null];
-                            }
-                            else {
-                                return [-1, null];
-                            }
-                        case typeAssigment.modulo:
-                            var newvalue4 = new ArichmeticExpression();
-                            newvalue4.Expression1 = this.name;
-                            newvalue4.Expression2 = value[1];
-                            newvalue4.Function = ArichmeticExpr.modulo;
-                            newvalue4.linea = this.linea;
-                            var val4 = newvalue4.execute(tablasimbolo);
-                            if (val4[0] != -1) {
-                                var result4 = tablasimbolo.update(this.name.name, val4[1]);
-                                if (result4 == 1)
-                                    return [1, null];
-                                return [-1, null];
-                            }
-                            else {
-                                return [-1, null];
-                            }
-                        case typeAssigment.multiplicacion:
-                            var newvalue3 = new ArichmeticExpression();
-                            newvalue3.Expression1 = this.name;
-                            newvalue3.Expression2 = value[1];
-                            newvalue3.Function = ArichmeticExpr.multiplicacion;
-                            newvalue3.linea = this.linea;
-                            var val3 = newvalue3.execute(tablasimbolo);
-                            if (val3[0] != -1) {
-                                var result3 = tablasimbolo.update(this.name.name, val3[1]);
-                                if (result3 == 1)
-                                    return [1, null];
-                                return [-1, null];
-                            }
-                            else {
-                                return [-1, null];
-                            }
-                        case typeAssigment.potencia:
-                            var newvalue2 = new ArichmeticExpression();
-                            newvalue2.Expression1 = this.name;
-                            newvalue2.Expression2 = value[1];
-                            newvalue2.Function = ArichmeticExpr.potenciacion;
-                            newvalue2.linea = this.linea;
-                            var val2 = newvalue2.execute(tablasimbolo);
-                            if (val2[0] != -1) {
-                                var result2 = tablasimbolo.update(this.name.name, val2[1]);
-                                if (result2 == 1)
-                                    return [1, null];
-                                return [-1, null];
-                            }
-                            else {
-                                return [-1, null];
-                            }
-                        case typeAssigment.resta:
-                            var newvalue1 = new ArichmeticExpression();
-                            newvalue1.Expression1 = this.name;
-                            newvalue1.Expression2 = value[1];
-                            newvalue1.Function = ArichmeticExpr.resta;
-                            newvalue1.linea = this.linea;
-                            var val1 = newvalue1.execute(tablasimbolo);
-                            if (val1[0] != -1) {
-                                var result1 = tablasimbolo.update(this.name.name, val1[1]);
-                                if (result1 == 1)
-                                    return [1, null];
-                                return [-1, null];
-                            }
-                            else {
-                                return [-1, null];
-                            }
-                        case typeAssigment.suma:
-                            var newvalue = new ArichmeticExpression();
-                            newvalue.Expression1 = this.name;
-                            newvalue.Expression2 = value[1];
-                            newvalue.Function = ArichmeticExpr.suma;
-                            newvalue.linea = this.linea;
-                            var val = newvalue.execute(tablasimbolo);
-                            if (val[0] != -1) {
-                                var result = tablasimbolo.update(this.name.name, val[1]);
-                                if (result == 1)
-                                    return [1, null];
-                                return [-1, null];
-                            }
-                            else {
-                                return [-1, null];
-                            }
-                    }
+                var newvalue = new ArichmeticExpression();
+                var valant = new expression();
+                valant.name = this.name;
+                valant.linea = this.linea;
+                valant.type = TypeStatement.ExpresionStatement;
+                newvalue.Expression1 = valant;
+                switch (this.Assigment) {
+                    case typeAssigment.division:
+                        newvalue.Expression2 = this.Expression;
+                        newvalue.Function = ArichmeticExpr.division;
+                        newvalue.linea = this.linea;
+                        var val5 = newvalue.execute(tablasimbolo);
+                        if (val5[0] > 0) {
+                            return tablasimbolo.update(this.name, val5[1]);
+                        }
+                        break;
+                    case typeAssigment.igual:
+                        var value = this.Expression.execute(tablasimbolo);
+                        if (value[0] > 0) {
+                            return tablasimbolo.update(this.name, value[1]);
+                        }
+                        break;
+                    case typeAssigment.modulo:
+                        newvalue.Expression2 = this.Expression;
+                        newvalue.Function = ArichmeticExpr.modulo;
+                        newvalue.linea = this.linea;
+                        var val4 = newvalue.execute(tablasimbolo);
+                        if (val4[0] > 0) {
+                            return tablasimbolo.update(this.name, val4[1]);
+                        }
+                        break;
+                    case typeAssigment.multiplicacion:
+                        newvalue.Expression2 = this.Expression;
+                        newvalue.Function = ArichmeticExpr.multiplicacion;
+                        newvalue.linea = this.linea;
+                        var val3 = newvalue.execute(tablasimbolo);
+                        if (val3[0] > 0) {
+                            return tablasimbolo.update(this.name, val3[1]);
+                        }
+                        break;
+                    case typeAssigment.potencia:
+                        newvalue.Expression2 = this.Expression;
+                        newvalue.Function = ArichmeticExpr.potenciacion;
+                        newvalue.linea = this.linea;
+                        var val2 = newvalue.execute(tablasimbolo);
+                        if (val2[0] > 0) {
+                            return tablasimbolo.update(this.name, val2[1]);
+                        }
+                        break;
+                    case typeAssigment.resta:
+                        newvalue.Expression2 = this.Expression;
+                        newvalue.Function = ArichmeticExpr.resta;
+                        newvalue.linea = this.linea;
+                        var val1 = newvalue.execute(tablasimbolo);
+                        if (val1[0] > 0) {
+                            return tablasimbolo.update(this.name, val1[1]);
+                        }
+                        break;
+                    case typeAssigment.suma:
+                        newvalue.Expression2 = this.Expression;
+                        newvalue.Function = ArichmeticExpr.suma;
+                        newvalue.linea = this.linea;
+                        var val = newvalue.execute(tablasimbolo);
+                        if (val[0] > 0) {
+                            return tablasimbolo.update(this.name, val[1]);
+                        }
+                        break;
                 }
             }
-            return [-1, null];
+            return [-1, 'cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object'];
         }
         catch (e) {
-            return [-2, null];
+            //console.log(e)
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     Asignation.prototype.operateArrAtr = function (objeto, tablasimbolo, position, atributos, value) {
@@ -1875,7 +1846,7 @@ var Asignation = /** @class */ (function (_super) {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     Asignation.prototype.operateAtrArr = function (objeto, tablasimbolo, atributos, position, value) {
@@ -1912,7 +1883,7 @@ var Asignation = /** @class */ (function (_super) {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     Asignation.prototype.operateAtr = function (objeto, tablasimbolo, atributos, value) {
@@ -1941,7 +1912,7 @@ var Asignation = /** @class */ (function (_super) {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     Asignation.prototype.operateArr = function (objeto, tablasimbolo, position, value) {
@@ -1975,7 +1946,7 @@ var Asignation = /** @class */ (function (_super) {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     Asignation.prototype.grahp = function () {
@@ -2001,39 +1972,13 @@ var IfStatement = /** @class */ (function (_super) {
         return _this;
     }
     IfStatement.prototype.execute = function (tablasimbolo) {
-        var valInitial = this.ValueExpression.execute(tablasimbolo);
-        if (valInitial[0] < 0)
-            return [-1, null];
-        if (valInitial[1]) {
-            for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
-                var statement0 = _a[_i];
-                var value = statement0.execute(tablasimbolo);
-                switch (value[0]) {
-                    case -2: //-> error instanciar variable
-                        return [-2, null];
-                    case -1: //-> error
-                        return [-1, null];
-                    case 0: //-> finalizado
-                        this.StateCode = 0;
-                        this.value = value[1];
-                        break;
-                    case 1: //-> sin errores
-                        this.StateCode = 1;
-                        this.value = value[1];
-                        break;
-                    case 2: //-> sin errores, break
-                        return [2, null];
-                    case 3: //-> sin errores, continue
-                        return [3, null];
-                    case 4: //-> sin errores, return
-                        return [4, value[1]];
-                }
-            }
-        }
-        else {
-            if (this.bodyElse != undefined) {
-                for (var _b = 0, _c = this.bodyElse; _b < _c.length; _b++) {
-                    var statement0 = _c[_b];
+        try {
+            var valInitial = this.ValueExpression.execute(tablasimbolo);
+            if (valInitial[0] < 0)
+                return [-1, null];
+            if (valInitial[1]) {
+                for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
+                    var statement0 = _a[_i];
                     var value = statement0.execute(tablasimbolo);
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
@@ -2057,8 +2002,39 @@ var IfStatement = /** @class */ (function (_super) {
                     }
                 }
             }
+            else {
+                if (this.bodyElse != undefined) {
+                    for (var _b = 0, _c = this.bodyElse; _b < _c.length; _b++) {
+                        var statement0 = _c[_b];
+                        var value = statement0.execute(tablasimbolo);
+                        switch (value[0]) {
+                            case -2: //-> error instanciar variable
+                                return [-2, null];
+                            case -1: //-> error
+                                return [-1, null];
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                this.value = value[1];
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                this.value = value[1];
+                                break;
+                            case 2: //-> sin errores, break
+                                return [2, null];
+                            case 3: //-> sin errores, continue
+                                return [3, null];
+                            case 4: //-> sin errores, return
+                                return [4, value[1]];
+                        }
+                    }
+                }
+            }
+            return [this.StateCode, this.value];
         }
-        return [this.StateCode, this.value];
+        catch (e) {
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
+        }
     };
     IfStatement.prototype.grahp = function () {
         return "";
@@ -2078,24 +2054,29 @@ var OperatorTernario = /** @class */ (function (_super) {
         return _this;
     }
     OperatorTernario.prototype.execute = function (tablasimbolo) {
-        var valInitial = this.ValueExpression.execute(tablasimbolo);
-        if (valInitial[0] < 0)
-            return [-1, null];
-        if (valInitial[1]) {
-            var val1 = this.Expression1.execute(tablasimbolo);
-            if (val1[1] < 0)
+        try {
+            var valInitial = this.ValueExpression.execute(tablasimbolo);
+            if (valInitial[0] < 0)
                 return [-1, null];
-            this.StateCode = 1;
-            this.value = val1[1];
+            if (valInitial[1]) {
+                var val1 = this.Expression1.execute(tablasimbolo);
+                if (val1[1] < 0)
+                    return [-1, null];
+                this.StateCode = 1;
+                this.value = val1[1];
+            }
+            else {
+                var val2 = this.Expression2.execute(tablasimbolo);
+                if (val2[1] < 0)
+                    return [-1, null];
+                this.StateCode = 1;
+                this.value = val2[1];
+            }
+            return [this.StateCode, this.value];
         }
-        else {
-            var val2 = this.Expression2.execute(tablasimbolo);
-            if (val2[1] < 0)
-                return [-1, null];
-            this.StateCode = 1;
-            this.value = val2[1];
+        catch (e) {
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
-        return [this.StateCode, this.value];
     };
     OperatorTernario.prototype.grahp = function () {
         return "";
@@ -2567,10 +2548,10 @@ var expression = /** @class */ (function (_super) {
                     return [1, null];
                 return [1, data];
             }
-            return [-1, null];
+            return [-1, 'We cant get the data'];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     expression.prototype.grahp = function () {
@@ -2618,7 +2599,7 @@ var ArichmeticExpression = /** @class */ (function (_super) {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     ArichmeticExpression.prototype.grahp = function () {
@@ -2681,7 +2662,7 @@ var LogialExpression = /** @class */ (function (_super) {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     LogialExpression.prototype.grahp = function () {
@@ -2731,7 +2712,7 @@ var RelationalExpression = /** @class */ (function (_super) {
             return [-1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     RelationalExpression.prototype.grahp = function () {
@@ -3965,9 +3946,9 @@ var declarations = /** @class */ (function (_super) {
                         var value = declaration.execute(tablasimbolo);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
-                                return [-2, null];
+                                return value;
                             case -1: //-> error
-                                return [-1, null];
+                                return value;
                             case 0: //-> finalizado
                                 this.StateCode = 0;
                                 this.value = value[1];
@@ -3977,7 +3958,7 @@ var declarations = /** @class */ (function (_super) {
                                 this.value = value[1];
                                 break;
                             default:
-                                return [-1, null];
+                                return [-1, 'An Error was ocurred, we can\'t identified the error.'];
                         }
                     }
                     else if (this.tipo == TypeValue["var"]) {
@@ -3986,9 +3967,9 @@ var declarations = /** @class */ (function (_super) {
                         var value = declaration.execute(tablasimbolo);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
-                                return [-2, null];
+                                return value;
                             case -1: //-> error
-                                return [-1, null];
+                                return value;
                             case 0: //-> finalizado
                                 this.StateCode = 0;
                                 this.value = value[1];
@@ -3998,7 +3979,7 @@ var declarations = /** @class */ (function (_super) {
                                 this.value = value[1];
                                 break;
                             default:
-                                return [-1, null];
+                                return [-1, 'An Error was ocurred, we can\'t identified the error.'];
                         }
                     }
                     else if (this.tipo == TypeValue["const"]) {
@@ -4007,9 +3988,9 @@ var declarations = /** @class */ (function (_super) {
                         var value = declaration.execute(tablasimbolo);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
-                                return [-2, null];
+                                return value;
                             case -1: //-> error
-                                return [-1, null];
+                                return value;
                             case 0: //-> finalizado
                                 this.StateCode = 0;
                                 this.value = value[1];
@@ -4019,7 +4000,7 @@ var declarations = /** @class */ (function (_super) {
                                 this.value = value[1];
                                 break;
                             default:
-                                return [-1, null];
+                                return [-1, 'An Error was ocurred, we can\'t identified the error.'];
                         }
                     }
                     else {
@@ -4028,9 +4009,9 @@ var declarations = /** @class */ (function (_super) {
                         var value = declaration.execute(tablasimbolo);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
-                                return [-2, null];
+                                return value;
                             case -1: //-> error
-                                return [-1, null];
+                                return value;
                             case 0: //-> finalizado
                                 this.StateCode = 0;
                                 this.value = value[1];
@@ -4040,7 +4021,7 @@ var declarations = /** @class */ (function (_super) {
                                 this.value = value[1];
                                 break;
                             default:
-                                return [-1, null];
+                                return [-1, 'An Error was ocurred, we can\'t identified the error.'];
                         }
                     }
                 }
@@ -4048,7 +4029,7 @@ var declarations = /** @class */ (function (_super) {
             return [1, null];
         }
         catch (e) {
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     declarations.prototype.grahp = function () {
@@ -4092,11 +4073,11 @@ var declaration0 = /** @class */ (function (_super) {
                     return tablasimbolo.insert(this.name, valor[1], this.tipoSim, this.tipo);
                 }
             }
-            return [-1, null];
+            return [-1, 'Error, cannot be execute the instruction'];
         }
         catch (e) {
             //console.log(e)
-            return [-1, null];
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     declaration0.prototype.grahp = function () {
@@ -4281,19 +4262,21 @@ var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":"CallFunction","name":"sumarColumnas", "parameters":[{"linea":"195","statement":"variable","value":"matrixA"}]},\n' +
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
-var jsondata2 = '{"linea":"9","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"5"}]}]}]}]},\n' +
-    '{"linea":"2","statement":"console","expression":[{"linea":"2","statement":"nativeArray", "name":"a" ,"hijo":[],"native":"length"}]},\n' +
-    '{"linea":"3","statement":"console","expression":[{"linea":"3","statement":"nativeArray", "name":"a", "hijo":[],"native":"pop"}]},\n' +
-    '{"linea":"4","statement":"nativeArray", "name":"a" ,"hijo":[],"native":"push","value":[{"linea":"4","statement":"arreglo","value":[{"linea":"4","tipo":"number", "value":"5"},\n' +
-    '{"linea":"4","tipo":"number", "value":"6"}]}]},\n' +
-    '{"linea":"5","statement":"console","expression":[{"linea":"5","statement":"nativeArray", "name":"a" ,"hijo":[],"native":"length"}]},\n' +
-    '{"linea":"6","statement":"nativeArray", "name":"a" ,"hijo":[{"linea":"6","statement":"ArrayList","value":[{"linea":"6","statement":"MatrizPosition","value":[{"linea":"6","tipo":"number", "value":"0"}]}]}],"native":"push","value":[{"linea":"6","statement":"arreglo","value":[{"linea":"6","tipo":"number", "value":"5"},\n' +
-    '{"linea":"6","tipo":"number", "value":"6"}]}]},\n' +
-    '{"linea":"6","statement":""},\n' +
-    '{"linea":"7","statement":"nativeArray", "name":"a", "hijo":[{"linea":"7","statement":"ArrayList","value":[{"linea":"7","statement":"MatrizPosition","value":[{"linea":"7","tipo":"number", "value":"0"}]}]}],"native":"pop"},\n' +
-    '{"linea":"7","statement":""},\n' +
-    '{"linea":"8","statement":"console","expression":[{"linea":"8","statement":"nativeArray", "name":"a" ,"hijo":[{"linea":"8","statement":"ArrayList","value":[{"linea":"8","statement":"MatrizPosition","value":[{"linea":"8","tipo":"number", "value":"0"}]}]}],"native":"length"}]},\n' +
-    '{"linea":"9","statement":""}]}';
+var jsondata2 = '{"linea":"18","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","tipo":"number", "value":"5"}]}]}]},\n' +
+    '{"linea":"2","statement":"asignation","variable":"a","params":[],"ValExpression":[{"linea":"2","operator":[{"linea":"2","v":"+="}],"Expression":[{"linea":"2","tipo":"number", "value":"1005"}]}]},\n' +
+    '{"linea":"3","statement":"declaration","type":[{"linea":"3","tipo":[{"linea":"3","tipo":"let"}],"size":[]}], "values":[{"linea":"3","statement":"variable","tipoExpresion":[],"name":"b","ValExpression":[{"linea":"3","operator":[{"linea":"3","v":"="}],"Expression":[{"linea":"3","statement":"arreglo","value":[{"linea":"3","tipo":"number", "value":"5"},\n' +
+    '{"linea":"3","tipo":"number", "value":"6"}]}]}]}]},\n' +
+    '{"linea":"4","statement":"asignation","variable":"b","params":[],"ValExpression":[{"linea":"4","operator":[{"linea":"4","v":"="}],"Expression":[{"linea":"4","statement":"arreglo","value":[{"linea":"4","tipo":"number", "value":"8"},\n' +
+    '{"linea":"4","tipo":"number", "value":"9"},\n' +
+    '{"linea":"4","tipo":"number", "value":"10"}]}]}]},\n' +
+    '{"linea":"8","statement":"declaration","type":[{"linea":"5","tipo":[{"linea":"5","tipo":"type"}],"size":[]}], "values":[{"linea":"8","statement":"variable","tipoExpresion":[],"name":"c","ValExpression":[{"linea":"8","operator":[{"linea":"5","v":"="}],"Expression":[{"linea":"8","statement":"typebody","values":[{"linea":"7","statement":"atributo","name":"root", "tipo":[{"linea":"7","tipo":"number"}],"valor":[]}]}]}]}]},\n' +
+    '{"linea":"13","statement":"declaration","type":[{"linea":"10","tipo":[{"linea":"10","tipo":"let"}],"size":[]}], "values":[{"linea":"13","statement":"variable","tipoExpresion":[{"linea":"10","tipo":[{"linea":"10","tipo":"c"}],"size":[]}],"name":"d","ValExpression":[{"linea":"13","operator":[{"linea":"10","v":"="}],"Expression":[{"linea":"13","statement":"typebody","values":[{"linea":"12","statement":"atributo","name":"root", "tipo":[{"linea":"12","tipo":"number"}],"valor":[]}]}]}]}]},\n' +
+    '{"linea":"14","statement":"asignation","variable":"d","params":[{"linea":"14","statement":"Object","value":"root"}],"ValExpression":[{"linea":"14","operator":[{"linea":"14","v":"="}],"Expression":[{"linea":"14","tipo":"number", "value":"1500"}]}]},\n' +
+    '{"linea":"15","statement":"console","expression":[{"linea":"15","statement":"variable","value":"a"}]},\n' +
+    '{"linea":"16","statement":"console","expression":[{"linea":"16","statement":"variable","value":"b"}]},\n' +
+    '{"linea":"17","statement":"console","expression":[{"linea":"17","statement":"callAtributo", "value":"d", "hijo":[{"linea":"17","statement":"Object","value":"root"}]}]},\n' +
+    '{"linea":"18","statement":"asignation","variable":"d","params":[{"linea":"18","statement":"ArrayList","value":[{"linea":"18","statement":"MatrizPosition","value":[{"linea":"18","tipo":"number", "value":"0"}]}]},{"statement":"Object","value":"hola"}],"ValExpression":[{"linea":"18","operator":[{"linea":"18","v":"="}],"Expression":[{"linea":"18","tipo":"number", "value":"5"}]}]},\n' +
+    '{"linea":"18","statement":""}]}';
 var instrucciones = [];
 var tablasimbolo = new tablasimbolos();
 var jsondata = '';
@@ -4404,7 +4387,7 @@ function getStatement(data) {
         case "CallFunction":
             break;
         case "asignation":
-            break;
+            return getAsignation(data);
         case "Argument":
             break;
         case "ArrayList":
@@ -4803,7 +4786,7 @@ function getExpressiones(data) {
                 case "CallFunction":
                     break;
                 case "asignation":
-                    break;
+                    return getAsignation(data);
                 case "Argument":
                     break;
                 case "ArrayList":
@@ -5874,6 +5857,116 @@ function getAtributo(data) {
             atr.value = getExpressiones(data.valor[0]);
         }
         return atr;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getTipoAssigment(data) {
+    try {
+        /*
+
+                      "linea": "2",
+                      "v": "+="
+         */
+        switch (data.v) {
+            case "+=":
+                return typeAssigment.suma;
+            case "-=":
+                return typeAssigment.resta;
+            case "=":
+                return typeAssigment.igual;
+            case "*=":
+                return typeAssigment.multiplicacion;
+            case "/=":
+                return typeAssigment.division;
+            case "**=":
+                return typeAssigment.potencia;
+            case "%=":
+                return typeAssigment.modulo;
+            default:
+                return typeAssigment.igual;
+        }
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getAsignation(data) {
+    try {
+        //console.log(data);
+        /*
+        "linea": "2",
+      "statement": "asignation",
+      "variable": "a",
+      "params": [],
+      "ValExpression": [
+        {
+          "linea": "2",
+          "operator": [
+            {
+              "linea": "2",
+              "v": "+="
+            }
+          ],
+          "Expression": [
+            {
+              "linea": "2",
+              "tipo": "number",
+              "value": "1005"
+            }
+          ]
+        }
+      ]
+
+            "params": [
+                    {
+                      "linea": "18",
+                      "statement": "ArrayList",
+                      "value": [
+                        {
+                          "linea": "18",
+                          "statement": "MatrizPosition",
+                          "value": [
+                            {
+                              "linea": "18",
+                              "tipo": "number",
+                              "value": "0"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+
+
+         */
+        var as = new Asignation();
+        as.linea = data.linea;
+        as.name = data.variable;
+        as.atributo = [];
+        as.position = [];
+        if (data.params.length > 0) {
+            if (data.params[0].statement == 'ArrayList')
+                as.isArr = true;
+            for (var _i = 0, _a = data.params; _i < _a.length; _i++) {
+                var params = _a[_i];
+                var k = getExpressiones(params);
+                if (k != null) {
+                    if (k instanceof Array) {
+                        for (var _b = 0, k_3 = k; _b < k_3.length; _b++) {
+                            var m = k_3[_b];
+                            as.position.push(m);
+                        }
+                    }
+                    else {
+                        as.atributo.push(k);
+                    }
+                }
+            }
+        }
+        as.Assigment = getTipoAssigment(data.ValExpression[0].operator[0]);
+        as.Expression = getExpressiones(data.ValExpression[0].Expression[0]);
+        return as;
     }
     catch (e) {
         return null;

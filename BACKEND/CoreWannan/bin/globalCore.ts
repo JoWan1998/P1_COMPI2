@@ -61,7 +61,7 @@ class tablasimbolos
         }
         catch (e)
         {
-            return [-1,null];
+            return [-2,'Unexpected Error, cannot get information of the variable']
         }
     }
 
@@ -96,7 +96,7 @@ class tablasimbolos
         }
         catch (e)
         {
-            return [-1,null];
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
     }
@@ -135,7 +135,7 @@ class tablasimbolos
             return [-1,null];
         }
         catch (e) {
-            return [-1,null];
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
     }
@@ -151,7 +151,7 @@ class tablasimbolos
                 }
             }
         }
-        return [-1,null]
+        return [-1,'the object doesn\'t exists']
     }
     getType(name:string)
     {
@@ -167,10 +167,10 @@ class tablasimbolos
                     }
                 }
             }
-            return [-1,null];
+            return [-1,'the object doesn\'t exists'];
         }
         catch (e) {
-            return [-1,null];
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
     }
 
@@ -188,10 +188,10 @@ class tablasimbolos
                     }
                 }
             }
-            return [-1,null];
+            return [-1,'the object doesn\'t exists'];
         }
         catch (e) {
-            return [-1,null];
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
     }
@@ -219,11 +219,11 @@ class tablasimbolos
                 return [1,null];
             }
 
-            return [-2,null];
+            return [-2,'we can\'t locate the variable, it\'s probably the variable doesn\'t exists'];
 
         }
         catch (e) {
-            return [-1,null];
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
     }
 
@@ -270,7 +270,7 @@ class sym
             }
         }
         catch (e) {
-            return [-1,null]
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
 
@@ -1959,7 +1959,7 @@ class Asignation extends statement
     StateCode: number;
     type: TypeStatement;
     linea:number;
-    name:expression;
+    name:string;
     atributo:string[];
     position:statement[];
     Expression:statement;
@@ -1978,218 +1978,188 @@ class Asignation extends statement
         {
             if(this.atributo.length>0 && this.position.length>0)
             {
-                let value = this.Expression.execute(tablasimbolo);
-                if(value[0]==1)
+                if(this.Assigment == typeAssigment.igual)
                 {
-                    if(this.isArr)
+                    let value = this.Expression.execute(tablasimbolo);
+                    if(value[0]>0)
                     {
-                        //array with type in object
-                        let simbolo = tablasimbolo.getsym(this.name.name);
-                        if (simbolo[0] > 0)
+                        if(this.isArr)
                         {
-                            let simbolito:sym = simbolo[1];
-                            if(simbolito.getValue() instanceof arrays)
+                            //array with type in object
+                            let simbolo = tablasimbolo.getsym(this.name);
+                            if (simbolo[0] > 0)
                             {
-                                let arrs:arrays = simbolito.getValue();
-                                let result = this.operateArrAtr(arrs,tablasimbolo,this.position,this.atributo,value[1]);
-                                if(result[0]>0)
+                                let simbolito:sym = simbolo[1];
+                                if(simbolito.getValue() instanceof arrays)
                                 {
-                                    return tablasimbolo.update(this.name.name,result[1]);
+                                    let arrs:arrays = simbolito.getValue();
+                                    let result = this.operateArrAtr(arrs,tablasimbolo,this.position,this.atributo,this.Expression);
+                                    if(result[0]>0)
+                                    {
+                                        return tablasimbolo.update(this.name,result[1]);
+                                    }
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            //type with array
+                            let simbolo = tablasimbolo.getsym(this.name);
+                            if (simbolo[0] > 0)
+                            {
+                                let simbolito:sym = simbolo[1];
+                                if(simbolito.getValue() instanceof types)
+                                {
+                                    let arrs:types = simbolito.getValue();
+                                    let result = this.operateAtrArr(arrs,tablasimbolo,this.atributo,this.position,this.Expression);
+                                    if(result[0]>0)
+                                    {
+                                        return tablasimbolo.update(this.name,result[1]);
+                                    }
                                 }
                             }
                         }
-
                     }
-                    else
+
+                    return [-2,'We can\'t does aplied the instruccion, the object can\'t have the atribute or position']
+                }
+                return [-1, 'cannot be aplied '+typeAssigment[this.Assigment]+', in the object']
+
+            }
+            else if(this.atributo.length>0)
+            {
+                if(this.Assigment == typeAssigment.igual)
+                {
+                    let value = this.Expression.execute(tablasimbolo);
+                    if(value[0]>0)
                     {
-                        //type with array
-                        let simbolo = tablasimbolo.getsym(this.name.name);
-                        if (simbolo[0] > 0)
+                        let simbolo = tablasimbolo.getsym(this.name);
+                        if(simbolo[0]>0)
                         {
                             let simbolito:sym = simbolo[1];
                             if(simbolito.getValue() instanceof types)
                             {
-                                let arrs:types = simbolito.getValue();
-                                let result = this.operateAtrArr(arrs,tablasimbolo,this.atributo,this.position,value[1]);
-                                if(result[0]>0)
+                                let atr:types = simbolito.getValue();
+                                let val = this.operateAtr(atr,tablasimbolo,this.atributo,this.Expression);
+                                if(val[0]>0)
                                 {
-                                    return tablasimbolo.update(this.name.name,result[1]);
+                                    return tablasimbolo.update(this.name,atr);
                                 }
                             }
                         }
                     }
+                    return [-2,'We can\'t does aplied the instruccion, the object can\'t have the atribute']
                 }
-            }
-            else if(this.atributo.length>0)
-            {
-                let value = this.Expression.execute(tablasimbolo);
-                if(value[0]>0)
-                {
-                    let simbolo = tablasimbolo.getsym(this.name.name);
-                    if(simbolo[0]>0)
-                    {
-                        let simbolito:sym = simbolo[1];
-                        if(simbolito.getValue() instanceof types)
-                        {
-                            let atr:types = simbolito.getValue();
-                            let val = this.operateAtr(atr,tablasimbolo,this.atributo,value[1]);
-                            if(val[0]>0)
-                            {
-                                return tablasimbolo.update(this.name.name,atr);
-                            }
-                        }
-                    }
-                }
+                return [-1, 'cannot be aplied '+typeAssigment[this.Assigment]+', in the object']
 
             }
             else if(this.position.length>0)
             {
-                let value = this.Expression.execute(tablasimbolo);
-                if(value[0]>0)
-                {
-                    let simbolo = tablasimbolo.getsym(this.name.name);
-                    if (simbolo[0] > 0)
-                    {
-                        let simbolito:sym = simbolo[1];
-                        if(simbolito.getValue() instanceof arrays)
-                        {
-                            let arrs:arrays = simbolito.getValue();
-                            return arrs.setValue(tablasimbolo,this.position,value[1]);
+                if(this.Assigment == typeAssigment.igual) {
+                    let value = this.Expression.execute(tablasimbolo);
+                    if (value[0] > 0) {
+                        let simbolo = tablasimbolo.getsym(this.name);
+                        if (simbolo[0] > 0) {
+                            let simbolito: sym = simbolo[1];
+                            if (simbolito.getValue() instanceof arrays) {
+                                let arrs: arrays = simbolito.getValue();
+                                let k = arrs.setValue(tablasimbolo, this.position, this.Expression);
+                                if (k[0] > 0) return tablasimbolo.update(this.name, arrs);
+
+                            }
                         }
                     }
+                    return [-2,'We can\'t does aplied the instruccion,  the object can\'t have the position']
                 }
-
+                return [-1, 'cannot be aplied '+typeAssigment[this.Assigment]+', in the object']
             }
             else
             {
-                let value = this.Expression.execute(tablasimbolo);
-                if(value[0]==1)
-                {
+
+                    let newvalue = new ArichmeticExpression();
+                    let valant:expression = new expression();
+                    valant.name = this.name;
+                    valant.linea = this.linea;
+                    valant.type = TypeStatement.ExpresionStatement;
+                    newvalue.Expression1 = valant;
                     switch (this.Assigment)
                     {
                         case typeAssigment.division:
 
-                            let newvalue5 = new ArichmeticExpression();
-                            newvalue5.Expression1 = this.name;
-                            newvalue5.Expression2 = value[1];
-                            newvalue5.Function = ArichmeticExpr.division;
-                            newvalue5.linea = this.linea
-                            let val5 = newvalue5.execute(tablasimbolo);
-                            if(val5[0]!=-1)
+                            newvalue.Expression2 = this.Expression;
+                            newvalue.Function = ArichmeticExpr.division;
+                            newvalue.linea = this.linea
+                            let val5 = newvalue.execute(tablasimbolo);
+                            if(val5[0]>0)
                             {
-                                let result5 = tablasimbolo.update(this.name.name,val5[1]);
-                                if(result5==1)return[1,null];
-                                return [-1,null];
+                                return tablasimbolo.update(this.name,val5[1]);
                             }
-                            else
-                            {
-                                return [-1,null];
-                            }
+                            break;
                         case typeAssigment.igual:
-                            let val0 = this.Expression.execute(tablasimbolo);
-                            if(val0[0]!=-1)
-                            {
-                                let result0 = tablasimbolo.update(this.name.name,val0[1]);
-                                if(result0==1)return[1,null];
-                                return [-1,null];
+                            let value = this.Expression.execute(tablasimbolo);
+                            if(value[0]>0) {
+                                return tablasimbolo.update(this.name, value[1]);
                             }
-                            else
-                            {
-                                return [-1,null];
-                            }
+                            break;
                         case typeAssigment.modulo:
-                            let newvalue4 = new ArichmeticExpression();
-                            newvalue4.Expression1 = this.name;
-                            newvalue4.Expression2 = value[1];
-                            newvalue4.Function = ArichmeticExpr.modulo;
-                            newvalue4.linea = this.linea
-                            let val4 = newvalue4.execute(tablasimbolo);
-                            if(val4[0]!=-1)
+                            newvalue.Expression2 = this.Expression;
+                            newvalue.Function = ArichmeticExpr.modulo;
+                            newvalue.linea = this.linea
+                            let val4 = newvalue.execute(tablasimbolo);
+                            if(val4[0]>0)
                             {
-                                let result4 = tablasimbolo.update(this.name.name,val4[1]);
-                                if(result4==1)return[1,null];
-                                return [-1,null];
+                                return tablasimbolo.update(this.name,val4[1]);
                             }
-                            else
-                            {
-                                return [-1,null];
-                            }
+                            break;
                         case typeAssigment.multiplicacion:
-                            let newvalue3 = new ArichmeticExpression();
-                            newvalue3.Expression1 = this.name;
-                            newvalue3.Expression2 = value[1];
-                            newvalue3.Function = ArichmeticExpr.multiplicacion;
-                            newvalue3.linea = this.linea
-                            let val3 = newvalue3.execute(tablasimbolo);
-                            if(val3[0]!=-1)
+                            newvalue.Expression2 = this.Expression;
+                            newvalue.Function = ArichmeticExpr.multiplicacion;
+                            newvalue.linea = this.linea
+                            let val3 = newvalue.execute(tablasimbolo);
+                            if(val3[0]>0)
                             {
-                                let result3 = tablasimbolo.update(this.name.name,val3[1]);
-                                if(result3==1)return[1,null];
-                                return [-1,null];
+                                return tablasimbolo.update(this.name,val3[1]);
                             }
-                            else
-                            {
-                                return [-1,null];
-                            }
+                            break;
                         case typeAssigment.potencia:
-                            let newvalue2 = new ArichmeticExpression();
-                            newvalue2.Expression1 = this.name;
-                            newvalue2.Expression2 = value[1];
-                            newvalue2.Function = ArichmeticExpr.potenciacion;
-                            newvalue2.linea = this.linea
-                            let val2 = newvalue2.execute(tablasimbolo);
-                            if(val2[0]!=-1)
+                            newvalue.Expression2 = this.Expression;
+                            newvalue.Function = ArichmeticExpr.potenciacion;
+                            newvalue.linea = this.linea
+                            let val2 = newvalue.execute(tablasimbolo);
+                            if(val2[0]>0)
                             {
-                                let result2 = tablasimbolo.update(this.name.name,val2[1]);
-                                if(result2==1)return[1,null];
-                                return [-1,null];
+                                return tablasimbolo.update(this.name,val2[1]);
                             }
-                            else
-                            {
-                                return [-1,null];
-                            }
+                            break;
                         case typeAssigment.resta:
-                            let newvalue1 = new ArichmeticExpression();
-                            newvalue1.Expression1 = this.name;
-                            newvalue1.Expression2 = value[1];
-                            newvalue1.Function = ArichmeticExpr.resta;
-                            newvalue1.linea = this.linea
-                            let val1 = newvalue1.execute(tablasimbolo);
-                            if(val1[0]!=-1)
+                            newvalue.Expression2 = this.Expression;
+                            newvalue.Function = ArichmeticExpr.resta;
+                            newvalue.linea = this.linea
+                            let val1 = newvalue.execute(tablasimbolo);
+                            if(val1[0]>0)
                             {
-                                let result1 = tablasimbolo.update(this.name.name,val1[1]);
-                                if(result1==1)return[1,null];
-                                return [-1,null];
+                                return tablasimbolo.update(this.name,val1[1]);
                             }
-                            else
-                            {
-                                return [-1,null];
-                            }
+                            break;
                         case typeAssigment.suma:
-                            let newvalue = new ArichmeticExpression();
-                            newvalue.Expression1 = this.name;
-                            newvalue.Expression2 = value[1];
+                            newvalue.Expression2 = this.Expression;
                             newvalue.Function = ArichmeticExpr.suma;
                             newvalue.linea = this.linea
                             let val = newvalue.execute(tablasimbolo);
-                            if(val[0]!=-1)
+                            if(val[0]>0)
                             {
-                                let result = tablasimbolo.update(this.name.name,val[1]);
-                                if(result==1)return[1,null];
-                                return [-1,null];
+                                return  tablasimbolo.update(this.name,val[1]);
                             }
-                            else
-                            {
-                                return [-1,null];
-                            }
-                    }
+                            break;
                 }
             }
 
-            return [-1,null]
+            return [-1, 'cannot be aplied '+typeAssigment[this.Assigment]+', in the object']
         }
         catch (e) {
-            return [-2,null]
+            //console.log(e)
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
     }
@@ -2247,7 +2217,7 @@ class Asignation extends statement
             return [-1,null]
         }
         catch (e) {
-            return [-1,null]
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
     }
 
@@ -2297,7 +2267,7 @@ class Asignation extends statement
             return [-1,null]
         }
         catch (e) {
-            return [-1, null]
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
     }
 
@@ -2336,7 +2306,7 @@ class Asignation extends statement
             return [-1,null]
         }
         catch (e) {
-            return [-1, null]
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
     }
 
@@ -2382,7 +2352,7 @@ class Asignation extends statement
             return [-1,null]
         }
         catch (e) {
-            return [-1,null]
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
     }
@@ -2421,41 +2391,13 @@ class IfStatement extends statement
     }
 
     execute(tablasimbolo): any {
-        let valInitial = this.ValueExpression.execute(tablasimbolo);
-        if(valInitial[0]<0) return [-1,null];
-        if(valInitial[1])
+        try
         {
-            for(let statement0 of this.body)
+            let valInitial = this.ValueExpression.execute(tablasimbolo);
+            if(valInitial[0]<0) return [-1,null];
+            if(valInitial[1])
             {
-                let value = statement0.execute(tablasimbolo);
-                switch (value[0])
-                {
-                    case -2: //-> error instanciar variable
-                        return [-2,null];
-                    case -1: //-> error
-                        return[-1,null];
-                    case 0: //-> finalizado
-                        this.StateCode = 0;
-                        this.value = value[1];
-                        break;
-                    case 1: //-> sin errores
-                        this.StateCode = 1;
-                        this.value = value[1];
-                        break;
-                    case 2: //-> sin errores, break
-                        return [2,null];
-                    case 3: //-> sin errores, continue
-                        return [3,null];
-                    case 4: //-> sin errores, return
-                        return [4,value[1]];
-                }
-            }
-        }
-        else
-        {
-            if(this.bodyElse != undefined)
-            {
-                for(let statement0 of this.bodyElse)
+                for(let statement0 of this.body)
                 {
                     let value = statement0.execute(tablasimbolo);
                     switch (value[0])
@@ -2481,8 +2423,42 @@ class IfStatement extends statement
                     }
                 }
             }
+            else
+            {
+                if(this.bodyElse != undefined)
+                {
+                    for(let statement0 of this.bodyElse)
+                    {
+                        let value = statement0.execute(tablasimbolo);
+                        switch (value[0])
+                        {
+                            case -2: //-> error instanciar variable
+                                return [-2,null];
+                            case -1: //-> error
+                                return[-1,null];
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                this.value = value[1];
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                this.value = value[1];
+                                break;
+                            case 2: //-> sin errores, break
+                                return [2,null];
+                            case 3: //-> sin errores, continue
+                                return [3,null];
+                            case 4: //-> sin errores, return
+                                return [4,value[1]];
+                        }
+                    }
+                }
+            }
+            return [this.StateCode,this.value]
         }
-        return [this.StateCode,this.value];
+        catch (e) {
+            return [-2,'Unexpected Error, cannot be execute the instruction']
+        }
     }
 
     grahp(): string {
@@ -2512,23 +2488,30 @@ class OperatorTernario extends statement
     }
 
     execute(tablasimbolo): any {
-        let valInitial = this.ValueExpression.execute(tablasimbolo);
-        if(valInitial[0]<0) return [-1,null];
-        if(valInitial[1])
+        try
         {
-            let val1 = this.Expression1.execute(tablasimbolo);
-            if(val1[1]<0) return [-1,null];
-            this.StateCode = 1;
-            this.value = val1[1];
+            let valInitial = this.ValueExpression.execute(tablasimbolo);
+            if(valInitial[0]<0) return [-1,null];
+            if(valInitial[1])
+            {
+                let val1 = this.Expression1.execute(tablasimbolo);
+                if(val1[1]<0) return [-1,null];
+                this.StateCode = 1;
+                this.value = val1[1];
+            }
+            else
+            {
+                let val2 = this.Expression2.execute(tablasimbolo);
+                if(val2[1]<0) return [-1,null];
+                this.StateCode = 1;
+                this.value = val2[1];
+            }
+            return [this.StateCode,this.value];
         }
-        else
-        {
-            let val2 = this.Expression2.execute(tablasimbolo);
-            if(val2[1]<0) return [-1,null];
-            this.StateCode = 1;
-            this.value = val2[1];
+        catch (e) {
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
-        return [this.StateCode,this.value];
+
     }
 
     grahp(): string {
@@ -3143,10 +3126,10 @@ class expression extends statement
                 if(data == '__jw__') return [1,null]
                 return [1,data]
             }
-            return [-1,null]
+            return [-1,'We cant get the data']
         }
         catch (e) {
-            return [-1,null]
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
     }
@@ -3208,8 +3191,7 @@ class ArichmeticExpression extends statement
             return [-1,null];
         }
         catch (e) {
-
-            return [-1,null];
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
     }
@@ -3289,7 +3271,7 @@ class LogialExpression extends statement
         }
         catch (e) {
 
-            return [-1,null];
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
     }
 
@@ -3352,7 +3334,7 @@ class RelationalExpression extends statement
             return [-1,null];
         }
         catch (e) {
-            return [-1,null];
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
     }
@@ -4810,9 +4792,9 @@ class declarations extends statement
                         switch (value[0])
                         {
                             case -2: //-> error instanciar variable
-                                return [-2,null];
+                                return value
                             case -1: //-> error
-                                return[-1,null];
+                                return value
                             case 0: //-> finalizado
                                 this.StateCode = 0;
                                 this.value = value[1];
@@ -4822,7 +4804,7 @@ class declarations extends statement
                                 this.value = value[1];
                                 break;
                             default:
-                                return [-1,null];
+                                return [-1,'An Error was ocurred, we can\'t identified the error.'];
                         }
                     }
                     else if(this.tipo == TypeValue.var)
@@ -4833,9 +4815,9 @@ class declarations extends statement
                         switch (value[0])
                         {
                             case -2: //-> error instanciar variable
-                                return [-2,null];
+                                return value
                             case -1: //-> error
-                                return[-1,null];
+                                return value
                             case 0: //-> finalizado
                                 this.StateCode = 0;
                                 this.value = value[1];
@@ -4845,7 +4827,7 @@ class declarations extends statement
                                 this.value = value[1];
                                 break;
                             default:
-                                return [-1,null];
+                                return [-1,'An Error was ocurred, we can\'t identified the error.'];
                         }
                     }
                     else if(this.tipo == TypeValue.const)
@@ -4856,9 +4838,9 @@ class declarations extends statement
                         switch (value[0])
                         {
                             case -2: //-> error instanciar variable
-                                return [-2,null];
+                                return value
                             case -1: //-> error
-                                return[-1,null];
+                                return value
                             case 0: //-> finalizado
                                 this.StateCode = 0;
                                 this.value = value[1];
@@ -4868,7 +4850,7 @@ class declarations extends statement
                                 this.value = value[1];
                                 break;
                             default:
-                                return [-1,null];
+                                return [-1,'An Error was ocurred, we can\'t identified the error.'];
                         }
                     }
                     else
@@ -4879,9 +4861,9 @@ class declarations extends statement
                             switch (value[0])
                             {
                                 case -2: //-> error instanciar variable
-                                    return [-2,null];
+                                    return value
                                 case -1: //-> error
-                                    return[-1,null];
+                                    return value
                                 case 0: //-> finalizado
                                     this.StateCode = 0;
                                     this.value = value[1];
@@ -4891,7 +4873,7 @@ class declarations extends statement
                                     this.value = value[1];
                                     break;
                                 default:
-                                    return [-1,null];
+                                    return [-1,'An Error was ocurred, we can\'t identified the error.'];
                             }
                     }
                 }
@@ -4901,7 +4883,7 @@ class declarations extends statement
         }
         catch(e)
         {
-            return [-1,null]
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
 
     }
@@ -4964,11 +4946,11 @@ class declaration0 extends statement
                     return tablasimbolo.insert(this.name,valor[1],this.tipoSim, this.tipo);
                 }
             }
-            return [-1,null];
+            return [-1,'Error, cannot be execute the instruction']
         }
         catch (e) {
             //console.log(e)
-            return [-1,null]
+            return [-2,'Unexpected Error, cannot be execute the instruction']
         }
     }
 
@@ -5157,20 +5139,21 @@ let jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
 
-let jsondata2 = '{"linea":"9","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[{"linea":"1","tipo":"number", "value":"5"}]}]}]}]},\n' +
-    '{"linea":"2","statement":"console","expression":[{"linea":"2","statement":"nativeArray", "name":"a" ,"hijo":[],"native":"length"}]},\n' +
-    '{"linea":"3","statement":"console","expression":[{"linea":"3","statement":"nativeArray", "name":"a", "hijo":[],"native":"pop"}]},\n' +
-    '{"linea":"4","statement":"nativeArray", "name":"a" ,"hijo":[],"native":"push","value":[{"linea":"4","statement":"arreglo","value":[{"linea":"4","tipo":"number", "value":"5"},\n' +
-    '{"linea":"4","tipo":"number", "value":"6"}]}]},\n' +
-    '{"linea":"5","statement":"console","expression":[{"linea":"5","statement":"nativeArray", "name":"a" ,"hijo":[],"native":"length"}]},\n' +
-    '{"linea":"6","statement":"nativeArray", "name":"a" ,"hijo":[{"linea":"6","statement":"ArrayList","value":[{"linea":"6","statement":"MatrizPosition","value":[{"linea":"6","tipo":"number", "value":"0"}]}]}],"native":"push","value":[{"linea":"6","statement":"arreglo","value":[{"linea":"6","tipo":"number", "value":"5"},\n' +
-    '{"linea":"6","tipo":"number", "value":"6"}]}]},\n' +
-    '{"linea":"6","statement":""},\n' +
-    '{"linea":"7","statement":"nativeArray", "name":"a", "hijo":[{"linea":"7","statement":"ArrayList","value":[{"linea":"7","statement":"MatrizPosition","value":[{"linea":"7","tipo":"number", "value":"0"}]}]}],"native":"pop"},\n' +
-    '{"linea":"7","statement":""},\n' +
-    '{"linea":"8","statement":"console","expression":[{"linea":"8","statement":"nativeArray", "name":"a" ,"hijo":[{"linea":"8","statement":"ArrayList","value":[{"linea":"8","statement":"MatrizPosition","value":[{"linea":"8","tipo":"number", "value":"0"}]}]}],"native":"length"}]},\n' +
-    '{"linea":"9","statement":""}]}'
-
+let jsondata2 = '{"linea":"18","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","tipo":"number", "value":"5"}]}]}]},\n' +
+    '{"linea":"2","statement":"asignation","variable":"a","params":[],"ValExpression":[{"linea":"2","operator":[{"linea":"2","v":"+="}],"Expression":[{"linea":"2","tipo":"number", "value":"1005"}]}]},\n' +
+    '{"linea":"3","statement":"declaration","type":[{"linea":"3","tipo":[{"linea":"3","tipo":"let"}],"size":[]}], "values":[{"linea":"3","statement":"variable","tipoExpresion":[],"name":"b","ValExpression":[{"linea":"3","operator":[{"linea":"3","v":"="}],"Expression":[{"linea":"3","statement":"arreglo","value":[{"linea":"3","tipo":"number", "value":"5"},\n' +
+    '{"linea":"3","tipo":"number", "value":"6"}]}]}]}]},\n' +
+    '{"linea":"4","statement":"asignation","variable":"b","params":[],"ValExpression":[{"linea":"4","operator":[{"linea":"4","v":"="}],"Expression":[{"linea":"4","statement":"arreglo","value":[{"linea":"4","tipo":"number", "value":"8"},\n' +
+    '{"linea":"4","tipo":"number", "value":"9"},\n' +
+    '{"linea":"4","tipo":"number", "value":"10"}]}]}]},\n' +
+    '{"linea":"8","statement":"declaration","type":[{"linea":"5","tipo":[{"linea":"5","tipo":"type"}],"size":[]}], "values":[{"linea":"8","statement":"variable","tipoExpresion":[],"name":"c","ValExpression":[{"linea":"8","operator":[{"linea":"5","v":"="}],"Expression":[{"linea":"8","statement":"typebody","values":[{"linea":"7","statement":"atributo","name":"root", "tipo":[{"linea":"7","tipo":"number"}],"valor":[]}]}]}]}]},\n' +
+    '{"linea":"13","statement":"declaration","type":[{"linea":"10","tipo":[{"linea":"10","tipo":"let"}],"size":[]}], "values":[{"linea":"13","statement":"variable","tipoExpresion":[{"linea":"10","tipo":[{"linea":"10","tipo":"c"}],"size":[]}],"name":"d","ValExpression":[{"linea":"13","operator":[{"linea":"10","v":"="}],"Expression":[{"linea":"13","statement":"typebody","values":[{"linea":"12","statement":"atributo","name":"root", "tipo":[{"linea":"12","tipo":"number"}],"valor":[]}]}]}]}]},\n' +
+    '{"linea":"14","statement":"asignation","variable":"d","params":[{"linea":"14","statement":"Object","value":"root"}],"ValExpression":[{"linea":"14","operator":[{"linea":"14","v":"="}],"Expression":[{"linea":"14","tipo":"number", "value":"1500"}]}]},\n' +
+    '{"linea":"15","statement":"console","expression":[{"linea":"15","statement":"variable","value":"a"}]},\n' +
+    '{"linea":"16","statement":"console","expression":[{"linea":"16","statement":"variable","value":"b"}]},\n' +
+    '{"linea":"17","statement":"console","expression":[{"linea":"17","statement":"callAtributo", "value":"d", "hijo":[{"linea":"17","statement":"Object","value":"root"}]}]},\n' +
+    '{"linea":"18","statement":"asignation","variable":"d","params":[{"linea":"18","statement":"ArrayList","value":[{"linea":"18","statement":"MatrizPosition","value":[{"linea":"18","tipo":"number", "value":"0"}]}]},{"statement":"Object","value":"hola"}],"ValExpression":[{"linea":"18","operator":[{"linea":"18","v":"="}],"Expression":[{"linea":"18","tipo":"number", "value":"5"}]}]},\n' +
+    '{"linea":"18","statement":""}]}'
 let instrucciones: statement[] = [];
 let tablasimbolo: tablasimbolos = new tablasimbolos();
 let jsondata:string = '';
@@ -5290,7 +5273,7 @@ function getStatement(data):any
         case "CallFunction":
             break;
         case "asignation":
-            break;
+            return getAsignation(data);
         case "Argument":
             break;
         case "ArrayList":
@@ -5725,7 +5708,7 @@ function getExpressiones(data):any
                 case "CallFunction":
                     break;
                 case "asignation":
-                    break;
+                    return getAsignation(data);
                 case "Argument":
                     break;
                 case "ArrayList":
@@ -6904,6 +6887,127 @@ function getAtributo(data):atributo
             atr.value = getExpressiones(data.valor[0]);
         }
         return atr;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getTipoAssigment(data):typeAssigment
+{
+    try
+    {
+        /*
+
+                      "linea": "2",
+                      "v": "+="
+         */
+        switch (data.v)
+        {
+            case "+=":
+                return typeAssigment.suma
+            case "-=":
+                return typeAssigment.resta
+            case "=":
+                return typeAssigment.igual
+            case "*=":
+                return typeAssigment.multiplicacion
+            case "/=":
+                return typeAssigment.division
+            case "**=":
+                return typeAssigment.potencia
+            case "%=":
+                return typeAssigment.modulo
+            default:
+                return typeAssigment.igual
+        }
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getAsignation(data):statement
+{
+    try
+    {
+        //console.log(data);
+        /*
+        "linea": "2",
+      "statement": "asignation",
+      "variable": "a",
+      "params": [],
+      "ValExpression": [
+        {
+          "linea": "2",
+          "operator": [
+            {
+              "linea": "2",
+              "v": "+="
+            }
+          ],
+          "Expression": [
+            {
+              "linea": "2",
+              "tipo": "number",
+              "value": "1005"
+            }
+          ]
+        }
+      ]
+
+            "params": [
+                    {
+                      "linea": "18",
+                      "statement": "ArrayList",
+                      "value": [
+                        {
+                          "linea": "18",
+                          "statement": "MatrizPosition",
+                          "value": [
+                            {
+                              "linea": "18",
+                              "tipo": "number",
+                              "value": "0"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+
+
+         */
+        let as:Asignation = new Asignation();
+        as.linea = data.linea;
+        as.name = data.variable;
+        as.atributo = [];
+        as.position = [];
+        if(data.params.length>0)
+        {
+            if(data.params[0].statement == 'ArrayList')as.isArr = true;
+            for(let params of data.params)
+            {
+                let k = getExpressiones(params);
+                if(k!=null)
+                {
+                    if(k instanceof Array)
+                    {
+                        for(let m of k)
+                        {
+                            as.position.push(m);
+                        }
+
+                    }
+                    else
+                    {
+                        as.atributo.push(k);
+                    }
+                }
+            }
+
+        }
+
+        as.Assigment = getTipoAssigment(data.ValExpression[0].operator[0]);
+        as.Expression = getExpressiones(data.ValExpression[0].Expression[0]);
+        return as;
     }
     catch (e) {
         return null;

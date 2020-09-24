@@ -19,3 +19,20 @@ type AVLTree = {
 let tree : AVLTree = {
     root: null
 };
+let a1 = 5;
+a1 += 1005;
+let b = [5,6];
+b = [8,9,10];
+type c =
+{
+  root:number
+}
+
+let d: c =
+{
+  root: 1509
+}
+d.root = 1500;
+console.log(a1)
+console.log(b)
+console.log(d.root)
