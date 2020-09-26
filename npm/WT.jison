@@ -668,7 +668,7 @@ CaseClause
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"case\",\"Expression\":['+$2+'],\"body\":[]}';
     }
-    | CASE Expr ':' SourceElements
+    | CASE Expr ':' Source1
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"case\",\"Expression\":['+$2+'],\"body\":['+$4+']}';
     }
@@ -684,7 +684,7 @@ DefaultClause
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"default\",\"Expression\":[],\"body\":[]}';
     }
 
-    | DEFAULT ':' SourceElements
+    | DEFAULT ':' Source1
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"default\",\"Expression\":[],\"body\":['+$3+']}';
     }

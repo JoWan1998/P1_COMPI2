@@ -1,0 +1,13 @@
+let mensaje = 'hola'
+switch(mensaje)
+{
+  case 'hola':
+    console.log('como estas?')
+    break;
+  case 'como estas':
+    console.log('bien y tu que tal')
+    break;
+  default:
+    console.log('no reconozco tu mensaje')
+    break;
+}

@@ -1,8 +1,8 @@
 var fs = require('fs');
-var parser = require('./WT');
+var parser = require('./WE');
 
 
-fs.readFile('./Entrada3.txt', (err, data) => {
+fs.readFile('./Entrada4.txt', (err, data) => {
     if (err) throw err;
     var a = parser.parse(data.toString());
     console.log(a);

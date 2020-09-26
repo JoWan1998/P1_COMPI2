@@ -246,7 +246,7 @@ Block_statements
         {
            $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
         }
-    | OPENBRACE Source1 CLOSEBRACE
+    | OPENBRACE Source2 CLOSEBRACE
         {
             $$ = $2;
         }
@@ -731,7 +731,7 @@ CaseClause
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"case\",\"Expression\":['+$2+'],\"body\":[]}';
     }
-    | CASE Expr ':' SourceElements
+    | CASE Expr ':' Source2
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"case\",\"Expression\":['+$2+'],\"body\":['+$4+']}';
     }
@@ -747,7 +747,7 @@ DefaultClause
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"default\",\"Expression\":[],\"body\":[]}';
     }
 
-    | DEFAULT ':' SourceElements
+    | DEFAULT ':' Source2
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"default\",\"Expression\":[],\"body\":['+$3+']}';
     }
