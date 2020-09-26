@@ -21,7 +21,7 @@ class tablasimbolos
 
 
 
-    constructor(tabla?:any)
+    constructor(tabla?:any,CF:boolean = false)
     {
         if(tabla==undefined)
         {
@@ -34,7 +34,18 @@ class tablasimbolos
             {
                 this.ambitoLevel = tabla.ambitoLevel + 1;
                 this.simbolos = [];
-                this.simbolos.push(tabla.simbolos);
+                for(let tablas of tabla.simbolos)
+                {
+                    if(CF)
+                    {
+                        if(tablas.ambito == 0)this.simbolos.push(tablas);
+                    }
+                    else
+                    {
+                        this.simbolos.push(tablas);
+                    }
+
+                }
             }
 
         }
@@ -70,29 +81,108 @@ class tablasimbolos
     {
         try
         {
-            for(let simbolo of this.simbolos)
-            {
-                if (simbolo instanceof sym)
-                {
-                    if (simbolo.name == name)
-                    {
-                        if(simbolo.tipoValue == TypeValue.type)
+            let ambitoglob = true;
+            let ambitoloc = false;
+            for(let simbolo of this.simbolos) {
+                if (simbolo instanceof sym) {
+                    if (simbolo.name == name) {
+                        if(simbolo.ambito == this.ambitoLevel && this.ambitoLevel>0 && simbolo.ambito >0)
                         {
-                            return simbolo.update(new_value,atributo,undefined);
+                            ambitoglob = false;
+                            ambitoloc = true;
                         }
-                        else if(simbolo.tipoValue == TypeValue.Array)
+                        else if(simbolo.ambito < this.ambitoLevel && this.ambitoLevel>0 && simbolo.ambito >0)
                         {
-                            return simbolo.update(new_value,undefined,posicion);
-                        }
-                        else
-                        {
-                            return simbolo.update(new_value,undefined,undefined);
-                        }
+                            ambitoglob = false;
 
+                        }
                     }
                 }
             }
-            return [-1,null];
+            if(ambitoglob)
+            {
+                for(let simbolo of this.simbolos)
+                {
+                    if (simbolo instanceof sym)
+                    {
+                        if (simbolo.name == name)
+                        {
+                            if(simbolo.tipoValue == TypeValue.type)
+                            {
+                                return simbolo.update(new_value,atributo,undefined);
+                            }
+                            else if(simbolo.tipoValue == TypeValue.Array)
+                            {
+                                return simbolo.update(new_value,undefined,posicion);
+                            }
+                            else
+                            {
+                                return simbolo.update(new_value,undefined,undefined);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(ambitoloc)
+                {
+                    for(let simbolo of this.simbolos)
+                    {
+                        if (simbolo instanceof sym)
+                        {
+                            if (simbolo.name == name)
+                            {
+                                if(simbolo.ambito == this.ambitoLevel)
+                                {
+                                    if(simbolo.tipoValue == TypeValue.type)
+                                    {
+                                        return simbolo.update(new_value,atributo,undefined);
+                                    }
+                                    else if(simbolo.tipoValue == TypeValue.Array)
+                                    {
+                                        return simbolo.update(new_value,undefined,posicion);
+                                    }
+                                    else
+                                    {
+                                        return simbolo.update(new_value,undefined,undefined);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for(let simbolo of this.simbolos)
+                    {
+                        if (simbolo instanceof sym)
+                        {
+                            if (simbolo.name == name)
+                            {
+                                if(simbolo.ambito < this.ambitoLevel && simbolo.ambito >0)
+                                {
+                                    if(simbolo.tipoValue == TypeValue.type)
+                                    {
+                                        return simbolo.update(new_value,atributo,undefined);
+                                    }
+                                    else if(simbolo.tipoValue == TypeValue.Array)
+                                    {
+                                        return simbolo.update(new_value,undefined,posicion);
+                                    }
+                                    else
+                                    {
+                                        return simbolo.update(new_value,undefined,undefined);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return [-1,'We cannot find the object: '+name];
         }
         catch (e)
         {
@@ -105,34 +195,120 @@ class tablasimbolos
     {
         try
         {
-            for(let simbolo of this.simbolos)
-            {
-                if (simbolo instanceof sym)
-                {
-                    if (simbolo.name == name)
-                    {
-                        if(simbolo.tipo == TypeSym.Variable)
+            let ambitoglob = true;
+            let ambitoloc = false;
+            for(let simbolo of this.simbolos) {
+                if (simbolo instanceof sym) {
+                    if (simbolo.name == name) {
+                        if(simbolo.ambito == this.ambitoLevel && this.ambitoLevel>0 && simbolo.ambito >0)
                         {
-                            if(simbolo.tipoValue == TypeValue.type)
-                            {
-                                let sim:types = simbolo.getValue();
-                                return sim.getValueAtributo(atributo);
-                            }
-                            else if(simbolo.tipoValue == TypeValue.Array)
-                            {
-                                let sim:arrays = simbolo.getValue();
-                                return sim.getValue(posicion,this);
-                            }
-                            else
-                            {
-                                return [1,simbolo.getValue()];
-                            }
+                            ambitoglob = false;
+                            ambitoloc = true;
                         }
+                        else if(simbolo.ambito < this.ambitoLevel && this.ambitoLevel>0 && simbolo.ambito >0)
+                        {
+                            ambitoglob = false;
 
+                        }
                     }
                 }
             }
-            return [-1,null];
+            if(ambitoglob)
+            {
+                for(let simbolo of this.simbolos)
+                {
+                    if (simbolo instanceof sym)
+                    {
+                        if (simbolo.name == name)
+                        {
+                            if(simbolo.tipo == TypeSym.Variable)
+                            {
+                                if(simbolo.tipoValue == TypeValue.type)
+                                {
+                                    let sim:types = simbolo.getValue();
+                                    return sim.getValueAtributo(atributo);
+                                }
+                                else if(simbolo.tipoValue == TypeValue.Array)
+                                {
+                                    let sim:arrays = simbolo.getValue();
+                                    return sim.getValue(posicion,this);
+                                }
+                                else
+                                {
+                                    return [1,simbolo.getValue()];
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(ambitoloc)
+                {
+                    for(let simbolo of this.simbolos)
+                    {
+                        if (simbolo instanceof sym)
+                        {
+                            console.log(simbolo, this.ambitoLevel)
+                            if (simbolo.name == name && simbolo.ambito == this.ambitoLevel)
+                            {
+                                if(simbolo.tipo == TypeSym.Variable)
+                                {
+                                    if(simbolo.tipoValue == TypeValue.type)
+                                    {
+                                        let sim:types = simbolo.getValue();
+                                        return sim.getValueAtributo(atributo);
+                                    }
+                                    else if(simbolo.tipoValue == TypeValue.Array)
+                                    {
+                                        let sim:arrays = simbolo.getValue();
+                                        return sim.getValue(posicion,this);
+                                    }
+                                    else
+                                    {
+                                        return [1,simbolo.getValue()];
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for(let simbolo of this.simbolos)
+                    {
+                        if (simbolo instanceof sym)
+                        {
+                            if( simbolo.name == name && simbolo.ambito < this.ambitoLevel && simbolo.ambito > 0)
+                            {
+                                if(simbolo.tipo == TypeSym.Variable)
+                                {
+                                    if(simbolo.tipoValue == TypeValue.type)
+                                    {
+                                        let sim:types = simbolo.getValue();
+                                        return sim.getValueAtributo(atributo);
+                                    }
+                                    else if(simbolo.tipoValue == TypeValue.Array)
+                                    {
+                                        let sim:arrays = simbolo.getValue();
+                                        return sim.getValue(posicion,this);
+                                    }
+                                    else
+                                    {
+                                        return [1,simbolo.getValue()];
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            return [-1,'We cannot find the object: '+name];
         }
         catch (e) {
             return [-2,'Unexpected Error, cannot be execute the instruction']
@@ -141,17 +317,74 @@ class tablasimbolos
     }
     getsym(name:string)
     {
-        for(let simbolo of this.simbolos)
+        try
         {
-            if (simbolo instanceof sym)
-            {
-                if (simbolo.name == name)
-                {
-                    return[1,simbolo]
+            let ambitoglob = true;
+            let ambitoloc = false;
+            for(let simbolo of this.simbolos) {
+                if (simbolo instanceof sym) {
+                    if (simbolo.name == name) {
+                        if(simbolo.ambito == this.ambitoLevel && this.ambitoLevel>0 && simbolo.ambito >0)
+                        {
+                            ambitoglob = false;
+                            ambitoloc = true;
+                        }
+                        else if(simbolo.ambito < this.ambitoLevel && this.ambitoLevel>0 && simbolo.ambito >0)
+                        {
+                            ambitoglob = false;
+
+                        }
+                    }
                 }
             }
+            if(ambitoglob)
+            {
+                for(let simbolo of this.simbolos)
+                {
+                    if (simbolo instanceof sym)
+                    {
+                        if (simbolo.name == name)
+                        {
+                            return[1,simbolo]
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(ambitoloc)
+                {
+                    for(let simbolo of this.simbolos)
+                    {
+                        if (simbolo instanceof sym)
+                        {
+                            if (simbolo.name == name && simbolo.ambito == this.ambitoLevel)
+                            {
+                                return[1,simbolo]
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for(let simbolo of this.simbolos)
+                    {
+                        if (simbolo instanceof sym)
+                        {
+                            if( simbolo.name == name && simbolo.ambito < this.ambitoLevel && simbolo.ambito > 0)
+                            {
+                                return [1,simbolo]
+                            }
+                        }
+                    }
+                }
+            }
+
+            return [-1,'We cannot find the object: '+name];
         }
-        return [-1,'the object doesn\'t exists']
+        catch (e) {
+            return [-2,'Unexpected Error, cannot be execute the instruction']
+        }
     }
     getType(name:string)
     {
@@ -204,7 +437,7 @@ class tablasimbolos
             {
                 if (simbolo instanceof sym)
                 {
-                    if (simbolo.name == name)
+                    if (simbolo.name == name && simbolo.ambito == this.ambitoLevel)
                     {
                         state = true;
                         break;
@@ -405,8 +638,14 @@ class SwitchStatement extends statement
     val:statement;
     default:statement;
     value:any;
+    constructor() {
+        super();
+        this.cases = [];
+        this.default = null;
+    }
 
-    execute(tablasimbolo: tablasimbolos): any {
+    execute(tablasimbolo1: tablasimbolos): any {
+        let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1,false);
         let state = 5;
         for(let statements of this.cases)
         {
@@ -417,16 +656,42 @@ class SwitchStatement extends statement
                 switch (value[0])
                 {
                     case -2: //-> error instanciar variable
-                        return [-2,null];
+                        return value
                     case -1: //-> error
-                        return[-1,null];
+                        return value
                     case 0: //-> finalizado
                         state = 0;
-                        this.value = value[1];
+                        if(value[1] != null)
+                            {
+                                if(value[1] instanceof Array)
+                                {
+                                    for(let m of value[1])
+                                    {
+                                        this.value.push(m);
+                                    }
+                                }
+                                else
+                                {
+                                    this.value.push(value[1]);
+                                }
+                            }
                         break;
                     case 1: //-> sin errores
                         state = 1;
-                        this.value = value[1];
+                        if(value[1] != null)
+                            {
+                                if(value[1] instanceof Array)
+                                {
+                                    for(let m of value[1])
+                                    {
+                                        this.value.push(m);
+                                    }
+                                }
+                                else
+                                {
+                                    this.value.push(value[1]);
+                                }
+                            }
                         break;
                     case 2: //-> sin errores, break
                         return [2,null];
@@ -439,7 +704,7 @@ class SwitchStatement extends statement
                 }
             }
         }
-        if(state == 5) return this.default.execute(tablasimbolo);
+        if(state == 5 && this.default != null) return this.default.execute(tablasimbolo);
         return [state,this.value]
     }
 
@@ -485,11 +750,37 @@ class cases extends statement
                         return[-1,null];
                     case 0: //-> finalizado
                         this.StateCode = 0;
-                        this.value = value[1];
+                        if(value[1] != null)
+                            {
+                                if(value[1] instanceof Array)
+                                {
+                                    for(let m of value[1])
+                                    {
+                                        this.value.push(m);
+                                    }
+                                }
+                                else
+                                {
+                                    this.value.push(value[1]);
+                                }
+                            }
                         break;
                     case 1: //-> sin errores
                         this.StateCode = 1;
-                        this.value = value[1];
+                        if(value[1] != null)
+                            {
+                                if(value[1] instanceof Array)
+                                {
+                                    for(let m of value[1])
+                                    {
+                                        this.value.push(m);
+                                    }
+                                }
+                                else
+                                {
+                                    this.value.push(value[1]);
+                                }
+                            }
                         break;
                     case 2: //-> sin errores, break
                         return [2,null];
@@ -533,11 +824,37 @@ class defaults extends statement
                     return[-1,null];
                 case 0: //-> finalizado
                     this.StateCode = 0;
-                    this.value = value[1];
+                    if(value[1] != null)
+                            {
+                                if(value[1] instanceof Array)
+                                {
+                                    for(let m of value[1])
+                                    {
+                                        this.value.push(m);
+                                    }
+                                }
+                                else
+                                {
+                                    this.value.push(value[1]);
+                                }
+                            }
                     break;
                 case 1: //-> sin errores
                     this.StateCode = 1;
-                    this.value = value[1];
+                    if(value[1] != null)
+                            {
+                                if(value[1] instanceof Array)
+                                {
+                                    for(let m of value[1])
+                                    {
+                                        this.value.push(m);
+                                    }
+                                }
+                                else
+                                {
+                                    this.value.push(value[1]);
+                                }
+                            }
                     break;
                 case 2: //-> sin errores, break
                     return [2,null];
@@ -559,7 +876,6 @@ class defaults extends statement
     }
 
 }
-
 class autoincrements extends statement
 {
     StateCode: number;
@@ -1669,7 +1985,6 @@ class autoincrements extends statement
     }
 
 }
-
 class arrays extends statement
 {
     StateCode: number;
@@ -1947,7 +2262,6 @@ class arrays extends statement
 
 }
 
-
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -2022,7 +2336,7 @@ class Asignation extends statement
                         }
                     }
 
-                    return [-2,'We can\'t does aplied the instruccion, the object can\'t have the atribute or position']
+                    return [-2,'We cannot apply the instruction, the object does not have the attribute or the position']
                 }
                 return [-1, 'cannot be aplied '+typeAssigment[this.Assigment]+', in the object']
 
@@ -2049,7 +2363,7 @@ class Asignation extends statement
                             }
                         }
                     }
-                    return [-2,'We can\'t does aplied the instruccion, the object can\'t have the atribute']
+                    return [-2,'We cannot apply the instruction, the object does not have the attribute']
                 }
                 return [-1, 'cannot be aplied '+typeAssigment[this.Assigment]+', in the object']
 
@@ -2070,7 +2384,7 @@ class Asignation extends statement
                             }
                         }
                     }
-                    return [-2,'We can\'t does aplied the instruccion,  the object can\'t have the position']
+                    return [-2,'We cannot apply the instruction, the object does not have the position']
                 }
                 return [-1, 'cannot be aplied '+typeAssigment[this.Assigment]+', in the object']
             }
@@ -2383,16 +2697,19 @@ class IfStatement extends statement
     body:statement[];
     bodyElse:statement[];
 
-    constructor(Val: statement, cuerpo: statement[], cuerpo2?:statement[]) {
+    constructor() {
         super();
-        this.body =cuerpo;
-        this.ValueExpression = Val;
-        this.bodyElse = cuerpo2;
+        this.body =[];
+        this.bodyElse = [];
+        this.value = [];
     }
 
-    execute(tablasimbolo): any {
+    execute(tablasimbolo1): any {
         try
         {
+            //console.log(this);
+            this.value = []
+            let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1,false);
             let valInitial = this.ValueExpression.execute(tablasimbolo);
             if(valInitial[0]<0) return [-1,null];
             if(valInitial[1])
@@ -2403,16 +2720,56 @@ class IfStatement extends statement
                     switch (value[0])
                     {
                         case -2: //-> error instanciar variable
-                            return [-2,null];
+                            return value
                         case -1: //-> error
-                            return[-1,null];
+                            return value
                         case 0: //-> finalizado
-                            this.StateCode = 0;
-                            this.value = value[1];
+                            this.StateCode = 0
+                            if(statement0 instanceof autoincrements)
+                            {
+
+                            }
+                            else
+                            {
+                                if(value[1] != null)
+                                {
+                                    if(value[1] instanceof Array)
+                                    {
+                                        for(let m of value[1])
+                                        {
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 1: //-> sin errores
                             this.StateCode = 1;
-                            this.value = value[1];
+                            if(statement0 instanceof autoincrements)
+                            {
+
+                            }
+                            else
+                            {
+                                if(value[1] != null)
+                                {
+                                    if(value[1] instanceof Array)
+                                    {
+                                        for(let m of value[1])
+                                        {
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 2: //-> sin errores, break
                             return [2,null];
@@ -2425,7 +2782,7 @@ class IfStatement extends statement
             }
             else
             {
-                if(this.bodyElse != undefined)
+                if(this.bodyElse.length > 0)
                 {
                     for(let statement0 of this.bodyElse)
                     {
@@ -2433,16 +2790,56 @@ class IfStatement extends statement
                         switch (value[0])
                         {
                             case -2: //-> error instanciar variable
-                                return [-2,null];
+                                return value
                             case -1: //-> error
-                                return[-1,null];
+                                return value
                             case 0: //-> finalizado
                                 this.StateCode = 0;
-                                this.value = value[1];
+                                if(statement0 instanceof autoincrements)
+                                {
+
+                                }
+                                else
+                                {
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
                                 break;
                             case 1: //-> sin errores
                                 this.StateCode = 1;
-                                this.value = value[1];
+                                if(statement0 instanceof autoincrements)
+                                {
+
+                                }
+                                else
+                                {
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
                                 break;
                             case 2: //-> sin errores, break
                                 return [2,null];
@@ -2480,11 +2877,11 @@ class OperatorTernario extends statement
     Expression1:statement;
     Expression2:statement;
 
-    constructor(Val: statement, cuerpo1: statement, cuerpo2: statement) {
+    constructor() {
         super();
-        this.Expression1 = cuerpo1;
-        this.Expression2 = cuerpo2;
-        this.ValueExpression = Val;
+        this.Expression1 = null;
+        this.Expression2 = null;
+        this.ValueExpression = null;
     }
 
     execute(tablasimbolo): any {
@@ -3367,14 +3764,11 @@ class RelationalExpression extends statement
     }
 
 }
-///<reference path="Statements.ts"/>
-///<reference path="Expression.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
         GUATEMALA
  */
-
 class functions extends statement
 {
     StateCode: number;
@@ -3400,7 +3794,7 @@ class functions extends statement
     {
         try
         {
-            let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1);
+            let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1,true);
             if(this.Parameters.length == parameters.length)
             {
                 for(var a = 0;a<this.Parameters.length;a++)
@@ -3565,9 +3959,9 @@ class functions extends statement
                     switch (value[0])
                     {
                         case -2: //-> error instanciar variable
-                            return [-2,null];
+                            return value
                         case -1: //-> error
-                            return[-1,null];
+                            return value
                         case 0: //-> finalizado
                             this.StateCode = 0;
                             this.value = value[1];
@@ -3586,27 +3980,27 @@ class functions extends statement
                             if(value[1] == null)
                             {
                                 if(this.tipo == TypeValue.void) return[4,null];
-                                return [-1,null];
+                                return [-1,'Error no se puede retornar el valor, no corresponde al siguiente tipo: '+TypeValue[this.tipo]]
                             }
                             else if(value[1] instanceof Boolean)
                             {
                                 if(this.tipo == TypeValue.Boolean) return [4,value[1]]
-                                return [-1,null]
+                                return [-1,'Error no se puede retornar el valor, no corresponde al siguiente tipo: '+TypeValue[this.tipo]]
                             }
                             else if(value[1] instanceof Number)
                             {
                                 if(this.tipo == TypeValue.Number) return [4,value[1]]
-                                return [-1,null]
+                                return [-1,'Error no se puede retornar el valor, no corresponde al siguiente tipo: '+TypeValue[this.tipo]]
                             }
                             else if(value[1] instanceof String)
                             {
                                 if(this.tipo == TypeValue.String) return [4,value[1]]
-                                return [-1,null]
+                                return [-1,'Error no se puede retornar el valor, no corresponde al siguiente tipo: '+TypeValue[this.tipo]]
                             }
                             else if(value[1] instanceof arrays)
                             {
                                 if(this.tipo == TypeValue.Array) return [4,value[1]]
-                                return [-1,null]
+                                return [-1,'Error no se puede retornar el valor, no corresponde al siguiente tipo: '+TypeValue[this.tipo]]
                             }
                             else
                             {
@@ -3617,10 +4011,10 @@ class functions extends statement
                 }
                 return [1,null]
             }
-            return [-1,null];
+            return [-1,'Internal Error, Parameters length is not the same length, length: '+this.Parameters.length+", length_send: "+parameters.length];
         }
         catch (e) {
-            return [-1,null]
+            return [-1,'Unexpected Error, we cannot find a solution for this error']
         }
 
     }
@@ -3654,9 +4048,6 @@ class Parameter extends statement
     }
 
 }
-///<reference path="Statements.ts"/>
-///<reference path="Expression.ts"/>
-///<reference path="Literal.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -3672,16 +4063,19 @@ class WhileStatements extends statement
     value: any;
     linea:number;
 
-    constructor(Value:statement,cuerpo:statement[]) {
+    constructor() {
         super();
-        this.ValueExpression = Value;
-        this.body = cuerpo;
+        this.ValueExpression = null;
+        this.body = [];
+        this.value = [];
     }
 
-    execute(tablasimbolo): any {
+    execute(tablasimbolo1): any {
         try
         {
+            this.value = [];
             let state = true;
+            let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1,false)
             while(state) {
                 let valInitial = this.ValueExpression.execute(tablasimbolo);
                 if (valInitial[0] < 0) return [-1, null];
@@ -3690,6 +4084,7 @@ class WhileStatements extends statement
                 for(let statement0 of this.body)
                 {
                     let value = statement0.execute(tablasimbolo);
+
                     switch (value[0])
                     {
                         case -2: //-> error instanciar variable
@@ -3698,11 +4093,52 @@ class WhileStatements extends statement
                             return[-1,null];
                         case 0: //-> finalizado
                             this.StateCode = 0;
-                            this.value = value[1];
+                            if(statement0 instanceof autoincrements)
+                            {
+
+                            }
+                            else
+                            {
+                                if(value[1] != null)
+                                {
+                                    if(value[1] instanceof Array)
+                                    {
+                                        for(let m of value[1])
+                                        {
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 1: //-> sin errores
                             this.StateCode = 1;
-                            this.value = value[1];
+                            this.StateCode = 1;
+                            if(statement0 instanceof autoincrements)
+                            {
+
+                            }
+                            else
+                            {
+                                if(value[1] != null)
+                                {
+                                    if(value[1] instanceof Array)
+                                    {
+                                        for(let m of value[1])
+                                        {
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 2: //-> sin errores, break
                             internalState = 2;
@@ -3717,11 +4153,13 @@ class WhileStatements extends statement
                 }
                 if(internalState==3) continue;
                 if(internalState==2) break;
+
             }
-            return [1,null]
+            return [1,this.value]
         }
         catch (e) {
-            return [-1,null]
+            //console.log(e);
+            return [-1,'Unexpected Error, we cannot find the error...']
         }
 
     }
@@ -3745,15 +4183,18 @@ class DoWhileStatements extends statement
     value: any;
     linea:number;
 
-    constructor(Value:statement,cuerpo:statement[]) {
+    constructor() {
         super();
-        this.ValueExpression = Value;
-        this.body = cuerpo;
+        this.ValueExpression = null;
+        this.body = [];
+        this.value = []
     }
 
-    execute(tablasimblolo): any {
+    execute(tablasimblolo1): any {
         try
         {
+            this.value = [];
+            let tablasimblolo:tablasimbolos = new tablasimbolos(tablasimblolo1,false)
             let state = true;
             while(state) {
                 let internalState = 0;
@@ -3768,11 +4209,53 @@ class DoWhileStatements extends statement
                             return[-1,null];
                         case 0: //-> finalizado
                             this.StateCode = 0;
-                            this.value = value[1];
+                            if(statement0 instanceof autoincrements)
+                            {
+
+                            }
+                            else
+                            {
+                                if(value[1] != null)
+                                {
+                                    if(value[1] instanceof Array)
+                                    {
+                                        for(let m of value[1])
+                                        {
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
+
                             break;
                         case 1: //-> sin errores
                             this.StateCode = 1;
-                            this.value = value[1];
+                            this.StateCode = 1;
+                            if(statement0 instanceof autoincrements)
+                            {
+
+                            }
+                            else
+                            {
+                                if(value[1] != null)
+                                {
+                                    if(value[1] instanceof Array)
+                                    {
+                                        for(let m of value[1])
+                                        {
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 2: //-> sin errores, break
                             internalState = 2;
@@ -3791,10 +4274,10 @@ class DoWhileStatements extends statement
                 if (valInitial[0] < 0) return [-1, null];
                 if(!valInitial[1]) break;
             }
-            return [1,null]
+            return [1,this.value]
         }
         catch (e) {
-            return [-1,null]
+            return [-1,'Unexpected Error, we cannot find the error...']
         }
 
     }
@@ -3821,10 +4304,22 @@ class ForStatements1 extends statement
     value: any;
     linea:number;
 
-    execute(tablasimbolo): any[2]
+    constructor() {
+        super();
+        this.body = [];
+        this.condicion = null;
+        this.valueInitial = null;
+        this.postIterator = null;
+        this.value = [];
+    }
+
+    execute(tablasimbolo1): any[2]
     {
         try
         {
+            this.value = []
+            let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1,false)
+
             let initial = this.valueInitial.execute(tablasimbolo);
             if(initial[0]>0)
             {
@@ -3833,7 +4328,7 @@ class ForStatements1 extends statement
                 {
                     let internalState = 0;
                     let condicion = this.condicion.execute(tablasimbolo);
-                    if(condicion[0]<0) return [-1,null]
+                    if(condicion[0]<0) return [-1,'Condition Iteration For, Error, cannot execute the  Condition']
                     if(condicion[1])
                     {
                         for(let statement1 of this.body)
@@ -3842,16 +4337,56 @@ class ForStatements1 extends statement
                             switch (value[0])
                             {
                                 case -2: //-> error instanciar variable
-                                    return [-2,null];
+                                    return value;
                                 case -1: //-> error
-                                    return[-1,null];
+                                    return value
                                 case 0: //-> finalizado
                                     this.StateCode = 0;
-                                    this.value = value[1];
+                                    if(statement1 instanceof autoincrements)
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        if(value[1] != null)
+                                        {
+                                            if(value[1] instanceof Array)
+                                            {
+                                                for(let m of value[1])
+                                                {
+                                                    this.value.push(m);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                this.value.push(value[1]);
+                                            }
+                                        }
+                                    }
                                     break;
                                 case 1: //-> sin errores
                                     this.StateCode = 1;
-                                    this.value = value[1];
+                                    if(statement1 instanceof autoincrements)
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        if(value[1] != null)
+                                        {
+                                            if(value[1] instanceof Array)
+                                            {
+                                                for(let m of value[1])
+                                                {
+                                                    this.value.push(m);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                this.value.push(value[1]);
+                                            }
+                                        }
+                                    }
                                     break;
                                 case 2: //-> sin errores, break
                                     internalState = 2;
@@ -3866,20 +4401,20 @@ class ForStatements1 extends statement
 
                         }
                         if(internalState==3) continue;
-                        if(internalState==2) break;
+                        if(internalState==2) state = false;
                         let post = this.postIterator.execute(tablasimbolo);
-                        if (post[0] < 0) return [-1, null];
+                        if (post[0] < 0) return [-1,'Post Iteration For, Error, cannot execute the Post Condition']
                     }
                     else
                     {
-                        break;
+                        state = false;
                     }
                 }
             }
-            return [1,null];
+            return [1,this.value];
         }
         catch (e) {
-            return [-1,null]
+            return [-1,'Unexpected Error, we cannot find the error...']
         }
 
     }
@@ -3906,10 +4441,12 @@ class ForStatements2 extends statement
     value: any;
     linea:number;
 
-    execute(tablasimbolo): any[2]
+    execute(tablasimbolo1): any[2]
     {
         try
         {
+            this.value = []
+            let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1,false)
             let initial = tablasimbolo.get(this.valueInitial);
             if(initial!=null)
             {
@@ -3932,11 +4469,37 @@ class ForStatements2 extends statement
                                     return[-1,null];
                                 case 0: //-> finalizado
                                     this.StateCode = 0;
-                                    this.value = value[1];
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
                                     break;
                                 case 1: //-> sin errores
                                     this.StateCode = 1;
-                                    this.value = value[1];
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
                                     break;
                                 case 2: //-> sin errores, break
                                     internalState = 2;
@@ -3990,39 +4553,89 @@ class ForStatements3 extends statement
     value: any;
     linea:number;
 
-    execute(tablasimbolo): any[2]
+    constructor() {
+        super();
+        this.value = [];
+        this.body = [];
+        this.StateCode = -1;
+    }
+
+    execute(tablasimbolo1): any[2]
     {
+        let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1,false)
         try
         {
+            this.value = []
             let internalState = 0;
-            tablasimbolo.insert(this.identificador,null,TypeSym.Variable, TypeValue.Number);
-            if(this.Expression.type == TypeStatement.ExpresionStatement)
+            tablasimbolo.insert(this.identificador,null,TypeSym.Variable, TypeValue.Object);
+            if(this.Expression instanceof expression)
             {
-                let vals = <expression> this.Expression;
-                switch (vals.valueType)
+                let vals = this.Expression.execute(tablasimbolo)
+                if(vals[0]>0)
                 {
-                    case TypeValue.Array:
-                        let valores:any[] = vals.getValuesArray(tablasimbolo);
-                        for(let post in valores)
-                        {
+                    if(vals[1] instanceof arrays)
+                    {
+                        let kk:any[] = vals[1].getAll();
 
-                            tablasimbolo.update(this.identificador,post);
+                        for(let pos in kk)
+                        {
+                            tablasimbolo.update(this.identificador,pos);
                             for(let statement1 of this.body)
                             {
                                 let value = statement1.execute(tablasimbolo);
                                 switch (value[0])
                                 {
                                     case -2: //-> error instanciar variable
-                                        return [-2,null];
+                                        return value
                                     case -1: //-> error
-                                        return[-1,null];
+                                        return value
                                     case 0: //-> finalizado
                                         this.StateCode = 0;
-                                        this.value = value[1];
+                                        if(statement1 instanceof autoincrements)
+                                        {
+
+                                        }
+                                        else
+                                        {
+                                            if(value[1] != null)
+                                            {
+                                                if(value[1] instanceof Array)
+                                                {
+                                                    for(let m of value[1])
+                                                    {
+                                                        this.value.push(m);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    this.value.push(value[1]);
+                                                }
+                                            }
+                                        }
                                         break;
                                     case 1: //-> sin errores
                                         this.StateCode = 1;
-                                        this.value = value[1];
+                                        if(statement1 instanceof autoincrements)
+                                        {
+
+                                        }
+                                        else
+                                        {
+                                            if(value[1] != null)
+                                            {
+                                                if(value[1] instanceof Array)
+                                                {
+                                                    for(let m of value[1])
+                                                    {
+                                                        this.value.push(m);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    this.value.push(value[1]);
+                                                }
+                                            }
+                                        }
                                         break;
                                     case 2: //-> sin errores, break
                                         internalState = 2;
@@ -4039,93 +4652,97 @@ class ForStatements3 extends statement
                             if(internalState==3) continue;
                             if(internalState==2) break;
                         }
-                        break;
-                    case TypeValue.Object:
-                        if(vals.atributo==null && vals.position == null)
-                        {
-                            let temp:sym = tablasimbolo.get(vals.name.toString())
-                            switch (temp.tipoValue)
-                            {
-                                case TypeValue.Array:
-                                    let valores:any[] = temp.getValue().getAll();
-                                    for(let post in valores)
-                                    {
-                                        tablasimbolo.update(this.identificador,post);
-                                        for(let statement1 of this.body)
-                                        {
-                                            let value = statement1.execute(tablasimbolo);
-                                            switch (value[0])
-                                            {
-                                                case -2: //-> error instanciar variable
-                                                    return [-2,null];
-                                                case -1: //-> error
-                                                    return[-1,null];
-                                                case 0: //-> finalizado
-                                                    this.StateCode = 0;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 1: //-> sin errores
-                                                    this.StateCode = 1;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 2: //-> sin errores, break
-                                                    internalState = 2;
-                                                    break;
-                                                case 3: //-> sin errores, continue
-                                                    internalState = 3;
-                                                    break;
-                                                case 4: //-> sin errores, return
-                                                    return [4,value[1]];
-                                            }
-                                            if(internalState==3 || internalState == 2) break;
 
-                                        }
-                                        if(internalState==3) continue;
-                                        if(internalState==2) break;
-                                    }
-                                    break;
-                            }
-                        }
-                        break;
-                    case TypeValue.type:
-                        let vsl = vals.getValueAtributo(tablasimbolo);
-                        for (let post in vsl) {
-                            tablasimbolo.update(this.identificador, post);
-                            for (let statement1 of this.body) {
-                                let value = statement1.execute(tablasimbolo);
-                                switch (value[0]) {
-                                    case -2: //-> error instanciar variable
-                                        return [-2, null];
-                                    case -1: //-> error
-                                        return [-1, null];
-                                    case 0: //-> finalizado
-                                        this.StateCode = 0;
-                                        this.value = value[1];
-                                        break;
-                                    case 1: //-> sin errores
-                                        this.StateCode = 1;
-                                        this.value = value[1];
-                                        break;
-                                    case 2: //-> sin errores, break
-                                        internalState = 2;
-                                        break;
-                                    case 3: //-> sin errores, continue
-                                        internalState = 3;
-                                        break;
-                                    case 4: //-> sin errores, return
-                                        return [4, value[1]];
-                                }
-                                if (internalState == 3 || internalState == 2) break;
-                            }
-                            break;
-                        }
+
+                    }
                 }
-                return [1,null];
             }
-            return [1,null];
-        }catch (e)
-        {
-            return [-1,null]
+            else if(this.Expression instanceof arrays)
+            {
+                let valores:any[] = this.Expression.getAll();
+                for(let post in valores)
+                {
+                    tablasimbolo.update(this.identificador,post);
+                    for(let statement1 of this.body)
+                    {
+                        let value = statement1.execute(tablasimbolo);
+                        switch (value[0])
+                        {
+                            case -2: //-> error instanciar variable
+                                return value
+                            case -1: //-> error
+                                return value
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                if(statement1 instanceof autoincrements)
+                                {
+
+                                }
+                                else
+                                {
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                if(statement1 instanceof autoincrements)
+                                {
+
+                                }
+                                else
+                                {
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 2: //-> sin errores, break
+                                internalState = 2;
+                                break;
+                            case 3: //-> sin errores, continue
+                                internalState = 3;
+                                break;
+                            case 4: //-> sin errores, return
+                                return [4,value[1]];
+                        }
+                        if(internalState==3 || internalState == 2) break;
+
+                    }
+                    if(internalState==3) continue;
+                    if(internalState==2) break;
+                }
+
+            }
+            if(this.StateCode>=0) return [1,this.value];
+            return [-1,'Cannot applied iterators in For...in, because only Arrays is permited!.']
+
+        }
+        catch (e) {
+            return [-1,'Unexpected Error, we cannot find the error...']
         }
 
     }
@@ -4151,39 +4768,251 @@ class ForStatements4 extends statement
     value: any;
     linea:number;
 
-    execute(tablasimbol): any[2]
+    constructor() {
+        super();
+        this.value = [];
+        this.StateCode = -1;
+    }
+    execute(tablasimbolo1): any[2]
     {
-        let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbol);
+        let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1,false)
         try
         {
+            this.value = []
             let internalState = 0;
             tablasimbolo.insert(this.identificador,null,TypeSym.Variable, TypeValue.Object);
-            if(this.Expression.type == TypeStatement.ExpresionStatement)
+            if(this.Expression instanceof expression)
             {
-                let vals = <expression> this.Expression;
-                switch (vals.valueType)
+                let vals = this.Expression.execute(tablasimbolo)
+                if(vals[0]>0)
                 {
-                    case TypeValue.Array:
-                        let valores:any[] = vals.getValuesArray(tablasimbolo);
-                        for(let post of valores)
+                    if(vals[1] instanceof arrays)
+                    {
+                        let kk = vals[1].getAll();
+
+                        for(let pos of kk)
                         {
-                            tablasimbolo.update(this.identificador,post);
+                            if(pos instanceof arrays)
+                            {
+                                let km = pos.getAll();
+                                for(let posi of km)
+                                {
+                                    tablasimbolo.update(this.identificador,posi.execute(tablasimbolo)[1]);
+
+                                    for(let statement1 of this.body)
+                                    {
+                                        let value = statement1.execute(tablasimbolo);
+                                        switch (value[0])
+                                        {
+                                            case -2: //-> error instanciar variable
+                                                return value
+                                            case -1: //-> error
+                                                return value
+                                            case 0: //-> finalizado
+                                                this.StateCode = 0;
+                                                if(statement1 instanceof autoincrements)
+                                                {
+
+                                                }
+                                                else
+                                                {
+                                                    if(value[1] != null)
+                                                    {
+                                                        if(value[1] instanceof Array)
+                                                        {
+                                                            for(let m of value[1])
+                                                            {
+                                                                this.value.push(m);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            this.value.push(value[1]);
+                                                        }
+                                                    }
+                                                }
+                                                break;
+                                            case 1: //-> sin errores
+                                                this.StateCode = 1;
+                                                this.StateCode = 1;
+                                                if(statement1 instanceof autoincrements)
+                                                {
+
+                                                }
+                                                else
+                                                {
+                                                    if(value[1] != null)
+                                                    {
+                                                        if(value[1] instanceof Array)
+                                                        {
+                                                            for(let m of value[1])
+                                                            {
+                                                                this.value.push(m);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            this.value.push(value[1]);
+                                                        }
+                                                    }
+                                                }
+                                                break;
+                                            case 2: //-> sin errores, break
+                                                internalState = 2;
+                                                break;
+                                            case 3: //-> sin errores, continue
+                                                internalState = 3;
+                                                break;
+                                            case 4: //-> sin errores, return
+                                                return [4,value[1]];
+                                        }
+                                        if(internalState==3 || internalState == 2) break;
+
+                                    }
+                                    if(internalState==3) continue;
+                                    if(internalState==2) break;
+                                }
+                            }
+                            else
+                            {
+                                tablasimbolo.update(this.identificador,pos.execute(tablasimbolo)[1]);
+
+                                for(let statement1 of this.body)
+                                {
+                                    let value = statement1.execute(tablasimbolo);
+                                    switch (value[0])
+                                    {
+                                        case -2: //-> error instanciar variable
+                                            return value
+                                        case -1: //-> error
+                                            return value
+                                        case 0: //-> finalizado
+                                            this.StateCode = 0;
+                                            if(statement1 instanceof autoincrements)
+                                            {
+
+                                            }
+                                            else
+                                            {
+                                                if(value[1] != null)
+                                                {
+                                                    if(value[1] instanceof Array)
+                                                    {
+                                                        for(let m of value[1])
+                                                        {
+                                                            this.value.push(m);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        this.value.push(value[1]);
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case 1: //-> sin errores
+                                            this.StateCode = 1;
+                                            if(statement1 instanceof autoincrements)
+                                            {
+
+                                            }
+                                            else
+                                            {
+                                                if(value[1] != null)
+                                                {
+                                                    if(value[1] instanceof Array)
+                                                    {
+                                                        for(let m of value[1])
+                                                        {
+                                                            this.value.push(m);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        this.value.push(value[1]);
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case 2: //-> sin errores, break
+                                            internalState = 2;
+                                            break;
+                                        case 3: //-> sin errores, continue
+                                            internalState = 3;
+                                            break;
+                                        case 4: //-> sin errores, return
+                                            return [4,value[1]];
+                                    }
+                                    if(internalState==3 || internalState == 2) break;
+
+                                }
+                                if(internalState==3) continue;
+                                if(internalState==2) break;
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        for(let pos of vals[1])
+                        {
+                            tablasimbolo.update(this.identificador,pos);
                             for(let statement1 of this.body)
                             {
                                 let value = statement1.execute(tablasimbolo);
                                 switch (value[0])
                                 {
                                     case -2: //-> error instanciar variable
-                                        return [-2,null];
+                                        return value
                                     case -1: //-> error
-                                        return[-1,null];
+                                        return value
                                     case 0: //-> finalizado
                                         this.StateCode = 0;
-                                        this.value = value[1];
+                                        if(statement1 instanceof autoincrements)
+                                        {
+
+                                        }
+                                        else
+                                        {
+                                            if(value[1] != null)
+                                            {
+                                                if(value[1] instanceof Array)
+                                                {
+                                                    for(let m of value[1])
+                                                    {
+                                                        this.value.push(m);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    this.value.push(value[1]);
+                                                }
+                                            }
+                                        }
                                         break;
                                     case 1: //-> sin errores
                                         this.StateCode = 1;
-                                        this.value = value[1];
+                                        if(statement1 instanceof autoincrements)
+                                        {
+
+                                        }
+                                        else
+                                        {
+                                            if(value[1] != null)
+                                            {
+                                                if(value[1] instanceof Array)
+                                                {
+                                                    for(let m of value[1])
+                                                    {
+                                                        this.value.push(m);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    this.value.push(value[1]);
+                                                }
+                                            }
+                                        }
                                         break;
                                     case 2: //-> sin errores, break
                                         internalState = 2;
@@ -4200,169 +5029,175 @@ class ForStatements4 extends statement
                             if(internalState==3) continue;
                             if(internalState==2) break;
                         }
-                        break;
-                    case TypeValue.String:
-                        let valores1 = vals.getValue(tablasimbolo).toString();
-                        for(let va of valores1)
-                        {
-                            tablasimbolo.update(this.identificador,va);
-                            for(let statement1 of this.body)
-                            {
-                                let value = statement1.execute(tablasimbolo);
-                                switch (value[0])
-                                {
-                                    case -2: //-> error instanciar variable
-                                        return [-2,null];
-                                    case -1: //-> error
-                                        return[-1,null];
-                                    case 0: //-> finalizado
-                                        this.StateCode = 0;
-                                        this.value = value[1];
-                                        break;
-                                    case 1: //-> sin errores
-                                        this.StateCode = 1;
-                                        this.value = value[1];
-                                        break;
-                                    case 2: //-> sin errores, break
-                                        internalState = 2;
-                                        break;
-                                    case 3: //-> sin errores, continue
-                                        internalState = 3;
-                                        break;
-                                    case 4: //-> sin errores, return
-                                        return [4,value[1]];
-                                }
-                                if(internalState==3 || internalState == 2) break;
 
-                            }
-                            if(internalState==3) continue;
-                            if(internalState==2) break;
-                        }
-                        break;
-                    case TypeValue.Object:
-                        if(vals.atributo==null && vals.position == null)
-                        {
-                            let temp:sym = tablasimbolo.get(vals.name.toString())
-                            switch (temp.tipoValue)
-                            {
-                                case TypeValue.String:
-                                    let valores1 = temp.value;
-                                    for(let va of valores1)
-                                    {
-                                        tablasimbolo.update(this.identificador,va);
-                                        for(let statement1 of this.body)
-                                        {
-                                            let value = statement1.execute(tablasimbolo);
-                                            switch (value[0])
-                                            {
-                                                case -2: //-> error instanciar variable
-                                                    return [-2,null];
-                                                case -1: //-> error
-                                                    return[-1,null];
-                                                case 0: //-> finalizado
-                                                    this.StateCode = 0;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 1: //-> sin errores
-                                                    this.StateCode = 1;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 2: //-> sin errores, break
-                                                    internalState = 2;
-                                                    break;
-                                                case 3: //-> sin errores, continue
-                                                    internalState = 3;
-                                                    break;
-                                                case 4: //-> sin errores, return
-                                                    return [4,value[1]];
-                                            }
-                                            if(internalState==3 || internalState == 2) break;
-
-                                        }
-                                        if(internalState==3) continue;
-                                        if(internalState==2) break;
-                                    }
-                                    break;
-                                case TypeValue.Array:
-                                    let valores:any[] = temp.getValue().getAll();
-                                    for(let post of valores)
-                                    {
-                                        tablasimbolo.update(this.identificador,post);
-                                        for(let statement1 of this.body)
-                                        {
-                                            let value = statement1.execute(tablasimbolo);
-                                            switch (value[0])
-                                            {
-                                                case -2: //-> error instanciar variable
-                                                    return [-2,null];
-                                                case -1: //-> error
-                                                    return[-1,null];
-                                                case 0: //-> finalizado
-                                                    this.StateCode = 0;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 1: //-> sin errores
-                                                    this.StateCode = 1;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 2: //-> sin errores, break
-                                                    internalState = 2;
-                                                    break;
-                                                case 3: //-> sin errores, continue
-                                                    internalState = 3;
-                                                    break;
-                                                case 4: //-> sin errores, return
-                                                    return [4,value[1]];
-                                            }
-                                            if(internalState==3 || internalState == 2) break;
-
-                                        }
-                                        if(internalState==3) continue;
-                                        if(internalState==2) break;
-                                    }
-                                    break;
-                            }
-                        }
-                        break;
-                    case TypeValue.type:
-                        let vsl = vals.getValueAtributo(tablasimbolo);
-                        for (let post of vsl) {
-                            tablasimbolo.update(this.identificador, post);
-                            for (let statement1 of this.body) {
-                                let value = statement1.execute(tablasimbolo);
-                                switch (value[0]) {
-                                    case -2: //-> error instanciar variable
-                                        return [-2, null];
-                                    case -1: //-> error
-                                        return [-1, null];
-                                    case 0: //-> finalizado
-                                        this.StateCode = 0;
-                                        this.value = value[1];
-                                        break;
-                                    case 1: //-> sin errores
-                                        this.StateCode = 1;
-                                        this.value = value[1];
-                                        break;
-                                    case 2: //-> sin errores, break
-                                        internalState = 2;
-                                        break;
-                                    case 3: //-> sin errores, continue
-                                        internalState = 3;
-                                        break;
-                                    case 4: //-> sin errores, return
-                                        return [4, value[1]];
-                                }
-                                if (internalState == 3 || internalState == 2) break;
-                            }
-                            break;
-                        }
+                    }
                 }
-                return [1,null];
             }
-            return [1,null];
+            else if(this.Expression instanceof arrays)
+            {
+                let valores:any[] = this.Expression.getAll();
+                for(let post of valores)
+                {
+                    tablasimbolo.update(this.identificador,post.execute(tablasimbolo)[1]);
+                    for(let statement1 of this.body)
+                    {
+                        let value = statement1.execute(tablasimbolo);
+                        switch (value[0])
+                        {
+                            case -2: //-> error instanciar variable
+                                return value
+                            case -1: //-> error
+                                return value
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                if(statement1 instanceof autoincrements)
+                                {
+
+                                }
+                                else
+                                {
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                if(statement1 instanceof autoincrements)
+                                {
+
+                                }
+                                else
+                                {
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 2: //-> sin errores, break
+                                internalState = 2;
+                                break;
+                            case 3: //-> sin errores, continue
+                                internalState = 3;
+                                break;
+                            case 4: //-> sin errores, return
+                                return [4,value[1]];
+                        }
+                        if(internalState==3 || internalState == 2) break;
+
+                    }
+                    if(internalState==3) continue;
+                    if(internalState==2) break;
+                }
+
+            }
+            else if(this.Expression instanceof Strings)
+            {
+                let valores1 = this.Expression.execute();
+                for(let va of valores1)
+                {
+                    tablasimbolo.update(this.identificador,va);
+                    for(let statement1 of this.body)
+                    {
+                        let value = statement1.execute(tablasimbolo);
+                        switch (value[0])
+                        {
+                            case -2: //-> error instanciar variable
+                                return value
+                            case -1: //-> error
+                                return value
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                if(statement1 instanceof autoincrements)
+                                {
+
+                                }
+                                else
+                                {
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                if(statement1 instanceof autoincrements)
+                                {
+
+                                }
+                                else
+                                {
+                                    if(value[1] != null)
+                                    {
+                                        if(value[1] instanceof Array)
+                                        {
+                                            for(let m of value[1])
+                                            {
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 2: //-> sin errores, break
+                                internalState = 2;
+                                break;
+                            case 3: //-> sin errores, continue
+                                internalState = 3;
+                                break;
+                            case 4: //-> sin errores, return
+                                return [4,value[1]];
+                        }
+                        if(internalState==3 || internalState == 2) break;
+
+                    }
+                    if(internalState==3) continue;
+                    if(internalState==2) break;
+                }
+
+            }
+            if(this.StateCode>=0) return [1,this.value];
+            return [-1,'We cannot applied the instructions, because For...Of only iterate Strings and Arrays...'];
         }
         catch (e) {
-            return [-1,null]
+            return [-1,'Unexpected Error, we cannot find the error...']
         }
 
     }
@@ -4528,7 +5363,6 @@ class Cadena3 extends statement
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
         GUATEMALA
  */
-///<reference path="Statements.ts"/>
 class NativeStatement extends statement
 {
     StateCode: number;
@@ -4616,14 +5450,11 @@ class NativeStatement extends statement
     }
 
 }
-///<reference path="Statements.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
         GUATEMALA
  */
-
-
 
 class types extends statement
 {
@@ -4750,7 +5581,6 @@ class atributo
     tipo:string;
     tipe:TypeValue;
 }
-///<reference path="Statements.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -5139,21 +5969,11 @@ let jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
 
-let jsondata2 = '{"linea":"18","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","tipo":"number", "value":"5"}]}]}]},\n' +
-    '{"linea":"2","statement":"asignation","variable":"a","params":[],"ValExpression":[{"linea":"2","operator":[{"linea":"2","v":"+="}],"Expression":[{"linea":"2","tipo":"number", "value":"1005"}]}]},\n' +
-    '{"linea":"3","statement":"declaration","type":[{"linea":"3","tipo":[{"linea":"3","tipo":"let"}],"size":[]}], "values":[{"linea":"3","statement":"variable","tipoExpresion":[],"name":"b","ValExpression":[{"linea":"3","operator":[{"linea":"3","v":"="}],"Expression":[{"linea":"3","statement":"arreglo","value":[{"linea":"3","tipo":"number", "value":"5"},\n' +
-    '{"linea":"3","tipo":"number", "value":"6"}]}]}]}]},\n' +
-    '{"linea":"4","statement":"asignation","variable":"b","params":[],"ValExpression":[{"linea":"4","operator":[{"linea":"4","v":"="}],"Expression":[{"linea":"4","statement":"arreglo","value":[{"linea":"4","tipo":"number", "value":"8"},\n' +
-    '{"linea":"4","tipo":"number", "value":"9"},\n' +
-    '{"linea":"4","tipo":"number", "value":"10"}]}]}]},\n' +
-    '{"linea":"8","statement":"declaration","type":[{"linea":"5","tipo":[{"linea":"5","tipo":"type"}],"size":[]}], "values":[{"linea":"8","statement":"variable","tipoExpresion":[],"name":"c","ValExpression":[{"linea":"8","operator":[{"linea":"5","v":"="}],"Expression":[{"linea":"8","statement":"typebody","values":[{"linea":"7","statement":"atributo","name":"root", "tipo":[{"linea":"7","tipo":"number"}],"valor":[]}]}]}]}]},\n' +
-    '{"linea":"13","statement":"declaration","type":[{"linea":"10","tipo":[{"linea":"10","tipo":"let"}],"size":[]}], "values":[{"linea":"13","statement":"variable","tipoExpresion":[{"linea":"10","tipo":[{"linea":"10","tipo":"c"}],"size":[]}],"name":"d","ValExpression":[{"linea":"13","operator":[{"linea":"10","v":"="}],"Expression":[{"linea":"13","statement":"typebody","values":[{"linea":"12","statement":"atributo","name":"root", "tipo":[{"linea":"12","tipo":"number"}],"valor":[]}]}]}]}]},\n' +
-    '{"linea":"14","statement":"asignation","variable":"d","params":[{"linea":"14","statement":"Object","value":"root"}],"ValExpression":[{"linea":"14","operator":[{"linea":"14","v":"="}],"Expression":[{"linea":"14","tipo":"number", "value":"1500"}]}]},\n' +
-    '{"linea":"15","statement":"console","expression":[{"linea":"15","statement":"variable","value":"a"}]},\n' +
-    '{"linea":"16","statement":"console","expression":[{"linea":"16","statement":"variable","value":"b"}]},\n' +
-    '{"linea":"17","statement":"console","expression":[{"linea":"17","statement":"callAtributo", "value":"d", "hijo":[{"linea":"17","statement":"Object","value":"root"}]}]},\n' +
-    '{"linea":"18","statement":"asignation","variable":"d","params":[{"linea":"18","statement":"ArrayList","value":[{"linea":"18","statement":"MatrizPosition","value":[{"linea":"18","tipo":"number", "value":"0"}]}]},{"statement":"Object","value":"hola"}],"ValExpression":[{"linea":"18","operator":[{"linea":"18","v":"="}],"Expression":[{"linea":"18","tipo":"number", "value":"5"}]}]},\n' +
-    '{"linea":"18","statement":""}]}'
+let jsondata2 =  '{"linea":"7","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","tipo":"number", "value":"0"}]}]}]},\n' +
+    '{"linea":"6","statement":"dowhile","body":[{"linea":"4","statement":"console","expression":[{"linea":"4","statement":"variable","value":"a"}]},\n' +
+    '{"linea":"5","statement":"postincrement1","padre":[{"linea":"5","statement":"variable","value":"a","hijo":[]}]}],"Expression":[{"linea":"6","statement":"Relational","Relational":"<","Expression1":[{"linea":"6","statement":"variable","value":"a"}],"Expression2":[{"linea":"6","tipo":"number", "value":"10"}]}]},\n' +
+    '{"linea":"7","statement":""}]}'
+
 let instrucciones: statement[] = [];
 let tablasimbolo: tablasimbolos = new tablasimbolos();
 let jsondata:string = '';
@@ -5202,10 +6022,20 @@ function execute()
                 let result = value.execute(tablasimbolo);
                 if(result[0]>0)
                 {
-                    if(value.type == TypeStatement.NativeStatement)
+                    if(result[1] instanceof Array)
                     {
-                        salida += result[1]+',\n';
+                        for(let resultadito of result[1])
+                        {
+                            salida += resultadito+',\n';
+                        }
                     }
+                    else {
+                        if(value.type == TypeStatement.NativeStatement)
+                        {
+                            salida += result[1]+',\n';
+                        }
+                    }
+
                 }
                 else if(result[0]==0)
                 {
@@ -5230,6 +6060,7 @@ function execute()
 }
 function generatinginformationExample()
 {
+
     let statement = JSON.parse(jsondata2);
     lineas = Number(statement.linea);
     let S = statement.S;
@@ -5295,12 +6126,19 @@ function getStatement(data):any
         case "switch":
         case "case":
         case "default":
+            break;
         case "if":
+            return getIf(data);
         case "dowhile":
+            return getDoWhile(data);
         case "for":
+            return getFor1(data);
         case "forin":
+            return getForIn(data);
         case "while":
+            return getWhile(data);
         case "forof":
+            return getForOf(data)
         case "parameter":
         case "array":
             //no usado
@@ -5365,6 +6203,7 @@ function getStatement(data):any
         case "Logical":
             return getLogical(data);
         case "ternario":
+            return getTernario(data);
         default:
             break;
     }
@@ -5720,6 +6559,8 @@ function getExpressiones(data):any
                 case "variable":
                     return getVariable(data);
                 case "variableArray":
+                    //no usado
+                    break;
                 case "funcion":
                 case "continue":
                 case "break":
@@ -5739,12 +6580,19 @@ function getExpressiones(data):any
                 case "nativeArray":
                     return nativeMatriz(data);
                 case "default":
+                    break;
                 case "if":
+                    return getIf(data);
                 case "dowhile":
+                     return getDoWhile(data);
                 case "for":
+                    return getFor1(data);
                 case "forin":
+                    return getForIn(data);
                 case "while":
+                    return getWhile(data);
                 case "forof":
+                    return getForOf(data);
                 case "parameter":
                     break;
                 case "array":
@@ -5798,6 +6646,7 @@ function getExpressiones(data):any
                 case "Logical":
                     return getLogical(data);
                 case "ternario":
+                    return getTernario(data);
 
             }
         }
@@ -7011,5 +7860,672 @@ function getAsignation(data):statement
     }
     catch (e) {
         return null;
+    }
+}
+function getIf(data):statement
+{
+    try
+    {
+        /*
+        "linea": "10",
+      "statement": "if",
+      "Expression": [
+        {
+          "linea": "3",
+          "statement": "variable",
+          "value": "a"
+        }
+      ],
+      "body": [
+        {
+          "linea": "5",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "5",
+              "tipo": "string3",
+              "value": "true"
+            }
+          ]
+        }
+      ],
+      "else": [
+        {
+          "linea": "9",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "9",
+              "tipo": "string3",
+              "value": "false"
+            }
+          ]
+        }
+      ]
+         */
+
+        let ifs:IfStatement = new IfStatement();
+        ifs.linea = data.linea;
+        let valExpression = getExpressiones(data.Expression[0]);
+        if(valExpression!=null) ifs.ValueExpression = valExpression;
+        for(let body of data.body)
+        {
+            let k = getExpressiones(body);
+            if(k!=null) ifs.body.push(k);
+        }
+        for(let body of data.else)
+        {
+            let k = getExpressiones(body);
+            if(k!=null) ifs.bodyElse.push(k);
+        }
+        return ifs;
+
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getTernario(data):statement
+{
+    try
+    {
+        /*
+        "linea": "11",
+              "statement": "ternario",
+              "valueExpression": [
+                {
+                  "linea": "11",
+                  "statement": "Relational",
+                  "Relational": "==",
+                  "Expression1": [
+                    {
+                      "linea": "11",
+                      "statement": "variable",
+                      "value": "a"
+                    }
+                  ],
+                  "Expression2": [
+                    {
+                      "linea": "11",
+                      "tipo": "boolean",
+                      "value": "true"
+                    }
+                  ]
+                }
+              ],
+              "Expression1": [
+                {
+                  "linea": "11",
+                  "tipo": "boolean",
+                  "value": "false"
+                }
+              ],
+              "Expression2": [
+                {
+                  "linea": "11",
+                  "tipo": "boolean",
+                  "value": "true"
+                }
+              ]
+         */
+        let terna:OperatorTernario = new OperatorTernario();
+        terna.ValueExpression = getExpressiones(data.valueExpression[0]);
+        terna.Expression1 = getExpressiones(data.Expression1[0])
+        terna.Expression2 = getExpressiones(data.Expression2[0])
+        terna.linea = data.linea
+        if(terna.ValueExpression==null) return null
+        return terna
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getWhile(data):statement
+{
+    try
+    {
+        /*
+       "linea": "8",
+      "statement": "while",
+      "body": [
+        {
+          "linea": "5",
+          "statement": "postincrement1",
+          "padre": [
+            {
+              "linea": "5",
+              "statement": "variable",
+              "value": "b",
+              "hijo": []
+            }
+          ]
+        },
+        {
+          "linea": "5",
+          "statement": ""
+        },
+        {
+          "linea": "6",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "6",
+              "tipo": "string3",
+              "value": "ciclo "
+            },
+            {
+              "linea": "6",
+              "statement": "variable",
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "linea": "7",
+          "statement": "if",
+          "Expression": [
+            {
+              "linea": "7",
+              "statement": "Relational",
+              "Relational": ">",
+              "Expression1": [
+                {
+                  "linea": "7",
+                  "statement": "variable",
+                  "value": "b"
+                }
+              ],
+              "Expression2": [
+                {
+                  "linea": "7",
+                  "tipo": "number",
+                  "value": "5"
+                }
+              ]
+            }
+          ],
+          "body": [
+            {
+              "linea": "7",
+              "statement": "asignation",
+              "variable": "a",
+              "params": [],
+              "ValExpression": [
+                {
+                  "linea": "7",
+                  "operator": [
+                    {
+                      "linea": "7",
+                      "v": "="
+                    }
+                  ],
+                  "Expression": [
+                    {
+                      "linea": "7",
+                      "tipo": "boolean",
+                      "value": "false"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "else": []
+        }
+      ],
+      "Expression": [
+        {
+          "linea": "3",
+          "statement": "variable",
+          "value": "a"
+        }
+      ]
+         */
+
+        let whiling:WhileStatements = new WhileStatements();
+        whiling.linea = data.linea;
+        whiling.ValueExpression = getExpressiones(data.Expression[0])
+        for(let body of data.body)
+        {
+            let k = getExpressiones(body);
+            if (k!=null)whiling.body.push(k)
+        }
+        return whiling;
+
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getInitial(data):statement
+{
+    /*
+    "ExpresionInitial": [
+        {
+          "linea": "1",
+          "statement": "variable",
+          "tipoExpresion": [],
+          "tipo": [
+            {
+              "linea": "1",
+              "tipo": "let"
+            }
+          ],
+          "name": "a",
+          "ValExpression": [
+            {
+              "linea": "1",
+              "operator": [
+                {
+                  "linea": "1",
+                  "v": "="
+                }
+              ],
+              "Expression": [
+                {
+                  "linea": "1",
+                  "tipo": "number",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+     */
+    try
+    {
+        let statements:declarations = new declarations();
+        statements.linea = data.linea;
+        statements.Expression = [];
+        let declaration:declaration0 = new declaration0();
+        declaration.linea = data.linea;
+        declaration.name = data.name;
+        declaration.Expression = getExpressiones(data.ValExpression[0].Expression[0])
+        switch (data.tipo[0])
+        {
+            case "string":
+                declaration.tipo = TypeValue.String;
+                statements.tipo = TypeValue.String;
+                break;
+            case "number":
+                declaration.tipo = TypeValue.Number;
+                statements.tipo = TypeValue.Number;
+                break;
+            case "boolean":
+                declaration.tipo = TypeValue.Boolean;
+                statements.tipo = TypeValue.Boolean;
+                break;
+            case "void":
+                declaration.tipo = TypeValue.void;
+                statements.tipo = TypeValue.void;
+                break;
+            case "var":
+                declaration.tipo = TypeValue.var;
+                statements.tipo = TypeValue.var;
+                break;
+            case "const":
+                declaration.tipo = TypeValue.const;
+                statements.tipo = TypeValue.const;
+                break;
+            case "type":
+                declaration.tipo = TypeValue.type;
+                statements.tipo = TypeValue.type;
+                break;
+            case "let":
+                declaration.tipo = TypeValue.let;
+                statements.tipo = TypeValue.let
+                break;
+            default:
+                declaration.tipo = TypeValue.Object;
+                statements.tipo = TypeValue.Object;
+                break;
+        }
+        statements.Expression.push(declaration);
+        return statements;
+
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getFor1(data):statement
+{
+    try
+    {
+        /*
+        "linea": "4",
+      "statement": "for",
+      "ExpresionInitial": [
+        {
+          "linea": "1",
+          "statement": "variable",
+          "tipoExpresion": [],
+          "tipo": [
+            {
+              "linea": "1",
+              "tipo": "let"
+            }
+          ],
+          "name": "a",
+          "ValExpression": [
+            {
+              "linea": "1",
+              "operator": [
+                {
+                  "linea": "1",
+                  "v": "="
+                }
+              ],
+              "Expression": [
+                {
+                  "linea": "1",
+                  "tipo": "number",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "Expressionvalue": [
+        {
+          "linea": "1",
+          "statement": "Relational",
+          "Relational": "<",
+          "Expression1": [
+            {
+              "linea": "1",
+              "statement": "variable",
+              "value": "a"
+            }
+          ],
+          "Expression2": [
+            {
+              "linea": "1",
+              "tipo": "number",
+              "value": "5"
+            }
+          ]
+        }
+      ],
+      "ExpressionFinal": [
+        {
+          "linea": "1",
+          "statement": "postincrement1",
+          "padre": [
+            {
+              "linea": "1",
+              "statement": "variable",
+              "value": "a",
+              "hijo": []
+            }
+          ]
+        }
+      ],
+      "body": [
+        {
+          "linea": "3",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "3",
+              "statement": "variable",
+              "value": "a"
+            }
+          ]
+        }
+      ]
+         */
+        let foring:ForStatements1 = new ForStatements1();
+        foring.linea = data.linea;
+        foring.valueInitial = getInitial(data.ExpresionInitial[0]);
+        foring.condicion = getExpressiones(data.Expressionvalue[0])
+        foring.postIterator = getExpressiones(data.ExpressionFinal[0])
+        for(let body of data.body)
+        {
+            let k = getExpressiones(body);
+            if(k!=null) foring.body.push(k);
+        }
+        return foring;
+
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getForOf(data):statement
+{
+    try
+    {
+        /*
+        "linea": "5",
+      "statement": "forof",
+      "ExpresionInitial": [
+        {
+          "tipo": [
+            {
+              "linea": "2",
+              "tipo": "let"
+            }
+          ],
+          "name": "b"
+        }
+      ],
+      "Expressionvalue": [
+        {
+          "linea": "2",
+          "statement": "variable",
+          "value": "a"
+        }
+      ],
+      "body": [
+        {
+          "linea": "4",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "4",
+              "statement": "variable",
+              "value": "b"
+            }
+          ]
+        }
+      ]
+         */
+        let forof:ForStatements4 = new ForStatements4();
+        forof.linea = data.linea;
+        forof.type = TypeStatement.IterationStatement;
+        forof.identificador = data.ExpresionInitial[0].name;
+        forof.Expression = getExpressiones(data.Expressionvalue[0])
+        forof.body = [];
+        for(let body of data.body)
+        {
+            let k = getExpressiones(body)
+            if(k!=null) forof.body.push(k);
+        }
+        return forof;
+
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getForIn(data):statement
+{
+    try
+    {
+        /*
+        "linea": "5",
+      "statement": "forin",
+      "ExpresionInitial": [
+        {
+          "tipo": [
+            {
+              "linea": "2",
+              "tipo": "let"
+            }
+          ],
+          "name": "pos"
+        }
+      ],
+      "Expressionvalue": [
+        {
+          "linea": "2",
+          "statement": "arreglo",
+          "value": [
+            {
+              "linea": "2",
+              "statement": "arreglo",
+              "value": [
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "5"
+                },
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "6"
+                }
+              ]
+            },
+            {
+              "linea": "2",
+              "statement": "arreglo",
+              "value": [
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "7"
+                },
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "8"
+                }
+              ]
+            },
+            {
+              "linea": "2",
+              "statement": "arreglo",
+              "value": [
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "9"
+                },
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "10"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "body": [
+        {
+          "linea": "4",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "4",
+              "statement": "variable",
+              "value": "pos"
+            }
+          ]
+        }
+      ]
+         */
+        let forof:ForStatements3 = new ForStatements3();
+        forof.linea = data.linea;
+        forof.type = TypeStatement.IterationStatement;
+        forof.identificador = data.ExpresionInitial[0].name;
+        forof.Expression = getExpressiones(data.Expressionvalue[0])
+        forof.body = [];
+        for(let body of data.body)
+        {
+            let k = getExpressiones(body)
+            if(k!=null) forof.body.push(k);
+        }
+        return forof;
+
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getDoWhile(data):statement
+{
+    try
+    {
+        /*
+        "linea": "6",
+      "statement": "dowhile",
+      "body": [
+        {
+          "linea": "4",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "4",
+              "statement": "variable",
+              "value": "a"
+            }
+          ]
+        },
+        {
+          "linea": "5",
+          "statement": "postincrement1",
+          "padre": [
+            {
+              "linea": "5",
+              "statement": "variable",
+              "value": "a",
+              "hijo": []
+            }
+          ]
+        }
+      ],
+      "Expression": [
+        {
+          "linea": "6",
+          "statement": "Relational",
+          "Relational": "<",
+          "Expression1": [
+            {
+              "linea": "6",
+              "statement": "variable",
+              "value": "a"
+            }
+          ],
+          "Expression2": [
+            {
+              "linea": "6",
+              "tipo": "number",
+              "value": "10"
+            }
+          ]
+        }
+      ]
+         */
+
+        let doit:DoWhileStatements = new DoWhileStatements();
+        doit.linea = data.linea;
+        doit.ValueExpression = getExpressiones(data.Expression[0])
+        doit.body = [];
+        for(let body of data.body)
+        {
+            let k = getExpressiones(body);
+            if(k!=null) doit.body.push(k);
+        }
+        doit.type = TypeStatement.IterationStatement;
+        return doit;
+
+    }
+    catch (e) {
+        return null
     }
 }

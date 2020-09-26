@@ -27,7 +27,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var tablasimbolos = /** @class */ (function () {
-    function tablasimbolos(tabla) {
+    function tablasimbolos(tabla, CF) {
+        if (CF === void 0) { CF = false; }
         if (tabla == undefined) {
             this.simbolos = [];
             this.ambitoLevel = 0;
@@ -36,7 +37,16 @@ var tablasimbolos = /** @class */ (function () {
             if (tabla instanceof tablasimbolos) {
                 this.ambitoLevel = tabla.ambitoLevel + 1;
                 this.simbolos = [];
-                this.simbolos.push(tabla.simbolos);
+                for (var _i = 0, _a = tabla.simbolos; _i < _a.length; _i++) {
+                    var tablas = _a[_i];
+                    if (CF) {
+                        if (tablas.ambito == 0)
+                            this.simbolos.push(tablas);
+                    }
+                    else {
+                        this.simbolos.push(tablas);
+                    }
+                }
             }
         }
     }
@@ -60,23 +70,83 @@ var tablasimbolos = /** @class */ (function () {
     };
     tablasimbolos.prototype.update = function (name, new_value, atributo, posicion) {
         try {
+            var ambitoglob = true;
+            var ambitoloc = false;
             for (var _i = 0, _a = this.simbolos; _i < _a.length; _i++) {
                 var simbolo = _a[_i];
                 if (simbolo instanceof sym) {
                     if (simbolo.name == name) {
-                        if (simbolo.tipoValue == TypeValue.type) {
-                            return simbolo.update(new_value, atributo, undefined);
+                        if (simbolo.ambito == this.ambitoLevel && this.ambitoLevel > 0 && simbolo.ambito > 0) {
+                            ambitoglob = false;
+                            ambitoloc = true;
                         }
-                        else if (simbolo.tipoValue == TypeValue.Array) {
-                            return simbolo.update(new_value, undefined, posicion);
-                        }
-                        else {
-                            return simbolo.update(new_value, undefined, undefined);
+                        else if (simbolo.ambito < this.ambitoLevel && this.ambitoLevel > 0 && simbolo.ambito > 0) {
+                            ambitoglob = false;
                         }
                     }
                 }
             }
-            return [-1, null];
+            if (ambitoglob) {
+                for (var _b = 0, _c = this.simbolos; _b < _c.length; _b++) {
+                    var simbolo = _c[_b];
+                    if (simbolo instanceof sym) {
+                        if (simbolo.name == name) {
+                            if (simbolo.tipoValue == TypeValue.type) {
+                                return simbolo.update(new_value, atributo, undefined);
+                            }
+                            else if (simbolo.tipoValue == TypeValue.Array) {
+                                return simbolo.update(new_value, undefined, posicion);
+                            }
+                            else {
+                                return simbolo.update(new_value, undefined, undefined);
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                if (ambitoloc) {
+                    for (var _d = 0, _e = this.simbolos; _d < _e.length; _d++) {
+                        var simbolo = _e[_d];
+                        if (simbolo instanceof sym) {
+                            if (simbolo.name == name) {
+                                if (simbolo.ambito == this.ambitoLevel) {
+                                    if (simbolo.tipoValue == TypeValue.type) {
+                                        return simbolo.update(new_value, atributo, undefined);
+                                    }
+                                    else if (simbolo.tipoValue == TypeValue.Array) {
+                                        return simbolo.update(new_value, undefined, posicion);
+                                    }
+                                    else {
+                                        return simbolo.update(new_value, undefined, undefined);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    for (var _f = 0, _g = this.simbolos; _f < _g.length; _f++) {
+                        var simbolo = _g[_f];
+                        if (simbolo instanceof sym) {
+                            if (simbolo.name == name) {
+                                if (simbolo.ambito < this.ambitoLevel && simbolo.ambito > 0) {
+                                    if (simbolo.tipoValue == TypeValue.type) {
+                                        return simbolo.update(new_value, atributo, undefined);
+                                    }
+                                    else if (simbolo.tipoValue == TypeValue.Array) {
+                                        return simbolo.update(new_value, undefined, posicion);
+                                    }
+                                    else {
+                                        return simbolo.update(new_value, undefined, undefined);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return [-1, 'We cannot find the object: ' + name];
         }
         catch (e) {
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
@@ -85,42 +155,152 @@ var tablasimbolos = /** @class */ (function () {
     //metodo el cual a diferencia de otros al no tener una ejecucion correcta devuelve null
     tablasimbolos.prototype.get = function (name, atributo, posicion) {
         try {
+            var ambitoglob = true;
+            var ambitoloc = false;
             for (var _i = 0, _a = this.simbolos; _i < _a.length; _i++) {
                 var simbolo = _a[_i];
                 if (simbolo instanceof sym) {
                     if (simbolo.name == name) {
-                        if (simbolo.tipo == TypeSym.Variable) {
-                            if (simbolo.tipoValue == TypeValue.type) {
-                                var sim = simbolo.getValue();
-                                return sim.getValueAtributo(atributo);
-                            }
-                            else if (simbolo.tipoValue == TypeValue.Array) {
-                                var sim = simbolo.getValue();
-                                return sim.getValue(posicion, this);
-                            }
-                            else {
-                                return [1, simbolo.getValue()];
+                        if (simbolo.ambito == this.ambitoLevel && this.ambitoLevel > 0 && simbolo.ambito > 0) {
+                            ambitoglob = false;
+                            ambitoloc = true;
+                        }
+                        else if (simbolo.ambito < this.ambitoLevel && this.ambitoLevel > 0 && simbolo.ambito > 0) {
+                            ambitoglob = false;
+                        }
+                    }
+                }
+            }
+            if (ambitoglob) {
+                for (var _b = 0, _c = this.simbolos; _b < _c.length; _b++) {
+                    var simbolo = _c[_b];
+                    if (simbolo instanceof sym) {
+                        if (simbolo.name == name) {
+                            if (simbolo.tipo == TypeSym.Variable) {
+                                if (simbolo.tipoValue == TypeValue.type) {
+                                    var sim = simbolo.getValue();
+                                    return sim.getValueAtributo(atributo);
+                                }
+                                else if (simbolo.tipoValue == TypeValue.Array) {
+                                    var sim = simbolo.getValue();
+                                    return sim.getValue(posicion, this);
+                                }
+                                else {
+                                    return [1, simbolo.getValue()];
+                                }
                             }
                         }
                     }
                 }
             }
-            return [-1, null];
+            else {
+                if (ambitoloc) {
+                    for (var _d = 0, _e = this.simbolos; _d < _e.length; _d++) {
+                        var simbolo = _e[_d];
+                        if (simbolo instanceof sym) {
+                            console.log(simbolo, this.ambitoLevel);
+                            if (simbolo.name == name && simbolo.ambito == this.ambitoLevel) {
+                                if (simbolo.tipo == TypeSym.Variable) {
+                                    if (simbolo.tipoValue == TypeValue.type) {
+                                        var sim = simbolo.getValue();
+                                        return sim.getValueAtributo(atributo);
+                                    }
+                                    else if (simbolo.tipoValue == TypeValue.Array) {
+                                        var sim = simbolo.getValue();
+                                        return sim.getValue(posicion, this);
+                                    }
+                                    else {
+                                        return [1, simbolo.getValue()];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    for (var _f = 0, _g = this.simbolos; _f < _g.length; _f++) {
+                        var simbolo = _g[_f];
+                        if (simbolo instanceof sym) {
+                            if (simbolo.name == name && simbolo.ambito < this.ambitoLevel && simbolo.ambito > 0) {
+                                if (simbolo.tipo == TypeSym.Variable) {
+                                    if (simbolo.tipoValue == TypeValue.type) {
+                                        var sim = simbolo.getValue();
+                                        return sim.getValueAtributo(atributo);
+                                    }
+                                    else if (simbolo.tipoValue == TypeValue.Array) {
+                                        var sim = simbolo.getValue();
+                                        return sim.getValue(posicion, this);
+                                    }
+                                    else {
+                                        return [1, simbolo.getValue()];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return [-1, 'We cannot find the object: ' + name];
         }
         catch (e) {
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
     tablasimbolos.prototype.getsym = function (name) {
-        for (var _i = 0, _a = this.simbolos; _i < _a.length; _i++) {
-            var simbolo = _a[_i];
-            if (simbolo instanceof sym) {
-                if (simbolo.name == name) {
-                    return [1, simbolo];
+        try {
+            var ambitoglob = true;
+            var ambitoloc = false;
+            for (var _i = 0, _a = this.simbolos; _i < _a.length; _i++) {
+                var simbolo = _a[_i];
+                if (simbolo instanceof sym) {
+                    if (simbolo.name == name) {
+                        if (simbolo.ambito == this.ambitoLevel && this.ambitoLevel > 0 && simbolo.ambito > 0) {
+                            ambitoglob = false;
+                            ambitoloc = true;
+                        }
+                        else if (simbolo.ambito < this.ambitoLevel && this.ambitoLevel > 0 && simbolo.ambito > 0) {
+                            ambitoglob = false;
+                        }
+                    }
                 }
             }
+            if (ambitoglob) {
+                for (var _b = 0, _c = this.simbolos; _b < _c.length; _b++) {
+                    var simbolo = _c[_b];
+                    if (simbolo instanceof sym) {
+                        if (simbolo.name == name) {
+                            return [1, simbolo];
+                        }
+                    }
+                }
+            }
+            else {
+                if (ambitoloc) {
+                    for (var _d = 0, _e = this.simbolos; _d < _e.length; _d++) {
+                        var simbolo = _e[_d];
+                        if (simbolo instanceof sym) {
+                            if (simbolo.name == name && simbolo.ambito == this.ambitoLevel) {
+                                return [1, simbolo];
+                            }
+                        }
+                    }
+                }
+                else {
+                    for (var _f = 0, _g = this.simbolos; _f < _g.length; _f++) {
+                        var simbolo = _g[_f];
+                        if (simbolo instanceof sym) {
+                            if (simbolo.name == name && simbolo.ambito < this.ambitoLevel && simbolo.ambito > 0) {
+                                return [1, simbolo];
+                            }
+                        }
+                    }
+                }
+            }
+            return [-1, 'We cannot find the object: ' + name];
         }
-        return [-1, 'the object doesn\'t exists'];
+        catch (e) {
+            return [-2, 'Unexpected Error, cannot be execute the instruction'];
+        }
     };
     tablasimbolos.prototype.getType = function (name) {
         try {
@@ -160,7 +340,7 @@ var tablasimbolos = /** @class */ (function () {
             for (var _i = 0, _a = this.simbolos; _i < _a.length; _i++) {
                 var simbolo = _a[_i];
                 if (simbolo instanceof sym) {
-                    if (simbolo.name == name) {
+                    if (simbolo.name == name && simbolo.ambito == this.ambitoLevel) {
                         state = true;
                         break;
                     }
@@ -326,9 +506,13 @@ var increments;
 var SwitchStatement = /** @class */ (function (_super) {
     __extends(SwitchStatement, _super);
     function SwitchStatement() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.cases = [];
+        _this["default"] = null;
+        return _this;
     }
-    SwitchStatement.prototype.execute = function (tablasimbolo) {
+    SwitchStatement.prototype.execute = function (tablasimbolo1) {
+        var tablasimbolo = new tablasimbolos(tablasimbolo1, false);
         var state = 5;
         for (var _i = 0, _a = this.cases; _i < _a.length; _i++) {
             var statements = _a[_i];
@@ -337,16 +521,36 @@ var SwitchStatement = /** @class */ (function (_super) {
                 var value = statements.execute(tablasimbolo);
                 switch (value[0]) {
                     case -2: //-> error instanciar variable
-                        return [-2, null];
+                        return value;
                     case -1: //-> error
-                        return [-1, null];
+                        return value;
                     case 0: //-> finalizado
                         state = 0;
-                        this.value = value[1];
+                        if (value[1] != null) {
+                            if (value[1] instanceof Array) {
+                                for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                    var m = _c[_b];
+                                    this.value.push(m);
+                                }
+                            }
+                            else {
+                                this.value.push(value[1]);
+                            }
+                        }
                         break;
                     case 1: //-> sin errores
                         state = 1;
-                        this.value = value[1];
+                        if (value[1] != null) {
+                            if (value[1] instanceof Array) {
+                                for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                    var m = _e[_d];
+                                    this.value.push(m);
+                                }
+                            }
+                            else {
+                                this.value.push(value[1]);
+                            }
+                        }
                         break;
                     case 2: //-> sin errores, break
                         return [2, null];
@@ -359,7 +563,7 @@ var SwitchStatement = /** @class */ (function (_super) {
                 }
             }
         }
-        if (state == 5)
+        if (state == 5 && this["default"] != null)
             return this["default"].execute(tablasimbolo);
         return [state, this.value];
     };
@@ -396,11 +600,31 @@ var cases = /** @class */ (function (_super) {
                         return [-1, null];
                     case 0: //-> finalizado
                         this.StateCode = 0;
-                        this.value = value[1];
+                        if (value[1] != null) {
+                            if (value[1] instanceof Array) {
+                                for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                    var m = _c[_b];
+                                    this.value.push(m);
+                                }
+                            }
+                            else {
+                                this.value.push(value[1]);
+                            }
+                        }
                         break;
                     case 1: //-> sin errores
                         this.StateCode = 1;
-                        this.value = value[1];
+                        if (value[1] != null) {
+                            if (value[1] instanceof Array) {
+                                for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                    var m = _e[_d];
+                                    this.value.push(m);
+                                }
+                            }
+                            else {
+                                this.value.push(value[1]);
+                            }
+                        }
                         break;
                     case 2: //-> sin errores, break
                         return [2, null];
@@ -439,11 +663,31 @@ var defaults = /** @class */ (function (_super) {
                     return [-1, null];
                 case 0: //-> finalizado
                     this.StateCode = 0;
-                    this.value = value[1];
+                    if (value[1] != null) {
+                        if (value[1] instanceof Array) {
+                            for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                var m = _c[_b];
+                                this.value.push(m);
+                            }
+                        }
+                        else {
+                            this.value.push(value[1]);
+                        }
+                    }
                     break;
                 case 1: //-> sin errores
                     this.StateCode = 1;
-                    this.value = value[1];
+                    if (value[1] != null) {
+                        if (value[1] instanceof Array) {
+                            for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                var m = _e[_d];
+                                this.value.push(m);
+                            }
+                        }
+                        else {
+                            this.value.push(value[1]);
+                        }
+                    }
                     break;
                 case 2: //-> sin errores, break
                     return [2, null];
@@ -1687,7 +1931,7 @@ var Asignation = /** @class */ (function (_super) {
                             }
                         }
                     }
-                    return [-2, 'We can\'t does aplied the instruccion, the object can\'t have the atribute or position'];
+                    return [-2, 'We cannot apply the instruction, the object does not have the attribute or the position'];
                 }
                 return [-1, 'cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object'];
             }
@@ -1707,7 +1951,7 @@ var Asignation = /** @class */ (function (_super) {
                             }
                         }
                     }
-                    return [-2, 'We can\'t does aplied the instruccion, the object can\'t have the atribute'];
+                    return [-2, 'We cannot apply the instruction, the object does not have the attribute'];
                 }
                 return [-1, 'cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object'];
             }
@@ -1726,7 +1970,7 @@ var Asignation = /** @class */ (function (_super) {
                             }
                         }
                     }
-                    return [-2, 'We can\'t does aplied the instruccion,  the object can\'t have the position'];
+                    return [-2, 'We cannot apply the instruction, the object does not have the position'];
                 }
                 return [-1, 'cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object'];
             }
@@ -1964,34 +2208,65 @@ var Asignation = /** @class */ (function (_super) {
  */
 var IfStatement = /** @class */ (function (_super) {
     __extends(IfStatement, _super);
-    function IfStatement(Val, cuerpo, cuerpo2) {
+    function IfStatement() {
         var _this = _super.call(this) || this;
-        _this.body = cuerpo;
-        _this.ValueExpression = Val;
-        _this.bodyElse = cuerpo2;
+        _this.body = [];
+        _this.bodyElse = [];
+        _this.value = [];
         return _this;
     }
-    IfStatement.prototype.execute = function (tablasimbolo) {
+    IfStatement.prototype.execute = function (tablasimbolo1) {
         try {
-            var valInitial = this.ValueExpression.execute(tablasimbolo);
+            //console.log(this);
+            this.value = [];
+            var tablasimbolo_1 = new tablasimbolos(tablasimbolo1, false);
+            var valInitial = this.ValueExpression.execute(tablasimbolo_1);
             if (valInitial[0] < 0)
                 return [-1, null];
             if (valInitial[1]) {
                 for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                     var statement0 = _a[_i];
-                    var value = statement0.execute(tablasimbolo);
+                    var value = statement0.execute(tablasimbolo_1);
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
-                            return [-2, null];
+                            return value;
                         case -1: //-> error
-                            return [-1, null];
+                            return value;
                         case 0: //-> finalizado
                             this.StateCode = 0;
-                            this.value = value[1];
+                            if (statement0 instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                            var m = _c[_b];
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 1: //-> sin errores
                             this.StateCode = 1;
-                            this.value = value[1];
+                            if (statement0 instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                            var m = _e[_d];
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 2: //-> sin errores, break
                             return [2, null];
@@ -2003,22 +2278,50 @@ var IfStatement = /** @class */ (function (_super) {
                 }
             }
             else {
-                if (this.bodyElse != undefined) {
-                    for (var _b = 0, _c = this.bodyElse; _b < _c.length; _b++) {
-                        var statement0 = _c[_b];
-                        var value = statement0.execute(tablasimbolo);
+                if (this.bodyElse.length > 0) {
+                    for (var _f = 0, _g = this.bodyElse; _f < _g.length; _f++) {
+                        var statement0 = _g[_f];
+                        var value = statement0.execute(tablasimbolo_1);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
-                                return [-2, null];
+                                return value;
                             case -1: //-> error
-                                return [-1, null];
+                                return value;
                             case 0: //-> finalizado
                                 this.StateCode = 0;
-                                this.value = value[1];
+                                if (statement0 instanceof autoincrements) {
+                                }
+                                else {
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _h = 0, _j = value[1]; _h < _j.length; _h++) {
+                                                var m = _j[_h];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
                                 break;
                             case 1: //-> sin errores
                                 this.StateCode = 1;
-                                this.value = value[1];
+                                if (statement0 instanceof autoincrements) {
+                                }
+                                else {
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _k = 0, _l = value[1]; _k < _l.length; _k++) {
+                                                var m = _l[_k];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
                                 break;
                             case 2: //-> sin errores, break
                                 return [2, null];
@@ -2046,11 +2349,11 @@ var IfStatement = /** @class */ (function (_super) {
 }(statement));
 var OperatorTernario = /** @class */ (function (_super) {
     __extends(OperatorTernario, _super);
-    function OperatorTernario(Val, cuerpo1, cuerpo2) {
+    function OperatorTernario() {
         var _this = _super.call(this) || this;
-        _this.Expression1 = cuerpo1;
-        _this.Expression2 = cuerpo2;
-        _this.ValueExpression = Val;
+        _this.Expression1 = null;
+        _this.Expression2 = null;
+        _this.ValueExpression = null;
         return _this;
     }
     OperatorTernario.prototype.execute = function (tablasimbolo) {
@@ -2738,8 +3041,6 @@ var RelationalExpression = /** @class */ (function (_super) {
     };
     return RelationalExpression;
 }(statement));
-///<reference path="Statements.ts"/>
-///<reference path="Expression.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -2757,7 +3058,7 @@ var functions = /** @class */ (function (_super) {
     };
     functions.prototype.executeV = function (tablasimbolo1, parameters) {
         try {
-            var tablasimbolo_1 = new tablasimbolos(tablasimbolo1);
+            var tablasimbolo_2 = new tablasimbolos(tablasimbolo1, true);
             if (this.Parameters.length == parameters.length) {
                 for (var a = 0; a < this.Parameters.length; a++) {
                     var namev = this.Parameters[a].name;
@@ -2765,10 +3066,10 @@ var functions = /** @class */ (function (_super) {
                         var value = parameters[a];
                         switch (this.Parameters[a].tipo) {
                             case TypeValue.String:
-                                var valueS = value.execute(tablasimbolo_1);
+                                var valueS = value.execute(tablasimbolo_2);
                                 if (valueS[0] > 0) {
                                     if (valueS[1] instanceof String) {
-                                        tablasimbolo_1.insert(namev, valueS[1], TypeSym.Variable, TypeValue.String);
+                                        tablasimbolo_2.insert(namev, valueS[1], TypeSym.Variable, TypeValue.String);
                                     }
                                     else {
                                         return [-1, null];
@@ -2779,10 +3080,10 @@ var functions = /** @class */ (function (_super) {
                                 }
                                 break;
                             case TypeValue.Number:
-                                var valueN = value.execute(tablasimbolo_1);
+                                var valueN = value.execute(tablasimbolo_2);
                                 if (valueN[0] > 0) {
                                     if (valueN[1] instanceof Number) {
-                                        tablasimbolo_1.insert(namev, valueN[1], TypeSym.Variable, TypeValue.Number);
+                                        tablasimbolo_2.insert(namev, valueN[1], TypeSym.Variable, TypeValue.Number);
                                     }
                                     else {
                                         return [-1, null];
@@ -2793,10 +3094,10 @@ var functions = /** @class */ (function (_super) {
                                 }
                                 break;
                             case TypeValue.Boolean:
-                                var valueB = value.execute(tablasimbolo_1);
+                                var valueB = value.execute(tablasimbolo_2);
                                 if (valueB[0] > 0) {
                                     if (valueB[1] instanceof Boolean) {
-                                        tablasimbolo_1.insert(namev, valueB[1], TypeSym.Variable, TypeValue.Boolean);
+                                        tablasimbolo_2.insert(namev, valueB[1], TypeSym.Variable, TypeValue.Boolean);
                                     }
                                     else {
                                         return [-1, null];
@@ -2807,20 +3108,20 @@ var functions = /** @class */ (function (_super) {
                                 }
                                 break;
                             case TypeValue["var"]:
-                                var valueV = tablasimbolo_1.getsym(value.name);
+                                var valueV = tablasimbolo_2.getsym(value.name);
                                 if (valueV[0] > 1) {
                                     var simbolo = valueV[1];
-                                    tablasimbolo_1.insert(namev, simbolo.value, simbolo.tipo, simbolo.tipoValue);
+                                    tablasimbolo_2.insert(namev, simbolo.value, simbolo.tipo, simbolo.tipoValue);
                                 }
                                 else {
                                     return [-1, null];
                                 }
                                 break;
                             case TypeValue.type:
-                                var valueT = value.execute(tablasimbolo_1);
+                                var valueT = value.execute(tablasimbolo_2);
                                 if (valueT[0] > 0) {
                                     if (valueT[1] instanceof types) {
-                                        tablasimbolo_1.insert(namev, valueT[1], TypeSym.Variable, TypeValue.type);
+                                        tablasimbolo_2.insert(namev, valueT[1], TypeSym.Variable, TypeValue.type);
                                     }
                                     else {
                                         return [-1, null];
@@ -2831,10 +3132,10 @@ var functions = /** @class */ (function (_super) {
                                 }
                                 break;
                             case TypeValue.Array:
-                                var valueA = value.execute(tablasimbolo_1);
+                                var valueA = value.execute(tablasimbolo_2);
                                 if (valueA[0] > 0) {
                                     if (valueA[1] instanceof arrays) {
-                                        tablasimbolo_1.insert(namev, valueA[1], TypeSym.Variable, TypeValue.Array);
+                                        tablasimbolo_2.insert(namev, valueA[1], TypeSym.Variable, TypeValue.Array);
                                     }
                                     else {
                                         return [-1, null];
@@ -2851,10 +3152,10 @@ var functions = /** @class */ (function (_super) {
                     else {
                         switch (this.Parameters[a].tipo) {
                             case TypeValue.String:
-                                var valueS = parameters[a].execute(tablasimbolo_1);
+                                var valueS = parameters[a].execute(tablasimbolo_2);
                                 if (valueS[0] > 0) {
                                     if (valueS[1] instanceof String) {
-                                        tablasimbolo_1.insert(namev, valueS[1], TypeSym.Variable, TypeValue.String);
+                                        tablasimbolo_2.insert(namev, valueS[1], TypeSym.Variable, TypeValue.String);
                                     }
                                     else {
                                         return [-1, null];
@@ -2865,10 +3166,10 @@ var functions = /** @class */ (function (_super) {
                                 }
                                 break;
                             case TypeValue.Number:
-                                var valueN = parameters[a].execute(tablasimbolo_1);
+                                var valueN = parameters[a].execute(tablasimbolo_2);
                                 if (valueN[0] > 0) {
                                     if (valueN[1] instanceof Number) {
-                                        tablasimbolo_1.insert(namev, valueN[1], TypeSym.Variable, TypeValue.Number);
+                                        tablasimbolo_2.insert(namev, valueN[1], TypeSym.Variable, TypeValue.Number);
                                     }
                                     else {
                                         return [-1, null];
@@ -2879,10 +3180,10 @@ var functions = /** @class */ (function (_super) {
                                 }
                                 break;
                             case TypeValue.Boolean:
-                                var valueB = parameters[a].execute(tablasimbolo_1);
+                                var valueB = parameters[a].execute(tablasimbolo_2);
                                 if (valueB[0] > 0) {
                                     if (valueB[1] instanceof Boolean) {
-                                        tablasimbolo_1.insert(namev, valueB[1], TypeSym.Variable, TypeValue.Boolean);
+                                        tablasimbolo_2.insert(namev, valueB[1], TypeSym.Variable, TypeValue.Boolean);
                                     }
                                     else {
                                         return [-1, null];
@@ -2899,12 +3200,12 @@ var functions = /** @class */ (function (_super) {
                 }
                 for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                     var statement1 = _a[_i];
-                    var value = statement1.execute(tablasimbolo_1);
+                    var value = statement1.execute(tablasimbolo_2);
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
-                            return [-2, null];
+                            return value;
                         case -1: //-> error
-                            return [-1, null];
+                            return value;
                         case 0: //-> finalizado
                             this.StateCode = 0;
                             this.value = value[1];
@@ -2921,27 +3222,27 @@ var functions = /** @class */ (function (_super) {
                             if (value[1] == null) {
                                 if (this.tipo == TypeValue["void"])
                                     return [4, null];
-                                return [-1, null];
+                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
                             }
                             else if (value[1] instanceof Boolean) {
                                 if (this.tipo == TypeValue.Boolean)
                                     return [4, value[1]];
-                                return [-1, null];
+                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
                             }
                             else if (value[1] instanceof Number) {
                                 if (this.tipo == TypeValue.Number)
                                     return [4, value[1]];
-                                return [-1, null];
+                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
                             }
                             else if (value[1] instanceof String) {
                                 if (this.tipo == TypeValue.String)
                                     return [4, value[1]];
-                                return [-1, null];
+                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
                             }
                             else if (value[1] instanceof arrays) {
                                 if (this.tipo == TypeValue.Array)
                                     return [4, value[1]];
-                                return [-1, null];
+                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
                             }
                             else {
                                 if (this.tipo == TypeValue["void"])
@@ -2952,10 +3253,10 @@ var functions = /** @class */ (function (_super) {
                 }
                 return [1, null];
             }
-            return [-1, null];
+            return [-1, 'Internal Error, Parameters length is not the same length, length: ' + this.Parameters.length + ", length_send: " + parameters.length];
         }
         catch (e) {
-            return [-1, null];
+            return [-1, 'Unexpected Error, we cannot find a solution for this error'];
         }
     };
     functions.prototype.grahp = function () {
@@ -2981,9 +3282,6 @@ var Parameter = /** @class */ (function (_super) {
     };
     return Parameter;
 }(statement));
-///<reference path="Statements.ts"/>
-///<reference path="Expression.ts"/>
-///<reference path="Literal.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -2991,17 +3289,20 @@ var Parameter = /** @class */ (function (_super) {
  */
 var WhileStatements = /** @class */ (function (_super) {
     __extends(WhileStatements, _super);
-    function WhileStatements(Value, cuerpo) {
+    function WhileStatements() {
         var _this = _super.call(this) || this;
-        _this.ValueExpression = Value;
-        _this.body = cuerpo;
+        _this.ValueExpression = null;
+        _this.body = [];
+        _this.value = [];
         return _this;
     }
-    WhileStatements.prototype.execute = function (tablasimbolo) {
+    WhileStatements.prototype.execute = function (tablasimbolo1) {
         try {
+            this.value = [];
             var state = true;
+            var tablasimbolo_3 = new tablasimbolos(tablasimbolo1, false);
             while (state) {
-                var valInitial = this.ValueExpression.execute(tablasimbolo);
+                var valInitial = this.ValueExpression.execute(tablasimbolo_3);
                 if (valInitial[0] < 0)
                     return [-1, null];
                 if (!valInitial[1])
@@ -3009,7 +3310,7 @@ var WhileStatements = /** @class */ (function (_super) {
                 var internalState = 0;
                 for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                     var statement0 = _a[_i];
-                    var value = statement0.execute(tablasimbolo);
+                    var value = statement0.execute(tablasimbolo_3);
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
                             return [-2, null];
@@ -3017,11 +3318,40 @@ var WhileStatements = /** @class */ (function (_super) {
                             return [-1, null];
                         case 0: //-> finalizado
                             this.StateCode = 0;
-                            this.value = value[1];
+                            if (statement0 instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                            var m = _c[_b];
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 1: //-> sin errores
                             this.StateCode = 1;
-                            this.value = value[1];
+                            this.StateCode = 1;
+                            if (statement0 instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                            var m = _e[_d];
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 2: //-> sin errores, break
                             internalState = 2;
@@ -3040,10 +3370,11 @@ var WhileStatements = /** @class */ (function (_super) {
                 if (internalState == 2)
                     break;
             }
-            return [1, null];
+            return [1, this.value];
         }
         catch (e) {
-            return [-1, null];
+            //console.log(e);
+            return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
     WhileStatements.prototype.grahp = function () {
@@ -3056,14 +3387,17 @@ var WhileStatements = /** @class */ (function (_super) {
 }(statement));
 var DoWhileStatements = /** @class */ (function (_super) {
     __extends(DoWhileStatements, _super);
-    function DoWhileStatements(Value, cuerpo) {
+    function DoWhileStatements() {
         var _this = _super.call(this) || this;
-        _this.ValueExpression = Value;
-        _this.body = cuerpo;
+        _this.ValueExpression = null;
+        _this.body = [];
+        _this.value = [];
         return _this;
     }
-    DoWhileStatements.prototype.execute = function (tablasimblolo) {
+    DoWhileStatements.prototype.execute = function (tablasimblolo1) {
         try {
+            this.value = [];
+            var tablasimblolo = new tablasimbolos(tablasimblolo1, false);
             var state = true;
             while (state) {
                 var internalState = 0;
@@ -3077,11 +3411,40 @@ var DoWhileStatements = /** @class */ (function (_super) {
                             return [-1, null];
                         case 0: //-> finalizado
                             this.StateCode = 0;
-                            this.value = value[1];
+                            if (statement0 instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                            var m = _c[_b];
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 1: //-> sin errores
                             this.StateCode = 1;
-                            this.value = value[1];
+                            this.StateCode = 1;
+                            if (statement0 instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                            var m = _e[_d];
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else {
+                                        this.value.push(value[1]);
+                                    }
+                                }
+                            }
                             break;
                         case 2: //-> sin errores, break
                             internalState = 2;
@@ -3105,10 +3468,10 @@ var DoWhileStatements = /** @class */ (function (_super) {
                 if (!valInitial[1])
                     break;
             }
-            return [1, null];
+            return [1, this.value];
         }
         catch (e) {
-            return [-1, null];
+            return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
     DoWhileStatements.prototype.grahp = function () {
@@ -3123,34 +3486,70 @@ var DoWhileStatements = /** @class */ (function (_super) {
 var ForStatements1 = /** @class */ (function (_super) {
     __extends(ForStatements1, _super);
     function ForStatements1() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.body = [];
+        _this.condicion = null;
+        _this.valueInitial = null;
+        _this.postIterator = null;
+        _this.value = [];
+        return _this;
     }
-    ForStatements1.prototype.execute = function (tablasimbolo) {
+    ForStatements1.prototype.execute = function (tablasimbolo1) {
         try {
-            var initial = this.valueInitial.execute(tablasimbolo);
+            this.value = [];
+            var tablasimbolo_4 = new tablasimbolos(tablasimbolo1, false);
+            var initial = this.valueInitial.execute(tablasimbolo_4);
             if (initial[0] > 0) {
                 var state = true;
                 while (state) {
                     var internalState = 0;
-                    var condicion = this.condicion.execute(tablasimbolo);
+                    var condicion = this.condicion.execute(tablasimbolo_4);
                     if (condicion[0] < 0)
-                        return [-1, null];
+                        return [-1, 'Condition Iteration For, Error, cannot execute the  Condition'];
                     if (condicion[1]) {
                         for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                             var statement1 = _a[_i];
-                            var value = statement1.execute(tablasimbolo);
+                            var value = statement1.execute(tablasimbolo_4);
                             switch (value[0]) {
                                 case -2: //-> error instanciar variable
-                                    return [-2, null];
+                                    return value;
                                 case -1: //-> error
-                                    return [-1, null];
+                                    return value;
                                 case 0: //-> finalizado
                                     this.StateCode = 0;
-                                    this.value = value[1];
+                                    if (statement1 instanceof autoincrements) {
+                                    }
+                                    else {
+                                        if (value[1] != null) {
+                                            if (value[1] instanceof Array) {
+                                                for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                                    var m = _c[_b];
+                                                    this.value.push(m);
+                                                }
+                                            }
+                                            else {
+                                                this.value.push(value[1]);
+                                            }
+                                        }
+                                    }
                                     break;
                                 case 1: //-> sin errores
                                     this.StateCode = 1;
-                                    this.value = value[1];
+                                    if (statement1 instanceof autoincrements) {
+                                    }
+                                    else {
+                                        if (value[1] != null) {
+                                            if (value[1] instanceof Array) {
+                                                for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                                    var m = _e[_d];
+                                                    this.value.push(m);
+                                                }
+                                            }
+                                            else {
+                                                this.value.push(value[1]);
+                                            }
+                                        }
+                                    }
                                     break;
                                 case 2: //-> sin errores, break
                                     internalState = 2;
@@ -3167,20 +3566,20 @@ var ForStatements1 = /** @class */ (function (_super) {
                         if (internalState == 3)
                             continue;
                         if (internalState == 2)
-                            break;
-                        var post = this.postIterator.execute(tablasimbolo);
+                            state = false;
+                        var post = this.postIterator.execute(tablasimbolo_4);
                         if (post[0] < 0)
-                            return [-1, null];
+                            return [-1, 'Post Iteration For, Error, cannot execute the Post Condition'];
                     }
                     else {
-                        break;
+                        state = false;
                     }
                 }
             }
-            return [1, null];
+            return [1, this.value];
         }
         catch (e) {
-            return [-1, null];
+            return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
     ForStatements1.prototype.grahp = function () {
@@ -3197,20 +3596,22 @@ var ForStatements2 = /** @class */ (function (_super) {
     function ForStatements2() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    ForStatements2.prototype.execute = function (tablasimbolo) {
+    ForStatements2.prototype.execute = function (tablasimbolo1) {
         try {
-            var initial = tablasimbolo.get(this.valueInitial);
+            this.value = [];
+            var tablasimbolo_5 = new tablasimbolos(tablasimbolo1, false);
+            var initial = tablasimbolo_5.get(this.valueInitial);
             if (initial != null) {
                 var state = true;
                 while (state) {
                     var internalState = 0;
-                    var condicion = this.condicion.execute(tablasimbolo);
+                    var condicion = this.condicion.execute(tablasimbolo_5);
                     if (condicion[0] < 0)
                         return [-1, null];
                     if (condicion[1]) {
                         for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                             var statement1 = _a[_i];
-                            var value = statement1.execute(tablasimbolo);
+                            var value = statement1.execute(tablasimbolo_5);
                             switch (value[0]) {
                                 case -2: //-> error instanciar variable
                                     return [-2, null];
@@ -3218,11 +3619,31 @@ var ForStatements2 = /** @class */ (function (_super) {
                                     return [-1, null];
                                 case 0: //-> finalizado
                                     this.StateCode = 0;
-                                    this.value = value[1];
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                                var m = _c[_b];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
                                     break;
                                 case 1: //-> sin errores
                                     this.StateCode = 1;
-                                    this.value = value[1];
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                                var m = _e[_d];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
                                     break;
                                 case 2: //-> sin errores, break
                                     internalState = 2;
@@ -3240,7 +3661,7 @@ var ForStatements2 = /** @class */ (function (_super) {
                             continue;
                         if (internalState == 2)
                             break;
-                        var post = this.postIterator.execute(tablasimbolo);
+                        var post = this.postIterator.execute(tablasimbolo_5);
                         if (post[0] < 0)
                             return [-1, null];
                     }
@@ -3267,34 +3688,68 @@ var ForStatements2 = /** @class */ (function (_super) {
 var ForStatements3 = /** @class */ (function (_super) {
     __extends(ForStatements3, _super);
     function ForStatements3() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.value = [];
+        _this.body = [];
+        _this.StateCode = -1;
+        return _this;
     }
-    ForStatements3.prototype.execute = function (tablasimbolo) {
+    ForStatements3.prototype.execute = function (tablasimbolo1) {
+        var tablasimbolo = new tablasimbolos(tablasimbolo1, false);
         try {
+            this.value = [];
             var internalState = 0;
-            tablasimbolo.insert(this.identificador, null, TypeSym.Variable, TypeValue.Number);
-            if (this.Expression.type == TypeStatement.ExpresionStatement) {
-                var vals = this.Expression;
-                switch (vals.valueType) {
-                    case TypeValue.Array:
-                        var valores = vals.getValuesArray(tablasimbolo);
-                        for (var post in valores) {
-                            tablasimbolo.update(this.identificador, post);
+            tablasimbolo.insert(this.identificador, null, TypeSym.Variable, TypeValue.Object);
+            if (this.Expression instanceof expression) {
+                var vals = this.Expression.execute(tablasimbolo);
+                if (vals[0] > 0) {
+                    if (vals[1] instanceof arrays) {
+                        var kk = vals[1].getAll();
+                        for (var pos in kk) {
+                            tablasimbolo.update(this.identificador, pos);
                             for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                                 var statement1 = _a[_i];
                                 var value = statement1.execute(tablasimbolo);
                                 switch (value[0]) {
                                     case -2: //-> error instanciar variable
-                                        return [-2, null];
+                                        return value;
                                     case -1: //-> error
-                                        return [-1, null];
+                                        return value;
                                     case 0: //-> finalizado
                                         this.StateCode = 0;
-                                        this.value = value[1];
+                                        if (statement1 instanceof autoincrements) {
+                                        }
+                                        else {
+                                            if (value[1] != null) {
+                                                if (value[1] instanceof Array) {
+                                                    for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                                        var m = _c[_b];
+                                                        this.value.push(m);
+                                                    }
+                                                }
+                                                else {
+                                                    this.value.push(value[1]);
+                                                }
+                                            }
+                                        }
                                         break;
                                     case 1: //-> sin errores
                                         this.StateCode = 1;
-                                        this.value = value[1];
+                                        if (statement1 instanceof autoincrements) {
+                                        }
+                                        else {
+                                            if (value[1] != null) {
+                                                if (value[1] instanceof Array) {
+                                                    for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                                        var m = _e[_d];
+                                                        this.value.push(m);
+                                                    }
+                                                }
+                                                else {
+                                                    this.value.push(value[1]);
+                                                }
+                                            }
+                                        }
                                         break;
                                     case 2: //-> sin errores, break
                                         internalState = 2;
@@ -3313,93 +3768,81 @@ var ForStatements3 = /** @class */ (function (_super) {
                             if (internalState == 2)
                                 break;
                         }
-                        break;
-                    case TypeValue.Object:
-                        if (vals.atributo == null && vals.position == null) {
-                            var temp = tablasimbolo.get(vals.name.toString());
-                            switch (temp.tipoValue) {
-                                case TypeValue.Array:
-                                    var valores_1 = temp.getValue().getAll();
-                                    for (var post in valores_1) {
-                                        tablasimbolo.update(this.identificador, post);
-                                        for (var _b = 0, _c = this.body; _b < _c.length; _b++) {
-                                            var statement1 = _c[_b];
-                                            var value = statement1.execute(tablasimbolo);
-                                            switch (value[0]) {
-                                                case -2: //-> error instanciar variable
-                                                    return [-2, null];
-                                                case -1: //-> error
-                                                    return [-1, null];
-                                                case 0: //-> finalizado
-                                                    this.StateCode = 0;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 1: //-> sin errores
-                                                    this.StateCode = 1;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 2: //-> sin errores, break
-                                                    internalState = 2;
-                                                    break;
-                                                case 3: //-> sin errores, continue
-                                                    internalState = 3;
-                                                    break;
-                                                case 4: //-> sin errores, return
-                                                    return [4, value[1]];
-                                            }
-                                            if (internalState == 3 || internalState == 2)
-                                                break;
-                                        }
-                                        if (internalState == 3)
-                                            continue;
-                                        if (internalState == 2)
-                                            break;
-                                    }
-                                    break;
-                            }
-                        }
-                        break;
-                    case TypeValue.type:
-                        var vsl = vals.getValueAtributo(tablasimbolo);
-                        for (var post in vsl) {
-                            tablasimbolo.update(this.identificador, post);
-                            for (var _d = 0, _e = this.body; _d < _e.length; _d++) {
-                                var statement1 = _e[_d];
-                                var value = statement1.execute(tablasimbolo);
-                                switch (value[0]) {
-                                    case -2: //-> error instanciar variable
-                                        return [-2, null];
-                                    case -1: //-> error
-                                        return [-1, null];
-                                    case 0: //-> finalizado
-                                        this.StateCode = 0;
-                                        this.value = value[1];
-                                        break;
-                                    case 1: //-> sin errores
-                                        this.StateCode = 1;
-                                        this.value = value[1];
-                                        break;
-                                    case 2: //-> sin errores, break
-                                        internalState = 2;
-                                        break;
-                                    case 3: //-> sin errores, continue
-                                        internalState = 3;
-                                        break;
-                                    case 4: //-> sin errores, return
-                                        return [4, value[1]];
-                                }
-                                if (internalState == 3 || internalState == 2)
-                                    break;
-                            }
-                            break;
-                        }
+                    }
                 }
-                return [1, null];
             }
-            return [1, null];
+            else if (this.Expression instanceof arrays) {
+                var valores = this.Expression.getAll();
+                for (var post in valores) {
+                    tablasimbolo.update(this.identificador, post);
+                    for (var _f = 0, _g = this.body; _f < _g.length; _f++) {
+                        var statement1 = _g[_f];
+                        var value = statement1.execute(tablasimbolo);
+                        switch (value[0]) {
+                            case -2: //-> error instanciar variable
+                                return value;
+                            case -1: //-> error
+                                return value;
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                if (statement1 instanceof autoincrements) {
+                                }
+                                else {
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _h = 0, _j = value[1]; _h < _j.length; _h++) {
+                                                var m = _j[_h];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                if (statement1 instanceof autoincrements) {
+                                }
+                                else {
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _k = 0, _l = value[1]; _k < _l.length; _k++) {
+                                                var m = _l[_k];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 2: //-> sin errores, break
+                                internalState = 2;
+                                break;
+                            case 3: //-> sin errores, continue
+                                internalState = 3;
+                                break;
+                            case 4: //-> sin errores, return
+                                return [4, value[1]];
+                        }
+                        if (internalState == 3 || internalState == 2)
+                            break;
+                    }
+                    if (internalState == 3)
+                        continue;
+                    if (internalState == 2)
+                        break;
+                }
+            }
+            if (this.StateCode >= 0)
+                return [1, this.value];
+            return [-1, 'Cannot applied iterators in For...in, because only Arrays is permited!.'];
         }
         catch (e) {
-            return [-1, null];
+            return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
     ForStatements3.prototype.grahp = function () {
@@ -3414,36 +3857,204 @@ var ForStatements3 = /** @class */ (function (_super) {
 var ForStatements4 = /** @class */ (function (_super) {
     __extends(ForStatements4, _super);
     function ForStatements4() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.value = [];
+        _this.StateCode = -1;
+        return _this;
     }
-    ForStatements4.prototype.execute = function (tablasimbol) {
-        var tablasimbolo = new tablasimbolos(tablasimbol);
+    ForStatements4.prototype.execute = function (tablasimbolo1) {
+        var tablasimbolo = new tablasimbolos(tablasimbolo1, false);
         try {
+            this.value = [];
             var internalState = 0;
             tablasimbolo.insert(this.identificador, null, TypeSym.Variable, TypeValue.Object);
-            if (this.Expression.type == TypeStatement.ExpresionStatement) {
-                var vals = this.Expression;
-                switch (vals.valueType) {
-                    case TypeValue.Array:
-                        var valores = vals.getValuesArray(tablasimbolo);
-                        for (var _i = 0, valores_2 = valores; _i < valores_2.length; _i++) {
-                            var post = valores_2[_i];
-                            tablasimbolo.update(this.identificador, post);
-                            for (var _a = 0, _b = this.body; _a < _b.length; _a++) {
-                                var statement1 = _b[_a];
+            if (this.Expression instanceof expression) {
+                var vals = this.Expression.execute(tablasimbolo);
+                if (vals[0] > 0) {
+                    if (vals[1] instanceof arrays) {
+                        var kk = vals[1].getAll();
+                        for (var _i = 0, kk_1 = kk; _i < kk_1.length; _i++) {
+                            var pos = kk_1[_i];
+                            if (pos instanceof arrays) {
+                                var km = pos.getAll();
+                                for (var _a = 0, km_1 = km; _a < km_1.length; _a++) {
+                                    var posi = km_1[_a];
+                                    tablasimbolo.update(this.identificador, posi.execute(tablasimbolo)[1]);
+                                    for (var _b = 0, _c = this.body; _b < _c.length; _b++) {
+                                        var statement1 = _c[_b];
+                                        var value = statement1.execute(tablasimbolo);
+                                        switch (value[0]) {
+                                            case -2: //-> error instanciar variable
+                                                return value;
+                                            case -1: //-> error
+                                                return value;
+                                            case 0: //-> finalizado
+                                                this.StateCode = 0;
+                                                if (statement1 instanceof autoincrements) {
+                                                }
+                                                else {
+                                                    if (value[1] != null) {
+                                                        if (value[1] instanceof Array) {
+                                                            for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                                                var m = _e[_d];
+                                                                this.value.push(m);
+                                                            }
+                                                        }
+                                                        else {
+                                                            this.value.push(value[1]);
+                                                        }
+                                                    }
+                                                }
+                                                break;
+                                            case 1: //-> sin errores
+                                                this.StateCode = 1;
+                                                this.StateCode = 1;
+                                                if (statement1 instanceof autoincrements) {
+                                                }
+                                                else {
+                                                    if (value[1] != null) {
+                                                        if (value[1] instanceof Array) {
+                                                            for (var _f = 0, _g = value[1]; _f < _g.length; _f++) {
+                                                                var m = _g[_f];
+                                                                this.value.push(m);
+                                                            }
+                                                        }
+                                                        else {
+                                                            this.value.push(value[1]);
+                                                        }
+                                                    }
+                                                }
+                                                break;
+                                            case 2: //-> sin errores, break
+                                                internalState = 2;
+                                                break;
+                                            case 3: //-> sin errores, continue
+                                                internalState = 3;
+                                                break;
+                                            case 4: //-> sin errores, return
+                                                return [4, value[1]];
+                                        }
+                                        if (internalState == 3 || internalState == 2)
+                                            break;
+                                    }
+                                    if (internalState == 3)
+                                        continue;
+                                    if (internalState == 2)
+                                        break;
+                                }
+                            }
+                            else {
+                                tablasimbolo.update(this.identificador, pos.execute(tablasimbolo)[1]);
+                                for (var _h = 0, _j = this.body; _h < _j.length; _h++) {
+                                    var statement1 = _j[_h];
+                                    var value = statement1.execute(tablasimbolo);
+                                    switch (value[0]) {
+                                        case -2: //-> error instanciar variable
+                                            return value;
+                                        case -1: //-> error
+                                            return value;
+                                        case 0: //-> finalizado
+                                            this.StateCode = 0;
+                                            if (statement1 instanceof autoincrements) {
+                                            }
+                                            else {
+                                                if (value[1] != null) {
+                                                    if (value[1] instanceof Array) {
+                                                        for (var _k = 0, _l = value[1]; _k < _l.length; _k++) {
+                                                            var m = _l[_k];
+                                                            this.value.push(m);
+                                                        }
+                                                    }
+                                                    else {
+                                                        this.value.push(value[1]);
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case 1: //-> sin errores
+                                            this.StateCode = 1;
+                                            if (statement1 instanceof autoincrements) {
+                                            }
+                                            else {
+                                                if (value[1] != null) {
+                                                    if (value[1] instanceof Array) {
+                                                        for (var _m = 0, _o = value[1]; _m < _o.length; _m++) {
+                                                            var m = _o[_m];
+                                                            this.value.push(m);
+                                                        }
+                                                    }
+                                                    else {
+                                                        this.value.push(value[1]);
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case 2: //-> sin errores, break
+                                            internalState = 2;
+                                            break;
+                                        case 3: //-> sin errores, continue
+                                            internalState = 3;
+                                            break;
+                                        case 4: //-> sin errores, return
+                                            return [4, value[1]];
+                                    }
+                                    if (internalState == 3 || internalState == 2)
+                                        break;
+                                }
+                                if (internalState == 3)
+                                    continue;
+                                if (internalState == 2)
+                                    break;
+                            }
+                        }
+                    }
+                    else {
+                        for (var _p = 0, _q = vals[1]; _p < _q.length; _p++) {
+                            var pos = _q[_p];
+                            tablasimbolo.update(this.identificador, pos);
+                            for (var _r = 0, _s = this.body; _r < _s.length; _r++) {
+                                var statement1 = _s[_r];
                                 var value = statement1.execute(tablasimbolo);
                                 switch (value[0]) {
                                     case -2: //-> error instanciar variable
-                                        return [-2, null];
+                                        return value;
                                     case -1: //-> error
-                                        return [-1, null];
+                                        return value;
                                     case 0: //-> finalizado
                                         this.StateCode = 0;
-                                        this.value = value[1];
+                                        if (statement1 instanceof autoincrements) {
+                                        }
+                                        else {
+                                            if (value[1] != null) {
+                                                if (value[1] instanceof Array) {
+                                                    for (var _t = 0, _u = value[1]; _t < _u.length; _t++) {
+                                                        var m = _u[_t];
+                                                        this.value.push(m);
+                                                    }
+                                                }
+                                                else {
+                                                    this.value.push(value[1]);
+                                                }
+                                            }
+                                        }
                                         break;
                                     case 1: //-> sin errores
                                         this.StateCode = 1;
-                                        this.value = value[1];
+                                        if (statement1 instanceof autoincrements) {
+                                        }
+                                        else {
+                                            if (value[1] != null) {
+                                                if (value[1] instanceof Array) {
+                                                    for (var _v = 0, _w = value[1]; _v < _w.length; _v++) {
+                                                        var m = _w[_v];
+                                                        this.value.push(m);
+                                                    }
+                                                }
+                                                else {
+                                                    this.value.push(value[1]);
+                                                }
+                                            }
+                                        }
                                         break;
                                     case 2: //-> sin errores, break
                                         internalState = 2;
@@ -3462,173 +4073,149 @@ var ForStatements4 = /** @class */ (function (_super) {
                             if (internalState == 2)
                                 break;
                         }
-                        break;
-                    case TypeValue.String:
-                        var valores1 = vals.getValue(tablasimbolo).toString();
-                        for (var _c = 0, valores1_1 = valores1; _c < valores1_1.length; _c++) {
-                            var va = valores1_1[_c];
-                            tablasimbolo.update(this.identificador, va);
-                            for (var _d = 0, _e = this.body; _d < _e.length; _d++) {
-                                var statement1 = _e[_d];
-                                var value = statement1.execute(tablasimbolo);
-                                switch (value[0]) {
-                                    case -2: //-> error instanciar variable
-                                        return [-2, null];
-                                    case -1: //-> error
-                                        return [-1, null];
-                                    case 0: //-> finalizado
-                                        this.StateCode = 0;
-                                        this.value = value[1];
-                                        break;
-                                    case 1: //-> sin errores
-                                        this.StateCode = 1;
-                                        this.value = value[1];
-                                        break;
-                                    case 2: //-> sin errores, break
-                                        internalState = 2;
-                                        break;
-                                    case 3: //-> sin errores, continue
-                                        internalState = 3;
-                                        break;
-                                    case 4: //-> sin errores, return
-                                        return [4, value[1]];
-                                }
-                                if (internalState == 3 || internalState == 2)
-                                    break;
-                            }
-                            if (internalState == 3)
-                                continue;
-                            if (internalState == 2)
-                                break;
-                        }
-                        break;
-                    case TypeValue.Object:
-                        if (vals.atributo == null && vals.position == null) {
-                            var temp = tablasimbolo.get(vals.name.toString());
-                            switch (temp.tipoValue) {
-                                case TypeValue.String:
-                                    var valores1_3 = temp.value;
-                                    for (var _f = 0, valores1_2 = valores1_3; _f < valores1_2.length; _f++) {
-                                        var va = valores1_2[_f];
-                                        tablasimbolo.update(this.identificador, va);
-                                        for (var _g = 0, _h = this.body; _g < _h.length; _g++) {
-                                            var statement1 = _h[_g];
-                                            var value = statement1.execute(tablasimbolo);
-                                            switch (value[0]) {
-                                                case -2: //-> error instanciar variable
-                                                    return [-2, null];
-                                                case -1: //-> error
-                                                    return [-1, null];
-                                                case 0: //-> finalizado
-                                                    this.StateCode = 0;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 1: //-> sin errores
-                                                    this.StateCode = 1;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 2: //-> sin errores, break
-                                                    internalState = 2;
-                                                    break;
-                                                case 3: //-> sin errores, continue
-                                                    internalState = 3;
-                                                    break;
-                                                case 4: //-> sin errores, return
-                                                    return [4, value[1]];
-                                            }
-                                            if (internalState == 3 || internalState == 2)
-                                                break;
-                                        }
-                                        if (internalState == 3)
-                                            continue;
-                                        if (internalState == 2)
-                                            break;
-                                    }
-                                    break;
-                                case TypeValue.Array:
-                                    var valores_4 = temp.getValue().getAll();
-                                    for (var _j = 0, valores_3 = valores_4; _j < valores_3.length; _j++) {
-                                        var post = valores_3[_j];
-                                        tablasimbolo.update(this.identificador, post);
-                                        for (var _k = 0, _l = this.body; _k < _l.length; _k++) {
-                                            var statement1 = _l[_k];
-                                            var value = statement1.execute(tablasimbolo);
-                                            switch (value[0]) {
-                                                case -2: //-> error instanciar variable
-                                                    return [-2, null];
-                                                case -1: //-> error
-                                                    return [-1, null];
-                                                case 0: //-> finalizado
-                                                    this.StateCode = 0;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 1: //-> sin errores
-                                                    this.StateCode = 1;
-                                                    this.value = value[1];
-                                                    break;
-                                                case 2: //-> sin errores, break
-                                                    internalState = 2;
-                                                    break;
-                                                case 3: //-> sin errores, continue
-                                                    internalState = 3;
-                                                    break;
-                                                case 4: //-> sin errores, return
-                                                    return [4, value[1]];
-                                            }
-                                            if (internalState == 3 || internalState == 2)
-                                                break;
-                                        }
-                                        if (internalState == 3)
-                                            continue;
-                                        if (internalState == 2)
-                                            break;
-                                    }
-                                    break;
-                            }
-                        }
-                        break;
-                    case TypeValue.type:
-                        var vsl = vals.getValueAtributo(tablasimbolo);
-                        for (var _m = 0, vsl_1 = vsl; _m < vsl_1.length; _m++) {
-                            var post = vsl_1[_m];
-                            tablasimbolo.update(this.identificador, post);
-                            for (var _o = 0, _p = this.body; _o < _p.length; _o++) {
-                                var statement1 = _p[_o];
-                                var value = statement1.execute(tablasimbolo);
-                                switch (value[0]) {
-                                    case -2: //-> error instanciar variable
-                                        return [-2, null];
-                                    case -1: //-> error
-                                        return [-1, null];
-                                    case 0: //-> finalizado
-                                        this.StateCode = 0;
-                                        this.value = value[1];
-                                        break;
-                                    case 1: //-> sin errores
-                                        this.StateCode = 1;
-                                        this.value = value[1];
-                                        break;
-                                    case 2: //-> sin errores, break
-                                        internalState = 2;
-                                        break;
-                                    case 3: //-> sin errores, continue
-                                        internalState = 3;
-                                        break;
-                                    case 4: //-> sin errores, return
-                                        return [4, value[1]];
-                                }
-                                if (internalState == 3 || internalState == 2)
-                                    break;
-                            }
-                            break;
-                        }
+                    }
                 }
-                return [1, null];
             }
-            return [1, null];
+            else if (this.Expression instanceof arrays) {
+                var valores = this.Expression.getAll();
+                for (var _x = 0, valores_1 = valores; _x < valores_1.length; _x++) {
+                    var post = valores_1[_x];
+                    tablasimbolo.update(this.identificador, post.execute(tablasimbolo)[1]);
+                    for (var _y = 0, _z = this.body; _y < _z.length; _y++) {
+                        var statement1 = _z[_y];
+                        var value = statement1.execute(tablasimbolo);
+                        switch (value[0]) {
+                            case -2: //-> error instanciar variable
+                                return value;
+                            case -1: //-> error
+                                return value;
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                if (statement1 instanceof autoincrements) {
+                                }
+                                else {
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _0 = 0, _1 = value[1]; _0 < _1.length; _0++) {
+                                                var m = _1[_0];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                if (statement1 instanceof autoincrements) {
+                                }
+                                else {
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _2 = 0, _3 = value[1]; _2 < _3.length; _2++) {
+                                                var m = _3[_2];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 2: //-> sin errores, break
+                                internalState = 2;
+                                break;
+                            case 3: //-> sin errores, continue
+                                internalState = 3;
+                                break;
+                            case 4: //-> sin errores, return
+                                return [4, value[1]];
+                        }
+                        if (internalState == 3 || internalState == 2)
+                            break;
+                    }
+                    if (internalState == 3)
+                        continue;
+                    if (internalState == 2)
+                        break;
+                }
+            }
+            else if (this.Expression instanceof Strings) {
+                var valores1 = this.Expression.execute();
+                for (var _4 = 0, valores1_1 = valores1; _4 < valores1_1.length; _4++) {
+                    var va = valores1_1[_4];
+                    tablasimbolo.update(this.identificador, va);
+                    for (var _5 = 0, _6 = this.body; _5 < _6.length; _5++) {
+                        var statement1 = _6[_5];
+                        var value = statement1.execute(tablasimbolo);
+                        switch (value[0]) {
+                            case -2: //-> error instanciar variable
+                                return value;
+                            case -1: //-> error
+                                return value;
+                            case 0: //-> finalizado
+                                this.StateCode = 0;
+                                if (statement1 instanceof autoincrements) {
+                                }
+                                else {
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _7 = 0, _8 = value[1]; _7 < _8.length; _7++) {
+                                                var m = _8[_7];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 1: //-> sin errores
+                                this.StateCode = 1;
+                                if (statement1 instanceof autoincrements) {
+                                }
+                                else {
+                                    if (value[1] != null) {
+                                        if (value[1] instanceof Array) {
+                                            for (var _9 = 0, _10 = value[1]; _9 < _10.length; _9++) {
+                                                var m = _10[_9];
+                                                this.value.push(m);
+                                            }
+                                        }
+                                        else {
+                                            this.value.push(value[1]);
+                                        }
+                                    }
+                                }
+                                break;
+                            case 2: //-> sin errores, break
+                                internalState = 2;
+                                break;
+                            case 3: //-> sin errores, continue
+                                internalState = 3;
+                                break;
+                            case 4: //-> sin errores, return
+                                return [4, value[1]];
+                        }
+                        if (internalState == 3 || internalState == 2)
+                            break;
+                    }
+                    if (internalState == 3)
+                        continue;
+                    if (internalState == 2)
+                        break;
+                }
+            }
+            if (this.StateCode >= 0)
+                return [1, this.value];
+            return [-1, 'We cannot applied the instructions, because For...Of only iterate Strings and Arrays...'];
         }
         catch (e) {
-            return [-1, null];
+            return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
     ForStatements4.prototype.grahp = function () {
@@ -3751,7 +4338,6 @@ var Cadena3 = /** @class */ (function (_super) {
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
         GUATEMALA
  */
-///<reference path="Statements.ts"/>
 var NativeStatement = /** @class */ (function (_super) {
     __extends(NativeStatement, _super);
     function NativeStatement(typeS, instr) {
@@ -3820,7 +4406,6 @@ var NativeStatement = /** @class */ (function (_super) {
     };
     return NativeStatement;
 }(statement));
-///<reference path="Statements.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -3918,7 +4503,6 @@ var atributo = /** @class */ (function () {
     }
     return atributo;
 }());
-///<reference path="Statements.ts"/>
 /*
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
@@ -4262,21 +4846,10 @@ var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":"CallFunction","name":"sumarColumnas", "parameters":[{"linea":"195","statement":"variable","value":"matrixA"}]},\n' +
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
-var jsondata2 = '{"linea":"18","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","tipo":"number", "value":"5"}]}]}]},\n' +
-    '{"linea":"2","statement":"asignation","variable":"a","params":[],"ValExpression":[{"linea":"2","operator":[{"linea":"2","v":"+="}],"Expression":[{"linea":"2","tipo":"number", "value":"1005"}]}]},\n' +
-    '{"linea":"3","statement":"declaration","type":[{"linea":"3","tipo":[{"linea":"3","tipo":"let"}],"size":[]}], "values":[{"linea":"3","statement":"variable","tipoExpresion":[],"name":"b","ValExpression":[{"linea":"3","operator":[{"linea":"3","v":"="}],"Expression":[{"linea":"3","statement":"arreglo","value":[{"linea":"3","tipo":"number", "value":"5"},\n' +
-    '{"linea":"3","tipo":"number", "value":"6"}]}]}]}]},\n' +
-    '{"linea":"4","statement":"asignation","variable":"b","params":[],"ValExpression":[{"linea":"4","operator":[{"linea":"4","v":"="}],"Expression":[{"linea":"4","statement":"arreglo","value":[{"linea":"4","tipo":"number", "value":"8"},\n' +
-    '{"linea":"4","tipo":"number", "value":"9"},\n' +
-    '{"linea":"4","tipo":"number", "value":"10"}]}]}]},\n' +
-    '{"linea":"8","statement":"declaration","type":[{"linea":"5","tipo":[{"linea":"5","tipo":"type"}],"size":[]}], "values":[{"linea":"8","statement":"variable","tipoExpresion":[],"name":"c","ValExpression":[{"linea":"8","operator":[{"linea":"5","v":"="}],"Expression":[{"linea":"8","statement":"typebody","values":[{"linea":"7","statement":"atributo","name":"root", "tipo":[{"linea":"7","tipo":"number"}],"valor":[]}]}]}]}]},\n' +
-    '{"linea":"13","statement":"declaration","type":[{"linea":"10","tipo":[{"linea":"10","tipo":"let"}],"size":[]}], "values":[{"linea":"13","statement":"variable","tipoExpresion":[{"linea":"10","tipo":[{"linea":"10","tipo":"c"}],"size":[]}],"name":"d","ValExpression":[{"linea":"13","operator":[{"linea":"10","v":"="}],"Expression":[{"linea":"13","statement":"typebody","values":[{"linea":"12","statement":"atributo","name":"root", "tipo":[{"linea":"12","tipo":"number"}],"valor":[]}]}]}]}]},\n' +
-    '{"linea":"14","statement":"asignation","variable":"d","params":[{"linea":"14","statement":"Object","value":"root"}],"ValExpression":[{"linea":"14","operator":[{"linea":"14","v":"="}],"Expression":[{"linea":"14","tipo":"number", "value":"1500"}]}]},\n' +
-    '{"linea":"15","statement":"console","expression":[{"linea":"15","statement":"variable","value":"a"}]},\n' +
-    '{"linea":"16","statement":"console","expression":[{"linea":"16","statement":"variable","value":"b"}]},\n' +
-    '{"linea":"17","statement":"console","expression":[{"linea":"17","statement":"callAtributo", "value":"d", "hijo":[{"linea":"17","statement":"Object","value":"root"}]}]},\n' +
-    '{"linea":"18","statement":"asignation","variable":"d","params":[{"linea":"18","statement":"ArrayList","value":[{"linea":"18","statement":"MatrizPosition","value":[{"linea":"18","tipo":"number", "value":"0"}]}]},{"statement":"Object","value":"hola"}],"ValExpression":[{"linea":"18","operator":[{"linea":"18","v":"="}],"Expression":[{"linea":"18","tipo":"number", "value":"5"}]}]},\n' +
-    '{"linea":"18","statement":""}]}';
+var jsondata2 = '{"linea":"7","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","tipo":"number", "value":"0"}]}]}]},\n' +
+    '{"linea":"6","statement":"dowhile","body":[{"linea":"4","statement":"console","expression":[{"linea":"4","statement":"variable","value":"a"}]},\n' +
+    '{"linea":"5","statement":"postincrement1","padre":[{"linea":"5","statement":"variable","value":"a","hijo":[]}]}],"Expression":[{"linea":"6","statement":"Relational","Relational":"<","Expression1":[{"linea":"6","statement":"variable","value":"a"}],"Expression2":[{"linea":"6","tipo":"number", "value":"10"}]}]},\n' +
+    '{"linea":"7","statement":""}]}';
 var instrucciones = [];
 var tablasimbolo = new tablasimbolos();
 var jsondata = '';
@@ -4320,8 +4893,16 @@ function execute() {
             if (value instanceof statement) {
                 var result = value.execute(tablasimbolo);
                 if (result[0] > 0) {
-                    if (value.type == TypeStatement.NativeStatement) {
-                        salida += result[1] + ',\n';
+                    if (result[1] instanceof Array) {
+                        for (var _b = 0, _c = result[1]; _b < _c.length; _b++) {
+                            var resultadito = _c[_b];
+                            salida += resultadito + ',\n';
+                        }
+                    }
+                    else {
+                        if (value.type == TypeStatement.NativeStatement) {
+                            salida += result[1] + ',\n';
+                        }
                     }
                 }
                 else if (result[0] == 0) {
@@ -4410,12 +4991,19 @@ function getStatement(data) {
         case "switch":
         case "case":
         case "default":
+            break;
         case "if":
+            return getIf(data);
         case "dowhile":
+            return getDoWhile(data);
         case "for":
+            return getFor1(data);
         case "forin":
+            return getForIn(data);
         case "while":
+            return getWhile(data);
         case "forof":
+            return getForOf(data);
         case "parameter":
         case "array":
             //no usado
@@ -4480,6 +5068,7 @@ function getStatement(data) {
         case "Logical":
             return getLogical(data);
         case "ternario":
+            return getTernario(data);
         default:
             break;
     }
@@ -4798,6 +5387,8 @@ function getExpressiones(data) {
                 case "variable":
                     return getVariable(data);
                 case "variableArray":
+                    //no usado
+                    break;
                 case "funcion":
                 case "continue":
                 case "break":
@@ -4817,12 +5408,19 @@ function getExpressiones(data) {
                 case "nativeArray":
                     return nativeMatriz(data);
                 case "default":
+                    break;
                 case "if":
+                    return getIf(data);
                 case "dowhile":
+                    return getDoWhile(data);
                 case "for":
+                    return getFor1(data);
                 case "forin":
+                    return getForIn(data);
                 case "while":
+                    return getWhile(data);
                 case "forof":
+                    return getForOf(data);
                 case "parameter":
                     break;
                 case "array":
@@ -4876,6 +5474,7 @@ function getExpressiones(data) {
                 case "Logical":
                     return getLogical(data);
                 case "ternario":
+                    return getTernario(data);
             }
         }
         else if (data.hasOwnProperty("tipo")) {
@@ -5967,6 +6566,655 @@ function getAsignation(data) {
         as.Assigment = getTipoAssigment(data.ValExpression[0].operator[0]);
         as.Expression = getExpressiones(data.ValExpression[0].Expression[0]);
         return as;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getIf(data) {
+    try {
+        /*
+        "linea": "10",
+      "statement": "if",
+      "Expression": [
+        {
+          "linea": "3",
+          "statement": "variable",
+          "value": "a"
+        }
+      ],
+      "body": [
+        {
+          "linea": "5",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "5",
+              "tipo": "string3",
+              "value": "true"
+            }
+          ]
+        }
+      ],
+      "else": [
+        {
+          "linea": "9",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "9",
+              "tipo": "string3",
+              "value": "false"
+            }
+          ]
+        }
+      ]
+         */
+        var ifs = new IfStatement();
+        ifs.linea = data.linea;
+        var valExpression = getExpressiones(data.Expression[0]);
+        if (valExpression != null)
+            ifs.ValueExpression = valExpression;
+        for (var _i = 0, _a = data.body; _i < _a.length; _i++) {
+            var body = _a[_i];
+            var k = getExpressiones(body);
+            if (k != null)
+                ifs.body.push(k);
+        }
+        for (var _b = 0, _c = data["else"]; _b < _c.length; _b++) {
+            var body = _c[_b];
+            var k = getExpressiones(body);
+            if (k != null)
+                ifs.bodyElse.push(k);
+        }
+        return ifs;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getTernario(data) {
+    try {
+        /*
+        "linea": "11",
+              "statement": "ternario",
+              "valueExpression": [
+                {
+                  "linea": "11",
+                  "statement": "Relational",
+                  "Relational": "==",
+                  "Expression1": [
+                    {
+                      "linea": "11",
+                      "statement": "variable",
+                      "value": "a"
+                    }
+                  ],
+                  "Expression2": [
+                    {
+                      "linea": "11",
+                      "tipo": "boolean",
+                      "value": "true"
+                    }
+                  ]
+                }
+              ],
+              "Expression1": [
+                {
+                  "linea": "11",
+                  "tipo": "boolean",
+                  "value": "false"
+                }
+              ],
+              "Expression2": [
+                {
+                  "linea": "11",
+                  "tipo": "boolean",
+                  "value": "true"
+                }
+              ]
+         */
+        var terna = new OperatorTernario();
+        terna.ValueExpression = getExpressiones(data.valueExpression[0]);
+        terna.Expression1 = getExpressiones(data.Expression1[0]);
+        terna.Expression2 = getExpressiones(data.Expression2[0]);
+        terna.linea = data.linea;
+        if (terna.ValueExpression == null)
+            return null;
+        return terna;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getWhile(data) {
+    try {
+        /*
+       "linea": "8",
+      "statement": "while",
+      "body": [
+        {
+          "linea": "5",
+          "statement": "postincrement1",
+          "padre": [
+            {
+              "linea": "5",
+              "statement": "variable",
+              "value": "b",
+              "hijo": []
+            }
+          ]
+        },
+        {
+          "linea": "5",
+          "statement": ""
+        },
+        {
+          "linea": "6",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "6",
+              "tipo": "string3",
+              "value": "ciclo "
+            },
+            {
+              "linea": "6",
+              "statement": "variable",
+              "value": "b"
+            }
+          ]
+        },
+        {
+          "linea": "7",
+          "statement": "if",
+          "Expression": [
+            {
+              "linea": "7",
+              "statement": "Relational",
+              "Relational": ">",
+              "Expression1": [
+                {
+                  "linea": "7",
+                  "statement": "variable",
+                  "value": "b"
+                }
+              ],
+              "Expression2": [
+                {
+                  "linea": "7",
+                  "tipo": "number",
+                  "value": "5"
+                }
+              ]
+            }
+          ],
+          "body": [
+            {
+              "linea": "7",
+              "statement": "asignation",
+              "variable": "a",
+              "params": [],
+              "ValExpression": [
+                {
+                  "linea": "7",
+                  "operator": [
+                    {
+                      "linea": "7",
+                      "v": "="
+                    }
+                  ],
+                  "Expression": [
+                    {
+                      "linea": "7",
+                      "tipo": "boolean",
+                      "value": "false"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "else": []
+        }
+      ],
+      "Expression": [
+        {
+          "linea": "3",
+          "statement": "variable",
+          "value": "a"
+        }
+      ]
+         */
+        var whiling = new WhileStatements();
+        whiling.linea = data.linea;
+        whiling.ValueExpression = getExpressiones(data.Expression[0]);
+        for (var _i = 0, _a = data.body; _i < _a.length; _i++) {
+            var body = _a[_i];
+            var k = getExpressiones(body);
+            if (k != null)
+                whiling.body.push(k);
+        }
+        return whiling;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getInitial(data) {
+    /*
+    "ExpresionInitial": [
+        {
+          "linea": "1",
+          "statement": "variable",
+          "tipoExpresion": [],
+          "tipo": [
+            {
+              "linea": "1",
+              "tipo": "let"
+            }
+          ],
+          "name": "a",
+          "ValExpression": [
+            {
+              "linea": "1",
+              "operator": [
+                {
+                  "linea": "1",
+                  "v": "="
+                }
+              ],
+              "Expression": [
+                {
+                  "linea": "1",
+                  "tipo": "number",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+     */
+    try {
+        var statements = new declarations();
+        statements.linea = data.linea;
+        statements.Expression = [];
+        var declaration = new declaration0();
+        declaration.linea = data.linea;
+        declaration.name = data.name;
+        declaration.Expression = getExpressiones(data.ValExpression[0].Expression[0]);
+        switch (data.tipo[0]) {
+            case "string":
+                declaration.tipo = TypeValue.String;
+                statements.tipo = TypeValue.String;
+                break;
+            case "number":
+                declaration.tipo = TypeValue.Number;
+                statements.tipo = TypeValue.Number;
+                break;
+            case "boolean":
+                declaration.tipo = TypeValue.Boolean;
+                statements.tipo = TypeValue.Boolean;
+                break;
+            case "void":
+                declaration.tipo = TypeValue["void"];
+                statements.tipo = TypeValue["void"];
+                break;
+            case "var":
+                declaration.tipo = TypeValue["var"];
+                statements.tipo = TypeValue["var"];
+                break;
+            case "const":
+                declaration.tipo = TypeValue["const"];
+                statements.tipo = TypeValue["const"];
+                break;
+            case "type":
+                declaration.tipo = TypeValue.type;
+                statements.tipo = TypeValue.type;
+                break;
+            case "let":
+                declaration.tipo = TypeValue.let;
+                statements.tipo = TypeValue.let;
+                break;
+            default:
+                declaration.tipo = TypeValue.Object;
+                statements.tipo = TypeValue.Object;
+                break;
+        }
+        statements.Expression.push(declaration);
+        return statements;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getFor1(data) {
+    try {
+        /*
+        "linea": "4",
+      "statement": "for",
+      "ExpresionInitial": [
+        {
+          "linea": "1",
+          "statement": "variable",
+          "tipoExpresion": [],
+          "tipo": [
+            {
+              "linea": "1",
+              "tipo": "let"
+            }
+          ],
+          "name": "a",
+          "ValExpression": [
+            {
+              "linea": "1",
+              "operator": [
+                {
+                  "linea": "1",
+                  "v": "="
+                }
+              ],
+              "Expression": [
+                {
+                  "linea": "1",
+                  "tipo": "number",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "Expressionvalue": [
+        {
+          "linea": "1",
+          "statement": "Relational",
+          "Relational": "<",
+          "Expression1": [
+            {
+              "linea": "1",
+              "statement": "variable",
+              "value": "a"
+            }
+          ],
+          "Expression2": [
+            {
+              "linea": "1",
+              "tipo": "number",
+              "value": "5"
+            }
+          ]
+        }
+      ],
+      "ExpressionFinal": [
+        {
+          "linea": "1",
+          "statement": "postincrement1",
+          "padre": [
+            {
+              "linea": "1",
+              "statement": "variable",
+              "value": "a",
+              "hijo": []
+            }
+          ]
+        }
+      ],
+      "body": [
+        {
+          "linea": "3",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "3",
+              "statement": "variable",
+              "value": "a"
+            }
+          ]
+        }
+      ]
+         */
+        var foring = new ForStatements1();
+        foring.linea = data.linea;
+        foring.valueInitial = getInitial(data.ExpresionInitial[0]);
+        foring.condicion = getExpressiones(data.Expressionvalue[0]);
+        foring.postIterator = getExpressiones(data.ExpressionFinal[0]);
+        for (var _i = 0, _a = data.body; _i < _a.length; _i++) {
+            var body = _a[_i];
+            var k = getExpressiones(body);
+            if (k != null)
+                foring.body.push(k);
+        }
+        return foring;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getForOf(data) {
+    try {
+        /*
+        "linea": "5",
+      "statement": "forof",
+      "ExpresionInitial": [
+        {
+          "tipo": [
+            {
+              "linea": "2",
+              "tipo": "let"
+            }
+          ],
+          "name": "b"
+        }
+      ],
+      "Expressionvalue": [
+        {
+          "linea": "2",
+          "statement": "variable",
+          "value": "a"
+        }
+      ],
+      "body": [
+        {
+          "linea": "4",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "4",
+              "statement": "variable",
+              "value": "b"
+            }
+          ]
+        }
+      ]
+         */
+        var forof = new ForStatements4();
+        forof.linea = data.linea;
+        forof.type = TypeStatement.IterationStatement;
+        forof.identificador = data.ExpresionInitial[0].name;
+        forof.Expression = getExpressiones(data.Expressionvalue[0]);
+        forof.body = [];
+        for (var _i = 0, _a = data.body; _i < _a.length; _i++) {
+            var body = _a[_i];
+            var k = getExpressiones(body);
+            if (k != null)
+                forof.body.push(k);
+        }
+        return forof;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getForIn(data) {
+    try {
+        /*
+        "linea": "5",
+      "statement": "forin",
+      "ExpresionInitial": [
+        {
+          "tipo": [
+            {
+              "linea": "2",
+              "tipo": "let"
+            }
+          ],
+          "name": "pos"
+        }
+      ],
+      "Expressionvalue": [
+        {
+          "linea": "2",
+          "statement": "arreglo",
+          "value": [
+            {
+              "linea": "2",
+              "statement": "arreglo",
+              "value": [
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "5"
+                },
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "6"
+                }
+              ]
+            },
+            {
+              "linea": "2",
+              "statement": "arreglo",
+              "value": [
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "7"
+                },
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "8"
+                }
+              ]
+            },
+            {
+              "linea": "2",
+              "statement": "arreglo",
+              "value": [
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "9"
+                },
+                {
+                  "linea": "2",
+                  "tipo": "number",
+                  "value": "10"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "body": [
+        {
+          "linea": "4",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "4",
+              "statement": "variable",
+              "value": "pos"
+            }
+          ]
+        }
+      ]
+         */
+        var forof = new ForStatements3();
+        forof.linea = data.linea;
+        forof.type = TypeStatement.IterationStatement;
+        forof.identificador = data.ExpresionInitial[0].name;
+        forof.Expression = getExpressiones(data.Expressionvalue[0]);
+        forof.body = [];
+        for (var _i = 0, _a = data.body; _i < _a.length; _i++) {
+            var body = _a[_i];
+            var k = getExpressiones(body);
+            if (k != null)
+                forof.body.push(k);
+        }
+        return forof;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getDoWhile(data) {
+    try {
+        /*
+        "linea": "6",
+      "statement": "dowhile",
+      "body": [
+        {
+          "linea": "4",
+          "statement": "console",
+          "expression": [
+            {
+              "linea": "4",
+              "statement": "variable",
+              "value": "a"
+            }
+          ]
+        },
+        {
+          "linea": "5",
+          "statement": "postincrement1",
+          "padre": [
+            {
+              "linea": "5",
+              "statement": "variable",
+              "value": "a",
+              "hijo": []
+            }
+          ]
+        }
+      ],
+      "Expression": [
+        {
+          "linea": "6",
+          "statement": "Relational",
+          "Relational": "<",
+          "Expression1": [
+            {
+              "linea": "6",
+              "statement": "variable",
+              "value": "a"
+            }
+          ],
+          "Expression2": [
+            {
+              "linea": "6",
+              "tipo": "number",
+              "value": "10"
+            }
+          ]
+        }
+      ]
+         */
+        var doit = new DoWhileStatements();
+        doit.linea = data.linea;
+        doit.ValueExpression = getExpressiones(data.Expression[0]);
+        doit.body = [];
+        for (var _i = 0, _a = data.body; _i < _a.length; _i++) {
+            var body = _a[_i];
+            var k = getExpressiones(body);
+            if (k != null)
+                doit.body.push(k);
+        }
+        doit.type = TypeStatement.IterationStatement;
+        return doit;
     }
     catch (e) {
         return null;

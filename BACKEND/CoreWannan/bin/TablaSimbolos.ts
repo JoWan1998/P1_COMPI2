@@ -39,7 +39,10 @@ class tablasimbolos
             {
                 this.ambitoLevel = tabla.ambitoLevel + 1;
                 this.simbolos = [];
-                this.simbolos.push(tabla.simbolos);
+                for(let tablas of tabla.simbolos)
+                {
+                    this.simbolos.push(tablas);
+                }
             }
 
         }
@@ -75,24 +78,55 @@ class tablasimbolos
     {
         try
         {
+            let ambitoglob = true;
+            for(let simbolo of this.simbolos) {
+                if (simbolo instanceof sym) {
+                    if (simbolo.name == name) {
+                        if(simbolo.ambito == this.ambitoLevel && this.ambitoLevel>0) ambitoglob = false;
+                    }
+                }
+            }
+
             for(let simbolo of this.simbolos)
             {
                 if (simbolo instanceof sym)
                 {
                     if (simbolo.name == name)
                     {
-                        if(simbolo.tipoValue == TypeValue.type)
+                        if(ambitoglob)
                         {
-                            return simbolo.update(new_value,atributo,undefined);
-                        }
-                        else if(simbolo.tipoValue == TypeValue.Array)
-                        {
-                            return simbolo.update(new_value,undefined,posicion);
+                            if(simbolo.tipoValue == TypeValue.type)
+                            {
+                                return simbolo.update(new_value,atributo,undefined);
+                            }
+                            else if(simbolo.tipoValue == TypeValue.Array)
+                            {
+                                return simbolo.update(new_value,undefined,posicion);
+                            }
+                            else
+                            {
+                                return simbolo.update(new_value,undefined,undefined);
+                            }
                         }
                         else
                         {
-                            return simbolo.update(new_value,undefined,undefined);
+                            if(simbolo.ambito >= this.ambitoLevel)
+                            {
+                                if(simbolo.tipoValue == TypeValue.type)
+                                {
+                                    return simbolo.update(new_value,atributo,undefined);
+                                }
+                                else if(simbolo.tipoValue == TypeValue.Array)
+                                {
+                                    return simbolo.update(new_value,undefined,posicion);
+                                }
+                                else
+                                {
+                                    return simbolo.update(new_value,undefined,undefined);
+                                }
+                            }
                         }
+
 
                     }
                 }
@@ -209,7 +243,7 @@ class tablasimbolos
             {
                 if (simbolo instanceof sym)
                 {
-                    if (simbolo.name == name)
+                    if (simbolo.name == name && simbolo.ambito == this.ambitoLevel)
                     {
                         state = true;
                         break;

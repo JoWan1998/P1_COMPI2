@@ -197,6 +197,10 @@ Statement
       {
         $$ = $1;
       }
+    | error
+      {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+      }
 ;
 
 
@@ -709,10 +713,10 @@ Iteration_statements
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"while\",\"body\":['+$5+'],\"Expression\":['+$3+']}';
     }
-    | FOR '(' ExprNoInOpt ';' ExprOpt ';' ExprOpt ')' Statement
+  /*  | FOR '(' ExprNoInOpt ';' ExprOpt ';' ExprOpt ')' Statement
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"for\",\"ExpresionInitial\":['+$3+'],\"Expressionvalue\":['+$5+'],\"ExpressionFinal\":['+$7+'],\"body\":['+$9+']}';
-    }
+    }*/
     | FOR '(' ValStatement1 ';' ExprOpt ';' ExprOpt ')' Statement
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"for\",\"ExpresionInitial\":['+$3+'],\"Expressionvalue\":['+$5+'],\"ExpressionFinal\":['+$7+'],\"body\":['+$9+']}';
