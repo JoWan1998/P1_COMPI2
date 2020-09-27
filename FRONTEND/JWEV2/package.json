@@ -42,9 +42,9 @@
     "popper.js": "^1.16.1",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
-    "wannancompile": "^1.1.1",
-    "wannancore": "^1.1.2",
-    "wannantraduction": "^1.1.1",
+    "wannancompile": "^1.2.0",
+    "wannancore": "^1.2.0",
+    "wannantraduction": "^1.2.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {

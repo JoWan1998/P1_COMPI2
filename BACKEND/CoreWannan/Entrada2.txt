@@ -9,6 +9,7 @@ function llenado(matrix1 : number[][], matrix2 : number[][], matrix3 : number[][
         matrix1[i] = [];
         matrix2[i] = [];
         matrix3[i] = [];
+
         for(let j = min; j < max; j++){
             matrix1[i][j] = j * 3 + i;
             matrix2[i][j] = i ** 3 - j ** 2;

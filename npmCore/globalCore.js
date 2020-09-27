@@ -3,16 +3,6 @@
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
         GUATEMALA
  */
-/*
-    simbologia de estados
-    -2 -> error instanciar variable
-    -1 -> error
-    0 -> finalizado
-    1 -> sin errores
-    2 -> sin errores, break
-    3 -> sin errores, continue
-    4 -> sin errores, return
- */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -26,6 +16,17 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var output = [];
+/*
+    simbologia de estados
+    -2 -> error instanciar variable
+    -1 -> error
+    0 -> finalizado
+    1 -> sin errores
+    2 -> sin errores, break
+    3 -> sin errores, continue
+    4 -> sin errores, return
+ */
 var tablasimbolos = /** @class */ (function () {
     function tablasimbolos(tabla, CF) {
         if (CF === void 0) { CF = false; }
@@ -198,7 +199,7 @@ var tablasimbolos = /** @class */ (function () {
                     for (var _d = 0, _e = this.simbolos; _d < _e.length; _d++) {
                         var simbolo = _e[_d];
                         if (simbolo instanceof sym) {
-                            console.log(simbolo, this.ambitoLevel);
+                            //console.log(simbolo, this.ambitoLevel)
                             if (simbolo.name == name && simbolo.ambito == this.ambitoLevel) {
                                 if (simbolo.tipo == TypeSym.Variable) {
                                     if (simbolo.tipoValue == TypeValue.type) {
@@ -509,16 +510,67 @@ var SwitchStatement = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.cases = [];
         _this["default"] = null;
+        _this.value = [];
         return _this;
     }
     SwitchStatement.prototype.execute = function (tablasimbolo1) {
-        var tablasimbolo = new tablasimbolos(tablasimbolo1, false);
-        var state = 5;
-        for (var _i = 0, _a = this.cases; _i < _a.length; _i++) {
-            var statements = _a[_i];
-            if (statements instanceof cases) {
-                statements.val = this.val;
-                var value = statements.execute(tablasimbolo);
+        try {
+            this.value = [];
+            //console.log(this);
+            var tablasimbolo_1 = new tablasimbolos(tablasimbolo1, false);
+            var state = 5;
+            for (var _i = 0, _a = this.cases; _i < _a.length; _i++) {
+                var statements = _a[_i];
+                if (statements instanceof cases) {
+                    statements.val = this.val;
+                    var value = statements.execute(tablasimbolo_1);
+                    switch (value[0]) {
+                        case -2: //-> error instanciar variable
+                            return value;
+                        case -1: //-> error
+                            return value;
+                        case 0: //-> finalizado
+                            state = 0;
+                            if (value[1] != null) {
+                                if (value[1] instanceof Array) {
+                                    for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                        var m = _c[_b];
+                                        this.value.push(m);
+                                    }
+                                }
+                                else {
+                                    this.value.push(value[1]);
+                                }
+                            }
+                            break;
+                        case 1: //-> sin errores
+                            state = 1;
+                            if (value[1] != null) {
+                                if (value[1] instanceof Array) {
+                                    for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                        var m = _e[_d];
+                                        this.value.push(m);
+                                    }
+                                }
+                                else {
+                                    this.value.push(value[1]);
+                                }
+                            }
+                            break;
+                        case 2: //-> sin errores, break
+                            return [2, this.value];
+                        case 3: //-> sin errores, continue
+                            return [3, this.value];
+                        case 4: //-> sin errores, return
+                            return [4, value[1]];
+                        case 5:
+                            state = 5;
+                            break;
+                    }
+                }
+            }
+            if (state == 5 && this["default"] != null) {
+                var value = this["default"].execute(tablasimbolo_1);
                 switch (value[0]) {
                     case -2: //-> error instanciar variable
                         return value;
@@ -528,8 +580,8 @@ var SwitchStatement = /** @class */ (function (_super) {
                         state = 0;
                         if (value[1] != null) {
                             if (value[1] instanceof Array) {
-                                for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
-                                    var m = _c[_b];
+                                for (var _f = 0, _g = value[1]; _f < _g.length; _f++) {
+                                    var m = _g[_f];
                                     this.value.push(m);
                                 }
                             }
@@ -542,8 +594,8 @@ var SwitchStatement = /** @class */ (function (_super) {
                         state = 1;
                         if (value[1] != null) {
                             if (value[1] instanceof Array) {
-                                for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
-                                    var m = _e[_d];
+                                for (var _h = 0, _j = value[1]; _h < _j.length; _h++) {
+                                    var m = _j[_h];
                                     this.value.push(m);
                                 }
                             }
@@ -558,14 +610,13 @@ var SwitchStatement = /** @class */ (function (_super) {
                         return [3, null];
                     case 4: //-> sin errores, return
                         return [4, value[1]];
-                    case 5:
-                        state = 5;
                 }
             }
+            return [state, this.value];
         }
-        if (state == 5 && this["default"] != null)
-            return this["default"].execute(tablasimbolo);
-        return [state, this.value];
+        catch (e) {
+            return [-1, 'Unexpected error, we cannot find the error...'];
+        }
     };
     SwitchStatement.prototype.grahp = function () {
         return "";
@@ -578,26 +629,108 @@ var SwitchStatement = /** @class */ (function (_super) {
 var cases = /** @class */ (function (_super) {
     __extends(cases, _super);
     function cases() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.val = null;
+        _this.ValueExpression = null;
+        _this.body = [];
+        _this.value = [];
+        return _this;
     }
     cases.prototype.execute = function (tablasimbolo) {
-        var valInitial1 = new RelationalExpression();
-        valInitial1.type = TypeStatement.ExpresionStatement;
-        valInitial1.Function = RelationalExpr.Igual;
-        valInitial1.Expression1 = this.val;
-        valInitial1.Expression2 = this.ValueExpression;
-        var valInitial = valInitial1.execute(tablasimbolo);
-        if (valInitial[0] < 0)
-            return [-1, null];
-        if (valInitial[1]) {
+        try {
+            this.value = [];
+            var valInitial1 = new RelationalExpression();
+            valInitial1.type = TypeStatement.ExpresionStatement;
+            valInitial1.Function = RelationalExpr.Igual;
+            valInitial1.Expression1 = this.val;
+            valInitial1.Expression2 = this.ValueExpression;
+            var valInitial = valInitial1.execute(tablasimbolo);
+            //console.log(valInitial);
+            if (valInitial[0] < 0)
+                return [-1, null];
+            if (valInitial[1]) {
+                for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
+                    var statement0 = _a[_i];
+                    var value = statement0.execute(tablasimbolo);
+                    //console.log(value);
+                    switch (value[0]) {
+                        case -2: //-> error instanciar variable
+                            return value;
+                        case -1: //-> error
+                            return value;
+                        case 0: //-> finalizado
+                            this.StateCode = 0;
+                            if (value[1] != null) {
+                                if (value[1] instanceof Array) {
+                                    for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                        var m = _c[_b];
+                                        this.value.push(m);
+                                    }
+                                }
+                                else {
+                                    this.value.push(value[1]);
+                                }
+                            }
+                            break;
+                        case 1: //-> sin errores
+                            this.StateCode = 1;
+                            if (value[1] != null) {
+                                if (value[1] instanceof Array) {
+                                    for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                        var m = _e[_d];
+                                        this.value.push(m);
+                                    }
+                                }
+                                else {
+                                    this.value.push(value[1]);
+                                }
+                            }
+                            break;
+                        case 2: //-> sin errores, break
+                            return [2, this.value];
+                        case 3: //-> sin errores, continue
+                            return [3, this.value];
+                        case 4: //-> sin errores, return
+                            return [4, value[1]];
+                    }
+                }
+            }
+            if (this.StateCode == 1 || this.StateCode == 0)
+                return [1, this.value];
+            return [5, null];
+        }
+        catch (e) {
+            //console.log(e);
+            return [-1, 'Unexpected Error, we cannot find the error...'];
+        }
+    };
+    cases.prototype.grahp = function () {
+        return "";
+    };
+    cases.prototype.traduction = function () {
+        return "";
+    };
+    return cases;
+}(statement));
+var defaults = /** @class */ (function (_super) {
+    __extends(defaults, _super);
+    function defaults() {
+        var _this = _super.call(this) || this;
+        _this.body = [];
+        _this.value = [];
+        return _this;
+    }
+    defaults.prototype.execute = function (tablasimbolo) {
+        try {
+            this.value = [];
             for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                 var statement0 = _a[_i];
                 var value = statement0.execute(tablasimbolo);
                 switch (value[0]) {
                     case -2: //-> error instanciar variable
-                        return [-2, null];
+                        return value;
                     case -1: //-> error
-                        return [-1, null];
+                        return value;
                     case 0: //-> finalizado
                         this.StateCode = 0;
                         if (value[1] != null) {
@@ -627,77 +760,18 @@ var cases = /** @class */ (function (_super) {
                         }
                         break;
                     case 2: //-> sin errores, break
-                        return [2, null];
+                        return [2, this.value];
                     case 3: //-> sin errores, continue
-                        return [3, null];
+                        return [3, this.value];
                     case 4: //-> sin errores, return
                         return [4, value[1]];
                 }
             }
-        }
-        if (this.StateCode == 1 || this.StateCode == 0)
             return [1, this.value];
-        return [5, null];
-    };
-    cases.prototype.grahp = function () {
-        return "";
-    };
-    cases.prototype.traduction = function () {
-        return "";
-    };
-    return cases;
-}(statement));
-var defaults = /** @class */ (function (_super) {
-    __extends(defaults, _super);
-    function defaults() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    defaults.prototype.execute = function (tablasimbolo) {
-        for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
-            var statement0 = _a[_i];
-            var value = statement0.execute(tablasimbolo);
-            switch (value[0]) {
-                case -2: //-> error instanciar variable
-                    return [-2, null];
-                case -1: //-> error
-                    return [-1, null];
-                case 0: //-> finalizado
-                    this.StateCode = 0;
-                    if (value[1] != null) {
-                        if (value[1] instanceof Array) {
-                            for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
-                                var m = _c[_b];
-                                this.value.push(m);
-                            }
-                        }
-                        else {
-                            this.value.push(value[1]);
-                        }
-                    }
-                    break;
-                case 1: //-> sin errores
-                    this.StateCode = 1;
-                    if (value[1] != null) {
-                        if (value[1] instanceof Array) {
-                            for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
-                                var m = _e[_d];
-                                this.value.push(m);
-                            }
-                        }
-                        else {
-                            this.value.push(value[1]);
-                        }
-                    }
-                    break;
-                case 2: //-> sin errores, break
-                    return [2, null];
-                case 3: //-> sin errores, continue
-                    return [3, null];
-                case 4: //-> sin errores, return
-                    return [4, value[1]];
-            }
         }
-        return [this.StateCode, this.value];
+        catch (e) {
+            return [-1, 'Unexpected Error, we cannot find the error'];
+        }
     };
     defaults.prototype.grahp = function () {
         return "";
@@ -2219,14 +2293,14 @@ var IfStatement = /** @class */ (function (_super) {
         try {
             //console.log(this);
             this.value = [];
-            var tablasimbolo_1 = new tablasimbolos(tablasimbolo1, false);
-            var valInitial = this.ValueExpression.execute(tablasimbolo_1);
+            var tablasimbolo_2 = new tablasimbolos(tablasimbolo1, false);
+            var valInitial = this.ValueExpression.execute(tablasimbolo_2);
             if (valInitial[0] < 0)
                 return [-1, null];
             if (valInitial[1]) {
                 for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                     var statement0 = _a[_i];
-                    var value = statement0.execute(tablasimbolo_1);
+                    var value = statement0.execute(tablasimbolo_2);
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
                             return value;
@@ -2269,9 +2343,9 @@ var IfStatement = /** @class */ (function (_super) {
                             }
                             break;
                         case 2: //-> sin errores, break
-                            return [2, null];
+                            return [2, this.value];
                         case 3: //-> sin errores, continue
-                            return [3, null];
+                            return [3, this.value];
                         case 4: //-> sin errores, return
                             return [4, value[1]];
                     }
@@ -2281,7 +2355,7 @@ var IfStatement = /** @class */ (function (_super) {
                 if (this.bodyElse.length > 0) {
                     for (var _f = 0, _g = this.bodyElse; _f < _g.length; _f++) {
                         var statement0 = _g[_f];
-                        var value = statement0.execute(tablasimbolo_1);
+                        var value = statement0.execute(tablasimbolo_2);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
                                 return value;
@@ -2324,9 +2398,9 @@ var IfStatement = /** @class */ (function (_super) {
                                 }
                                 break;
                             case 2: //-> sin errores, break
-                                return [2, null];
+                                return [2, this.value];
                             case 3: //-> sin errores, continue
-                                return [3, null];
+                                return [3, this.value];
                             case 4: //-> sin errores, return
                                 return [4, value[1]];
                         }
@@ -2625,6 +2699,7 @@ var expression = /** @class */ (function (_super) {
             if (val[0] > 0) {
                 var func = val[1];
                 var funcion = func.value;
+                //console.log(this.parameters)
                 var res = funcion.executeV(tablasimbolo, this.parameters);
                 if (res[0] > 0) {
                     return res[1];
@@ -2638,6 +2713,7 @@ var expression = /** @class */ (function (_super) {
     };
     expression.prototype.getValue = function (tablasimbolo) {
         //get data in especific
+        //console.log(this)
         var positions = [];
         var atributos = [];
         for (var _i = 0, _a = this.position; _i < _a.length; _i++) {
@@ -2727,7 +2803,7 @@ var expression = /** @class */ (function (_super) {
                                                     var bb = retorno.push(this.Expresion);
                                                     if (bb[0] > 0) {
                                                         var m = valors.setValue(tablasimbolo, this.position, retorno);
-                                                        console.log(valors);
+                                                        //console.log(valors)
                                                         if (m[0] > 0) {
                                                             var k = tablasimbolo.update(this.name, valors);
                                                             if (k[0] > 0)
@@ -3051,6 +3127,7 @@ var functions = /** @class */ (function (_super) {
     function functions() {
         var _this = _super.call(this) || this;
         _this.Parameters = [];
+        _this.body = [];
         return _this;
     }
     functions.prototype.execute = function (tablasimbolo) {
@@ -3058,197 +3135,216 @@ var functions = /** @class */ (function (_super) {
     };
     functions.prototype.executeV = function (tablasimbolo1, parameters) {
         try {
-            var tablasimbolo_2 = new tablasimbolos(tablasimbolo1, true);
+            //console.log(this)
+            var tablasimbolo_3 = new tablasimbolos(tablasimbolo1, true);
+            //console.log(this.Parameters.length == parameters.length)
             if (this.Parameters.length == parameters.length) {
                 for (var a = 0; a < this.Parameters.length; a++) {
                     var namev = this.Parameters[a].name;
+                    //console.log(namev)
                     if (parameters[a] instanceof expression) {
                         var value = parameters[a];
-                        switch (this.Parameters[a].tipo) {
+                        var valueS = value.execute(tablasimbolo1);
+                        if (valueS[0] > 0) {
+                            tablasimbolo_3.insert(namev, valueS[1], TypeSym.Variable, this.Parameters[a].tipo);
+                        }
+                        /*
+                        switch (this.Parameters[a].tipo)
+                        {
                             case TypeValue.String:
-                                var valueS = value.execute(tablasimbolo_2);
-                                if (valueS[0] > 0) {
+                                let valueS = value.execute(tablasimbolo);
+                                if(valueS[0]>0) {
+
                                     if (valueS[1] instanceof String) {
-                                        tablasimbolo_2.insert(namev, valueS[1], TypeSym.Variable, TypeValue.String);
-                                    }
-                                    else {
-                                        return [-1, null];
+                                        tablasimbolo.insert(namev, valueS[1], TypeSym.Variable, TypeValue.String);
+                                    } else {
+                                        return [-1, 'Parametro invalido...']
                                     }
                                 }
-                                else {
-                                    return [-1, null];
+                                else
+                                {
+                                    return [-1, 'Parametro invalido...']
                                 }
                                 break;
                             case TypeValue.Number:
-                                var valueN = value.execute(tablasimbolo_2);
-                                if (valueN[0] > 0) {
+                                let valueN = value.execute(tablasimbolo);
+                                if(valueN[0]>0) {
+
                                     if (valueN[1] instanceof Number) {
-                                        tablasimbolo_2.insert(namev, valueN[1], TypeSym.Variable, TypeValue.Number);
-                                    }
-                                    else {
-                                        return [-1, null];
+                                        tablasimbolo.insert(namev, valueN[1], TypeSym.Variable, TypeValue.Number);
+                                    } else {
+                                        return [-1, 'Parametro invalido...']
                                     }
                                 }
-                                else {
-                                    return [-1, null];
+                                else
+                                {
+                                    return [-1, 'Parametro invalido...']
                                 }
                                 break;
                             case TypeValue.Boolean:
-                                var valueB = value.execute(tablasimbolo_2);
-                                if (valueB[0] > 0) {
+                                let valueB = value.execute(tablasimbolo);
+                                if(valueB[0]>0) {
+
                                     if (valueB[1] instanceof Boolean) {
-                                        tablasimbolo_2.insert(namev, valueB[1], TypeSym.Variable, TypeValue.Boolean);
-                                    }
-                                    else {
-                                        return [-1, null];
+                                        tablasimbolo.insert(namev, valueB[1], TypeSym.Variable, TypeValue.Boolean);
+                                    } else {
+                                        return [-1, 'Parametro invalido...']
                                     }
                                 }
-                                else {
-                                    return [-1, null];
+                                else
+                                {
+                                    return [-1, 'Parametro invalido...']
                                 }
                                 break;
-                            case TypeValue["var"]:
-                                var valueV = tablasimbolo_2.getsym(value.name);
-                                if (valueV[0] > 1) {
-                                    var simbolo = valueV[1];
-                                    tablasimbolo_2.insert(namev, simbolo.value, simbolo.tipo, simbolo.tipoValue);
+                            case TypeValue.var:
+                                let valueV = tablasimbolo.getsym(value.name);
+                                if(valueV[0]>1) {
+                                    let simbolo =<sym> valueV[1];
+                                    tablasimbolo.insert(namev,simbolo.value,simbolo.tipo,simbolo.tipoValue);
                                 }
-                                else {
-                                    return [-1, null];
+                                else
+                                {
+                                    return [-1, 'Parametro invalido...']
                                 }
                                 break;
                             case TypeValue.type:
-                                var valueT = value.execute(tablasimbolo_2);
-                                if (valueT[0] > 0) {
+                                let valueT = value.execute(tablasimbolo);
+                                if(valueT[0]>0) {
+
                                     if (valueT[1] instanceof types) {
-                                        tablasimbolo_2.insert(namev, valueT[1], TypeSym.Variable, TypeValue.type);
-                                    }
-                                    else {
-                                        return [-1, null];
+                                        tablasimbolo.insert(namev, valueT[1], TypeSym.Variable, TypeValue.type);
+                                    } else {
+                                        return [-1, 'Parametro invalido...']
                                     }
                                 }
-                                else {
-                                    return [-1, null];
+                                else
+                                {
+                                    return [-1, 'Parametro invalido...']
                                 }
                                 break;
                             case TypeValue.Array:
-                                var valueA = value.execute(tablasimbolo_2);
-                                if (valueA[0] > 0) {
+                                let valueA = value.execute(tablasimbolo);
+                                if(valueA[0]>0) {
+
                                     if (valueA[1] instanceof arrays) {
-                                        tablasimbolo_2.insert(namev, valueA[1], TypeSym.Variable, TypeValue.Array);
-                                    }
-                                    else {
-                                        return [-1, null];
+                                        tablasimbolo.insert(namev, valueA[1], TypeSym.Variable, TypeValue.Array);
+                                    } else {
+                                        return [-1, 'Parametro invalido...']
                                     }
                                 }
-                                else {
-                                    return [-1, null];
+                                else
+                                {
+                                    return [-1, 'Parametro invalido...']
                                 }
                                 break;
                             default:
-                                return [-1, null];
+                                return [-1, 'Parametro invalido...']
+
+
                         }
+                        */
                     }
                     else {
-                        switch (this.Parameters[a].tipo) {
+                        if (parameters[a] instanceof Strings || parameters[a] instanceof arrays || parameters[a] instanceof types || parameters[a] instanceof Numbers || parameters[a] instanceof Booleans || parameters[a] instanceof Nulls) {
+                            var valueS = parameters[a].execute();
+                            if (valueS[0] > 0) {
+                                tablasimbolo_3.insert(namev, valueS[1], TypeSym.Variable, this.Parameters[a].tipo);
+                            }
+                        }
+                        else {
+                            var valueS = parameters[a].execute(tablasimbolo1);
+                            if (valueS[0] > 0) {
+                                tablasimbolo_3.insert(namev, valueS[1], TypeSym.Variable, this.Parameters[a].tipo);
+                            }
+                        }
+                        /*
+                        switch (this.Parameters[a].tipo)
+                        {
                             case TypeValue.String:
-                                var valueS = parameters[a].execute(tablasimbolo_2);
-                                if (valueS[0] > 0) {
+                                let valueS = parameters[a].execute(tablasimbolo);
+                                if(valueS[0]>0) {
+
                                     if (valueS[1] instanceof String) {
-                                        tablasimbolo_2.insert(namev, valueS[1], TypeSym.Variable, TypeValue.String);
-                                    }
-                                    else {
-                                        return [-1, null];
+                                        tablasimbolo.insert(namev, valueS[1], TypeSym.Variable, TypeValue.String);
+                                    } else {
+                                        return [-1, null]
                                     }
                                 }
-                                else {
-                                    return [-1, null];
+                                else
+                                {
+                                    return [-1,null]
                                 }
                                 break;
                             case TypeValue.Number:
-                                var valueN = parameters[a].execute(tablasimbolo_2);
-                                if (valueN[0] > 0) {
+                                let valueN = parameters[a].execute(tablasimbolo);
+                                if(valueN[0]>0) {
+
                                     if (valueN[1] instanceof Number) {
-                                        tablasimbolo_2.insert(namev, valueN[1], TypeSym.Variable, TypeValue.Number);
-                                    }
-                                    else {
-                                        return [-1, null];
+                                        tablasimbolo.insert(namev, valueN[1], TypeSym.Variable, TypeValue.Number);
+                                    } else {
+                                        return [-1, null]
                                     }
                                 }
-                                else {
-                                    return [-1, null];
+                                else
+                                {
+                                    return [-1,null]
                                 }
                                 break;
                             case TypeValue.Boolean:
-                                var valueB = parameters[a].execute(tablasimbolo_2);
-                                if (valueB[0] > 0) {
+                                let valueB = parameters[a].execute(tablasimbolo);
+                                if(valueB[0]>0) {
+
                                     if (valueB[1] instanceof Boolean) {
-                                        tablasimbolo_2.insert(namev, valueB[1], TypeSym.Variable, TypeValue.Boolean);
-                                    }
-                                    else {
-                                        return [-1, null];
+                                        tablasimbolo.insert(namev, valueB[1], TypeSym.Variable, TypeValue.Boolean);
+                                    } else {
+                                        return [-1, null]
                                     }
                                 }
-                                else {
-                                    return [-1, null];
+                                else
+                                {
+                                    return [-1,null]
                                 }
                                 break;
                             default:
-                                return [-1, null];
+                                return [-1,null]
+
+
                         }
+
+                         */
                     }
                 }
+                //console.log(tablasimbolo)
                 for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                     var statement1 = _a[_i];
-                    var value = statement1.execute(tablasimbolo_2);
+                    //console.log(tablasimbolo);
+                    var value = statement1.execute(tablasimbolo_3);
+                    //console.log(value);
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
                             return value;
                         case -1: //-> error
                             return value;
                         case 0: //-> finalizado
+                            this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
                             this.StateCode = 0;
                             this.value = value[1];
                             break;
                         case 1: //-> sin errores
+                            this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
                             this.StateCode = 1;
                             this.value = value[1];
                             break;
                         case 2: //-> sin errores, break
+                            this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
                             break;
                         case 3: //-> sin errores, continue
+                            this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
                             break;
                         case 4: //-> sin errores, return
-                            if (value[1] == null) {
-                                if (this.tipo == TypeValue["void"])
-                                    return [4, null];
-                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
-                            }
-                            else if (value[1] instanceof Boolean) {
-                                if (this.tipo == TypeValue.Boolean)
-                                    return [4, value[1]];
-                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
-                            }
-                            else if (value[1] instanceof Number) {
-                                if (this.tipo == TypeValue.Number)
-                                    return [4, value[1]];
-                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
-                            }
-                            else if (value[1] instanceof String) {
-                                if (this.tipo == TypeValue.String)
-                                    return [4, value[1]];
-                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
-                            }
-                            else if (value[1] instanceof arrays) {
-                                if (this.tipo == TypeValue.Array)
-                                    return [4, value[1]];
-                                return [-1, 'Error no se puede retornar el valor, no corresponde al siguiente tipo: ' + TypeValue[this.tipo]];
-                            }
-                            else {
-                                if (this.tipo == TypeValue["void"])
-                                    return [-1, null];
-                                return [1, value[1]];
-                            }
+                            this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
+                            //console.log(value);
+                            return [4, value[1]];
                     }
                 }
                 return [1, null];
@@ -3264,6 +3360,26 @@ var functions = /** @class */ (function (_super) {
     };
     functions.prototype.traduction = function () {
         return "";
+    };
+    functions.prototype.actualizarTs = function (tablasimbolos, tablasimbolos1, paramsCall) {
+        try {
+            for (var _i = 0, paramsCall_1 = paramsCall; _i < paramsCall_1.length; _i++) {
+                var finder = paramsCall_1[_i];
+                if (finder instanceof expression) {
+                    var value = finder;
+                    if (value.name != '' && value.isCallFunction == false) {
+                        var simbol = tablasimbolos1.getsym(value.name);
+                        if (simbol[0] > 0) {
+                            var valor = simbol[1];
+                            var insert = tablasimbolos.update(value.name, valor.getValue());
+                            console.log(insert);
+                        }
+                    }
+                }
+            }
+        }
+        catch (e) {
+        }
     };
     return functions;
 }(statement));
@@ -3300,9 +3416,9 @@ var WhileStatements = /** @class */ (function (_super) {
         try {
             this.value = [];
             var state = true;
-            var tablasimbolo_3 = new tablasimbolos(tablasimbolo1, false);
+            var tablasimbolo_4 = new tablasimbolos(tablasimbolo1, false);
             while (state) {
-                var valInitial = this.ValueExpression.execute(tablasimbolo_3);
+                var valInitial = this.ValueExpression.execute(tablasimbolo_4);
                 if (valInitial[0] < 0)
                     return [-1, null];
                 if (!valInitial[1])
@@ -3310,7 +3426,7 @@ var WhileStatements = /** @class */ (function (_super) {
                 var internalState = 0;
                 for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                     var statement0 = _a[_i];
-                    var value = statement0.execute(tablasimbolo_3);
+                    var value = statement0.execute(tablasimbolo_4);
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
                             return [-2, null];
@@ -3497,19 +3613,19 @@ var ForStatements1 = /** @class */ (function (_super) {
     ForStatements1.prototype.execute = function (tablasimbolo1) {
         try {
             this.value = [];
-            var tablasimbolo_4 = new tablasimbolos(tablasimbolo1, false);
-            var initial = this.valueInitial.execute(tablasimbolo_4);
+            var tablasimbolo_5 = new tablasimbolos(tablasimbolo1, false);
+            var initial = this.valueInitial.execute(tablasimbolo_5);
             if (initial[0] > 0) {
                 var state = true;
                 while (state) {
                     var internalState = 0;
-                    var condicion = this.condicion.execute(tablasimbolo_4);
+                    var condicion = this.condicion.execute(tablasimbolo_5);
                     if (condicion[0] < 0)
                         return [-1, 'Condition Iteration For, Error, cannot execute the  Condition'];
                     if (condicion[1]) {
                         for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                             var statement1 = _a[_i];
-                            var value = statement1.execute(tablasimbolo_4);
+                            var value = statement1.execute(tablasimbolo_5);
                             switch (value[0]) {
                                 case -2: //-> error instanciar variable
                                     return value;
@@ -3567,7 +3683,7 @@ var ForStatements1 = /** @class */ (function (_super) {
                             continue;
                         if (internalState == 2)
                             state = false;
-                        var post = this.postIterator.execute(tablasimbolo_4);
+                        var post = this.postIterator.execute(tablasimbolo_5);
                         if (post[0] < 0)
                             return [-1, 'Post Iteration For, Error, cannot execute the Post Condition'];
                     }
@@ -3599,19 +3715,19 @@ var ForStatements2 = /** @class */ (function (_super) {
     ForStatements2.prototype.execute = function (tablasimbolo1) {
         try {
             this.value = [];
-            var tablasimbolo_5 = new tablasimbolos(tablasimbolo1, false);
-            var initial = tablasimbolo_5.get(this.valueInitial);
+            var tablasimbolo_6 = new tablasimbolos(tablasimbolo1, false);
+            var initial = tablasimbolo_6.get(this.valueInitial);
             if (initial != null) {
                 var state = true;
                 while (state) {
                     var internalState = 0;
-                    var condicion = this.condicion.execute(tablasimbolo_5);
+                    var condicion = this.condicion.execute(tablasimbolo_6);
                     if (condicion[0] < 0)
                         return [-1, null];
                     if (condicion[1]) {
                         for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
                             var statement1 = _a[_i];
-                            var value = statement1.execute(tablasimbolo_5);
+                            var value = statement1.execute(tablasimbolo_6);
                             switch (value[0]) {
                                 case -2: //-> error instanciar variable
                                     return [-2, null];
@@ -3661,7 +3777,7 @@ var ForStatements2 = /** @class */ (function (_super) {
                             continue;
                         if (internalState == 2)
                             break;
-                        var post = this.postIterator.execute(tablasimbolo_5);
+                        var post = this.postIterator.execute(tablasimbolo_6);
                         if (post[0] < 0)
                             return [-1, null];
                     }
@@ -4231,7 +4347,6 @@ var ForStatements4 = /** @class */ (function (_super) {
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
         GUATEMALA
  */
-///<reference path="Statements.ts"/>
 var Strings = /** @class */ (function (_super) {
     __extends(Strings, _super);
     function Strings() {
@@ -4387,6 +4502,7 @@ var NativeStatement = /** @class */ (function (_super) {
                         }
                     }
                 }
+                output.push('{\"linea\":\"' + this.linea + '\", \"valor\":\"' + resultado + '\"}');
                 return [1, '{\"linea\":\"' + this.linea + '\", \"valor\":\"' + resultado + '\"}'];
             }
             else {
@@ -4394,7 +4510,7 @@ var NativeStatement = /** @class */ (function (_super) {
             }
         }
         catch (e) {
-            console.log(e);
+            //console.log(e)
             return [-1, null];
         }
     };
@@ -4673,86 +4789,164 @@ var declaration0 = /** @class */ (function (_super) {
     return declaration0;
 }(statement));
 /*
+        UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
+        JOSE ORLANDO WANNAN ESCOBAR - 201612331
+        GUATEMALA
+ */
+var BreakStatements = /** @class */ (function (_super) {
+    __extends(BreakStatements, _super);
+    function BreakStatements() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    BreakStatements.prototype.execute = function (tablasimbolo) {
+        return [2, null];
+    };
+    BreakStatements.prototype.grahp = function () {
+        return "";
+    };
+    BreakStatements.prototype.traduction = function () {
+        return "";
+    };
+    return BreakStatements;
+}(statement));
+var ContinueStatements = /** @class */ (function (_super) {
+    __extends(ContinueStatements, _super);
+    function ContinueStatements() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ContinueStatements.prototype.execute = function (tablasimbolo) {
+        return [3, null];
+    };
+    ContinueStatements.prototype.grahp = function () {
+        return "";
+    };
+    ContinueStatements.prototype.traduction = function () {
+        return "";
+    };
+    return ContinueStatements;
+}(statement));
+var ReturnStatements = /** @class */ (function (_super) {
+    __extends(ReturnStatements, _super);
+    function ReturnStatements() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ReturnStatements.prototype.execute = function (tablasimbolo) {
+        try {
+            var val = this.Expresion.execute(tablasimbolo);
+            if (val[0] > 0)
+                return [4, val[1]];
+            return [-1, 'An error appears, in Return instructions, maybe you will be inspect the return expression...'];
+        }
+        catch (e) {
+            return [-1, 'Unexpected Error, we cannot find the error'];
+        }
+    };
+    ReturnStatements.prototype.grahp = function () {
+        return "";
+    };
+    ReturnStatements.prototype.traduction = function () {
+        return "";
+    };
+    return ReturnStatements;
+}(statement));
+/*
     UNIVERSIDAD DE SAN CARLOS DE GUATEMALA
     JOSE WANNAN - 201612331 @2020
  */
-var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[{"linea":"1","tipo":[{"linea":"1","tipo":"number"}],"size":[{"linea":"1","statement":"array","elementos":[]},\n' +
-    '{"linea":"1","statement":"array","elementos":[]}]}],"name":"matrixA","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[]}]}]}]},\n' +
-    '{"linea":"2","statement":"declaration","type":[{"linea":"2","tipo":[{"linea":"2","tipo":"let"}],"size":[]}], "values":[{"linea":"2","statement":"variable","tipoExpresion":[{"linea":"2","tipo":[{"linea":"2","tipo":"number"}],"size":[{"linea":"2","statement":"array","elementos":[]},\n' +
-    '{"linea":"2","statement":"array","elementos":[]}]}],"name":"matrixB","ValExpression":[{"linea":"2","operator":[{"linea":"2","v":"="}],"Expression":[{"linea":"2","statement":"arreglo","value":[]}]}]}]},\n' +
-    '{"linea":"3","statement":"declaration","type":[{"linea":"3","tipo":[{"linea":"3","tipo":"let"}],"size":[]}], "values":[{"linea":"3","statement":"variable","tipoExpresion":[{"linea":"3","tipo":[{"linea":"3","tipo":"number"}],"size":[{"linea":"3","statement":"array","elementos":[]},\n' +
-    '{"linea":"3","statement":"array","elementos":[]}]}],"name":"matrixR","ValExpression":[{"linea":"3","operator":[{"linea":"3","v":"="}],"Expression":[{"linea":"3","statement":"arreglo","value":[]}]}]}]},\n' +
+var jsondataprueba = '';
+var jsondata2 = '{"linea":"196","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[{"linea":"1","tipo":[{"linea":"1","tipo":"number"}],"size":[{"linea":"1","statement":"arreglo","value":[]},\n' +
+    '{"linea":"1","statement":"arreglo","value":[]}]}],"name":"matrixA","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[]}]}]}]},\n' +
+    '{"linea":"2","statement":"declaration","type":[{"linea":"2","tipo":[{"linea":"2","tipo":"let"}],"size":[]}], "values":[{"linea":"2","statement":"variable","tipoExpresion":[{"linea":"2","tipo":[{"linea":"2","tipo":"number"}],"size":[{"linea":"2","statement":"arreglo","value":[]},\n' +
+    '{"linea":"2","statement":"arreglo","value":[]}]}],"name":"matrixB","ValExpression":[{"linea":"2","operator":[{"linea":"2","v":"="}],"Expression":[{"linea":"2","statement":"arreglo","value":[]}]}]}]},\n' +
+    '{"linea":"3","statement":"declaration","type":[{"linea":"3","tipo":[{"linea":"3","tipo":"let"}],"size":[]}], "values":[{"linea":"3","statement":"variable","tipoExpresion":[{"linea":"3","tipo":[{"linea":"3","tipo":"number"}],"size":[{"linea":"3","statement":"arreglo","value":[]},\n' +
+    '{"linea":"3","statement":"arreglo","value":[]}]}],"name":"matrixR","ValExpression":[{"linea":"3","operator":[{"linea":"3","v":"="}],"Expression":[{"linea":"3","statement":"arreglo","value":[]}]}]}]},\n' +
     '{"linea":"4","statement":"declaration","type":[{"linea":"4","tipo":[{"linea":"4","tipo":"const"}],"size":[]}], "values":[{"linea":"4","statement":"variable","tipoExpresion":[],"name":"min","ValExpression":[{"linea":"4","operator":[{"linea":"4","v":"="}],"Expression":[{"linea":"4","tipo":"number", "value":"0"}]}]}]},\n' +
     '{"linea":"5","statement":"declaration","type":[{"linea":"5","tipo":[{"linea":"5","tipo":"const"}],"size":[]}], "values":[{"linea":"5","statement":"variable","tipoExpresion":[],"name":"max","ValExpression":[{"linea":"5","operator":[{"linea":"5","v":"="}],"Expression":[{"linea":"5","tipo":"number", "value":"4"}]}]}]},\n' +
-    '{"linea":"18","statement":"funcion","name":"llenado","type":[{"linea":"7","tipo":[{"linea":"7","tipo":"void"}],"size":[]}],"params":[{"linea":"7","statement":"parameter","name":"matrix1","tipo":[{"linea":"7","tipo":[{"linea":"7","tipo":"number"}],"size":[{"linea":"7","statement":"array","elementos":[]},\n' +
-    '{"linea":"7","statement":"array","elementos":[]}]}]},\n' +
-    '{"linea":"7","statement":"parameter","name":"matrix2","tipo":[{"linea":"7","tipo":[{"linea":"7","tipo":"number"}],"size":[{"linea":"7","statement":"array","elementos":[]},\n' +
-    '{"linea":"7","statement":"array","elementos":[]}]}]},\n' +
-    '{"linea":"7","statement":"parameter","name":"matrix3","tipo":[{"linea":"7","tipo":[{"linea":"7","tipo":"number"}],"size":[{"linea":"7","statement":"array","elementos":[]},\n' +
-    '{"linea":"7","statement":"array","elementos":[]}]}]}],"body":[{"linea":"17","statement":"for","ExpresionInitial":[{"linea":"8","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"8","tipo":"let"}],"name":"i","ValExpression":[{"linea":"8","operator":[{"linea":"8","v":"="}],"Expression":[{"linea":"8","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"8","statement":"Relational","Relational":"<","Expression1":[{"linea":"8","statement":"variable","value":"i"}],"Expression2":[{"linea":"8","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"8","statement":"postincrement","padre":[{"linea":"8","statement":"variable","value":"i"}]}],"body":[{"linea":"9","statement":"asignation","variable":"matrix1","params":[{"linea":"9","statement":"ArrayList","value":[{"linea":"9","statement":"MatrizPosition","value":[{"linea":"9","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"9","operator":[{"linea":"9","v":"="}],"Expression":[{"linea":"9","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"18","statement":"funcion","name":"llenado","type":[{"linea":"7","tipo":[{"linea":"7","tipo":"void"}],"size":[]}],"params":[{"linea":"7","statement":"parameter","name":"matrix1","tipo":[{"linea":"7","tipo":[{"linea":"7","tipo":"number"}],"size":[{"linea":"7","statement":"arreglo","value":[]},\n' +
+    '{"linea":"7","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"7","statement":"parameter","name":"matrix2","tipo":[{"linea":"7","tipo":[{"linea":"7","tipo":"number"}],"size":[{"linea":"7","statement":"arreglo","value":[]},\n' +
+    '{"linea":"7","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"7","statement":"parameter","name":"matrix3","tipo":[{"linea":"7","tipo":[{"linea":"7","tipo":"number"}],"size":[{"linea":"7","statement":"arreglo","value":[]},\n' +
+    '{"linea":"7","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"17","statement":"for","ExpresionInitial":[{"linea":"8","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"8","tipo":"let"}],"name":"i","ValExpression":[{"linea":"8","operator":[{"linea":"8","v":"="}],"Expression":[{"linea":"8","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"8","statement":"Relational","Relational":"<","Expression1":[{"linea":"8","statement":"variable","value":"i"}],"Expression2":[{"linea":"8","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"8","statement":"postincrement1","padre":[{"linea":"8","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"9","statement":"asignation","variable":"matrix1","params":[{"linea":"9","statement":"ArrayList","value":[{"linea":"9","statement":"MatrizPosition","value":[{"linea":"9","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"9","operator":[{"linea":"9","v":"="}],"Expression":[{"linea":"9","statement":"arreglo","value":[]}]}]},\n' +
     '{"linea":"10","statement":"asignation","variable":"matrix2","params":[{"linea":"10","statement":"ArrayList","value":[{"linea":"10","statement":"MatrizPosition","value":[{"linea":"10","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"10","operator":[{"linea":"10","v":"="}],"Expression":[{"linea":"10","statement":"arreglo","value":[]}]}]},\n' +
     '{"linea":"11","statement":"asignation","variable":"matrix3","params":[{"linea":"11","statement":"ArrayList","value":[{"linea":"11","statement":"MatrizPosition","value":[{"linea":"11","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"11","operator":[{"linea":"11","v":"="}],"Expression":[{"linea":"11","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"16","statement":"for","ExpresionInitial":[{"linea":"12","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"12","tipo":"let"}],"name":"j","ValExpression":[{"linea":"12","operator":[{"linea":"12","v":"="}],"Expression":[{"linea":"12","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"12","statement":"Relational","Relational":"<","Expression1":[{"linea":"12","statement":"variable","value":"j"}],"Expression2":[{"linea":"12","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"12","statement":"postincrement","padre":[{"linea":"12","statement":"variable","value":"j"}]}],"body":[{"linea":"13","statement":"asignation","variable":"matrix1","params":[{"linea":"13","statement":"ArrayList","value":[{"linea":"13","statement":"MatrizPosition","value":[{"linea":"13","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"16","statement":"for","ExpresionInitial":[{"linea":"12","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"12","tipo":"let"}],"name":"j","ValExpression":[{"linea":"12","operator":[{"linea":"12","v":"="}],"Expression":[{"linea":"12","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"12","statement":"Relational","Relational":"<","Expression1":[{"linea":"12","statement":"variable","value":"j"}],"Expression2":[{"linea":"12","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"12","statement":"postincrement1","padre":[{"linea":"12","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"13","statement":"asignation","variable":"matrix1","params":[{"linea":"13","statement":"ArrayList","value":[{"linea":"13","statement":"MatrizPosition","value":[{"linea":"13","statement":"variable","value":"i"}]},\n' +
     '{"linea":"13","statement":"MatrizPosition","value":[{"linea":"13","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"13","operator":[{"linea":"13","v":"="}],"Expression":[{"linea":"13","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"13","statement":"Aritmetic","Aritmetic":"*","Expression1":[{"linea":"13","statement":"variable","value":"j"}],"Expression2":[{"linea":"13","tipo":"number", "value":"3"}]}],"Expression2":[{"linea":"13","statement":"variable","value":"i"}]}]}]},\n' +
     '{"linea":"14","statement":"asignation","variable":"matrix2","params":[{"linea":"14","statement":"ArrayList","value":[{"linea":"14","statement":"MatrizPosition","value":[{"linea":"14","statement":"variable","value":"i"}]},\n' +
     '{"linea":"14","statement":"MatrizPosition","value":[{"linea":"14","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"14","operator":[{"linea":"14","v":"="}],"Expression":[{"linea":"14","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"14","statement":"Aritmetic","Aritmetic":"**","Expression1":[{"linea":"14","statement":"variable","value":"i"}],"Expression2":[{"linea":"14","tipo":"number", "value":"3"}]}],"Expression2":[{"linea":"14","statement":"Aritmetic","Aritmetic":"**","Expression1":[{"linea":"14","statement":"variable","value":"j"}],"Expression2":[{"linea":"14","tipo":"number", "value":"2"}]}]}]}]},\n' +
     '{"linea":"15","statement":"asignation","variable":"matrix3","params":[{"linea":"15","statement":"ArrayList","value":[{"linea":"15","statement":"MatrizPosition","value":[{"linea":"15","statement":"variable","value":"i"}]},\n' +
     '{"linea":"15","statement":"MatrizPosition","value":[{"linea":"15","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"15","operator":[{"linea":"15","v":"="}],"Expression":[{"linea":"15","tipo":"number", "value":"0"}]}]}]}]}]},\n' +
-    '{"linea":"28","statement":"funcion","name":"print","type":[{"linea":"20","tipo":[{"linea":"20","tipo":"void"}],"size":[]}],"params":[{"linea":"20","statement":"parameter","name":"matrix","tipo":[{"linea":"20","tipo":[{"linea":"20","tipo":"number"}],"size":[{"linea":"20","statement":"array","elementos":[]},\n' +
-    '{"linea":"20","statement":"array","elementos":[]}]}]}],"body":[{"linea":"27","statement":"for","ExpresionInitial":[{"linea":"21","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"21","tipo":"let"}],"name":"i","ValExpression":[{"linea":"21","operator":[{"linea":"21","v":"="}],"Expression":[{"linea":"21","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"21","statement":"Relational","Relational":"<","Expression1":[{"linea":"21","statement":"variable","value":"i"}],"Expression2":[{"linea":"21","statement":"nativeArray", "padre":[{"linea":"21","statement":"variable","value":"matrix"}],"native":"length"}]}],"ExpressionFinal":[{"linea":"21","statement":"postincrement","padre":[{"linea":"21","statement":"variable","value":"i"}]}],"body":[{"linea":"22","statement":"declaration","type":[{"linea":"22","tipo":[{"linea":"22","tipo":"let"}],"size":[]}], "values":[{"linea":"22","statement":"variable","tipoExpresion":[],"name":"salida","ValExpression":[{"linea":"22","operator":[{"linea":"22","v":"="}],"Expression":[{"linea":"22","tipo":"string3", "value":""}]}]}]},\n' +
-    '{"linea":"25","statement":"for","ExpresionInitial":[{"linea":"23","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"23","tipo":"let"}],"name":"j","ValExpression":[{"linea":"23","operator":[{"linea":"23","v":"="}],"Expression":[{"linea":"23","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"23","statement":"Relational","Relational":"<","Expression1":[{"linea":"23","statement":"variable","value":"j"}],"Expression2":[{"linea":"23","statement":"nativeArray", "padre":[{"linea":"23","statement":"callMatriz", "padre":[{"linea":"23","statement":"variable","value":"matrix"}],"posicion":[{"linea":"23","statement":"variable","value":"i"}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"23","statement":"postincrement","padre":[{"linea":"23","statement":"variable","value":"j"}]}],"body":[{"linea":"24","statement":"asignation","variable":"salida","params":[],"ValExpression":[{"linea":"24","operator":[{"linea":"24","v":"="}],"Expression":[{"linea":"24","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"24","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"24","statement":"variable","value":"salida"}],"Expression2":[{"linea":"24","tipo":"string1", "value":"\\t|\\t"}]}],"Expression2":[{"linea":"24","statement":"callMatriz", "padre":[{"linea":"24","statement":"callMatriz", "padre":[{"linea":"24","statement":"variable","value":"matrix"}],"posicion":[{"linea":"24","statement":"variable","value":"i"}]}],"posicion":[{"linea":"24","statement":"variable","value":"j"}]}]}]}]}]},\n' +
+    '{"linea":"28","statement":"funcion","name":"print","type":[{"linea":"20","tipo":[{"linea":"20","tipo":"void"}],"size":[]}],"params":[{"linea":"20","statement":"parameter","name":"matrix","tipo":[{"linea":"20","tipo":[{"linea":"20","tipo":"number"}],"size":[{"linea":"20","statement":"arreglo","value":[]},\n' +
+    '{"linea":"20","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"27","statement":"for","ExpresionInitial":[{"linea":"21","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"21","tipo":"let"}],"name":"i","ValExpression":[{"linea":"21","operator":[{"linea":"21","v":"="}],"Expression":[{"linea":"21","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"21","statement":"Relational","Relational":"<","Expression1":[{"linea":"21","statement":"variable","value":"i"}],"Expression2":[{"linea":"21","statement":"nativeArray", "name":"matrix" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"21","statement":"postincrement1","padre":[{"linea":"21","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"22","statement":"declaration","type":[{"linea":"22","tipo":[{"linea":"22","tipo":"let"}],"size":[]}], "values":[{"linea":"22","statement":"variable","tipoExpresion":[],"name":"salida","ValExpression":[{"linea":"22","operator":[{"linea":"22","v":"="}],"Expression":[{"linea":"22","tipo":"string3", "value":""}]}]}]},\n' +
+    '{"linea":"25","statement":"for","ExpresionInitial":[{"linea":"23","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"23","tipo":"let"}],"name":"j","ValExpression":[{"linea":"23","operator":[{"linea":"23","v":"="}],"Expression":[{"linea":"23","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"23","statement":"Relational","Relational":"<","Expression1":[{"linea":"23","statement":"variable","value":"j"}],"Expression2":[{"linea":"23","statement":"nativeArray", "name":"matrix" ,"hijo":[{"linea":"23","statement":"ArrayList","value":[{"linea":"23","statement":"MatrizPosition","value":[{"linea":"23","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"23","statement":"postincrement1","padre":[{"linea":"23","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"24","statement":"asignation","variable":"salida","params":[],"ValExpression":[{"linea":"24","operator":[{"linea":"24","v":"="}],"Expression":[{"linea":"24","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"24","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"24","statement":"variable","value":"salida"}],"Expression2":[{"linea":"24","tipo":"string1", "value":"\\t|\\t"}]}],"Expression2":[{"linea":"24","statement":"callAtributo", "value":"matrix", "hijo":[{"linea":"24","statement":"ArrayList","value":[{"linea":"24","statement":"MatrizPosition","value":[{"linea":"24","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"24","statement":"MatrizPosition","value":[{"linea":"24","statement":"variable","value":"j"}]}]}]}]}]}]}]},\n' +
     '{"linea":"26","statement":"console","expression":[{"linea":"26","statement":"variable","value":"salida"}]}]}]},\n' +
-    '{"linea":"36","statement":"funcion","name":"suma","type":[],"params":[{"linea":"30","statement":"parameter","name":"matrix1","tipo":[{"linea":"30","tipo":[{"linea":"30","tipo":"number"}],"size":[{"linea":"30","statement":"array","elementos":[]},\n' +
-    '{"linea":"30","statement":"array","elementos":[]}]}]},\n' +
-    '{"linea":"30","statement":"parameter","name":"matrix2","tipo":[{"linea":"30","tipo":[{"linea":"30","tipo":"number"}],"size":[{"linea":"30","statement":"array","elementos":[]},\n' +
-    '{"linea":"30","statement":"array","elementos":[]}]}]},\n' +
-    '{"linea":"30","statement":"parameter","name":"matrixR","tipo":[{"linea":"30","tipo":[{"linea":"30","tipo":"number"}],"size":[{"linea":"30","statement":"array","elementos":[]},\n' +
-    '{"linea":"30","statement":"array","elementos":[]}]}]}],"body":[{"linea":"35","statement":"for","ExpresionInitial":[{"linea":"31","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"31","tipo":"let"}],"name":"i","ValExpression":[{"linea":"31","operator":[{"linea":"31","v":"="}],"Expression":[{"linea":"31","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"31","statement":"Relational","Relational":"<","Expression1":[{"linea":"31","statement":"variable","value":"i"}],"Expression2":[{"linea":"31","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"31","statement":"postincrement","padre":[{"linea":"31","statement":"variable","value":"i"}]}],"body":[{"linea":"34","statement":"for","ExpresionInitial":[{"linea":"32","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"32","tipo":"let"}],"name":"j","ValExpression":[{"linea":"32","operator":[{"linea":"32","v":"="}],"Expression":[{"linea":"32","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"32","statement":"Relational","Relational":"<","Expression1":[{"linea":"32","statement":"variable","value":"j"}],"Expression2":[{"linea":"32","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"32","statement":"postincrement","padre":[{"linea":"32","statement":"variable","value":"j"}]}],"body":[{"linea":"33","statement":"asignation","variable":"matrixR","params":[{"linea":"33","statement":"ArrayList","value":[{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"33","operator":[{"linea":"33","v":"="}],"Expression":[{"linea":"33","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"33","statement":"callMatriz", "padre":[{"linea":"33","statement":"callMatriz", "padre":[{"linea":"33","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"33","statement":"variable","value":"i"}]}],"posicion":[{"linea":"33","statement":"variable","value":"j"}]}],"Expression2":[{"linea":"33","statement":"callMatriz", "padre":[{"linea":"33","statement":"callMatriz", "padre":[{"linea":"33","statement":"variable","value":"matrix2"}],"posicion":[{"linea":"33","statement":"variable","value":"i"}]}],"posicion":[{"linea":"33","statement":"variable","value":"j"}]}]}]}]}]}]}]},\n' +
-    '{"linea":"50","statement":"funcion","name":"sumarFilas","type":[{"linea":"38","tipo":[{"linea":"38","tipo":"void"}],"size":[]}],"params":[{"linea":"38","statement":"parameter","name":"matrix","tipo":[{"linea":"38","tipo":[{"linea":"38","tipo":"number"}],"size":[{"linea":"38","statement":"array","elementos":[]},\n' +
-    '{"linea":"38","statement":"array","elementos":[]}]}]}],"body":[{"linea":"39","statement":"declaration","type":[{"linea":"39","tipo":[{"linea":"39","tipo":"let"}],"size":[]}], "values":[{"linea":"39","statement":"variable","tipoExpresion":[],"name":"contador","ValExpression":[{"linea":"39","operator":[{"linea":"39","v":"="}],"Expression":[{"linea":"39","tipo":"number", "value":"0"}]}]}]},\n' +
+    '{"linea":"36","statement":"funcion","name":"suma","type":[],"params":[{"linea":"30","statement":"parameter","name":"matrix1","tipo":[{"linea":"30","tipo":[{"linea":"30","tipo":"number"}],"size":[{"linea":"30","statement":"arreglo","value":[]},\n' +
+    '{"linea":"30","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"30","statement":"parameter","name":"matrix2","tipo":[{"linea":"30","tipo":[{"linea":"30","tipo":"number"}],"size":[{"linea":"30","statement":"arreglo","value":[]},\n' +
+    '{"linea":"30","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"30","statement":"parameter","name":"matrixR","tipo":[{"linea":"30","tipo":[{"linea":"30","tipo":"number"}],"size":[{"linea":"30","statement":"arreglo","value":[]},\n' +
+    '{"linea":"30","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"35","statement":"for","ExpresionInitial":[{"linea":"31","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"31","tipo":"let"}],"name":"i","ValExpression":[{"linea":"31","operator":[{"linea":"31","v":"="}],"Expression":[{"linea":"31","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"31","statement":"Relational","Relational":"<","Expression1":[{"linea":"31","statement":"variable","value":"i"}],"Expression2":[{"linea":"31","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"31","statement":"postincrement1","padre":[{"linea":"31","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"34","statement":"for","ExpresionInitial":[{"linea":"32","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"32","tipo":"let"}],"name":"j","ValExpression":[{"linea":"32","operator":[{"linea":"32","v":"="}],"Expression":[{"linea":"32","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"32","statement":"Relational","Relational":"<","Expression1":[{"linea":"32","statement":"variable","value":"j"}],"Expression2":[{"linea":"32","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"32","statement":"postincrement1","padre":[{"linea":"32","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"33","statement":"asignation","variable":"matrixR","params":[{"linea":"33","statement":"ArrayList","value":[{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"33","operator":[{"linea":"33","v":"="}],"Expression":[{"linea":"33","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"33","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"33","statement":"ArrayList","value":[{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"33","statement":"callAtributo", "value":"matrix2", "hijo":[{"linea":"33","statement":"ArrayList","value":[{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"j"}]}]}]}]}]}]}]}]}]},\n' +
+    '{"linea":"50","statement":"funcion","name":"sumarFilas","type":[{"linea":"38","tipo":[{"linea":"38","tipo":"void"}],"size":[]}],"params":[{"linea":"38","statement":"parameter","name":"matrix","tipo":[{"linea":"38","tipo":[{"linea":"38","tipo":"number"}],"size":[{"linea":"38","statement":"arreglo","value":[]},\n' +
+    '{"linea":"38","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"39","statement":"declaration","type":[{"linea":"39","tipo":[{"linea":"39","tipo":"let"}],"size":[]}], "values":[{"linea":"39","statement":"variable","tipoExpresion":[],"name":"contador","ValExpression":[{"linea":"39","operator":[{"linea":"39","v":"="}],"Expression":[{"linea":"39","tipo":"number", "value":"0"}]}]}]},\n' +
     '{"linea":"40","statement":"console","expression":[{"linea":"40","tipo":"string1", "value":"\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tR"}]},\n' +
-    '{"linea":"49","statement":"for","ExpresionInitial":[{"linea":"41","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"41","tipo":"let"}],"name":"i","ValExpression":[{"linea":"41","operator":[{"linea":"41","v":"="}],"Expression":[{"linea":"41","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"41","statement":"Relational","Relational":"<","Expression1":[{"linea":"41","statement":"variable","value":"i"}],"Expression2":[{"linea":"41","statement":"nativeArray", "padre":[{"linea":"41","statement":"variable","value":"matrix"}],"native":"length"}]}],"ExpressionFinal":[{"linea":"41","statement":"postincrement","padre":[{"linea":"41","statement":"variable","value":"i"}]}],"body":[{"linea":"42","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"42","operator":[{"linea":"42","v":"="}],"Expression":[{"linea":"42","tipo":"number", "value":"0"}]}]},\n' +
+    '{"linea":"49","statement":"for","ExpresionInitial":[{"linea":"41","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"41","tipo":"let"}],"name":"i","ValExpression":[{"linea":"41","operator":[{"linea":"41","v":"="}],"Expression":[{"linea":"41","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"41","statement":"Relational","Relational":"<","Expression1":[{"linea":"41","statement":"variable","value":"i"}],"Expression2":[{"linea":"41","statement":"nativeArray", "name":"matrix" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"41","statement":"postincrement1","padre":[{"linea":"41","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"42","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"42","operator":[{"linea":"42","v":"="}],"Expression":[{"linea":"42","tipo":"number", "value":"0"}]}]},\n' +
     '{"linea":"43","statement":"declaration","type":[{"linea":"43","tipo":[{"linea":"43","tipo":"let"}],"size":[]}], "values":[{"linea":"43","statement":"variable","tipoExpresion":[],"name":"salida","ValExpression":[{"linea":"43","operator":[{"linea":"43","v":"="}],"Expression":[{"linea":"43","tipo":"string3", "value":""}]}]}]},\n' +
-    '{"linea":"47","statement":"for","ExpresionInitial":[{"linea":"44","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"44","tipo":"let"}],"name":"j","ValExpression":[{"linea":"44","operator":[{"linea":"44","v":"="}],"Expression":[{"linea":"44","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"44","statement":"Relational","Relational":"<","Expression1":[{"linea":"44","statement":"variable","value":"j"}],"Expression2":[{"linea":"44","statement":"nativeArray", "padre":[{"linea":"44","statement":"callMatriz", "padre":[{"linea":"44","statement":"variable","value":"matrix"}],"posicion":[{"linea":"44","statement":"variable","value":"i"}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"44","statement":"postincrement","padre":[{"linea":"44","statement":"variable","value":"j"}]}],"body":[{"linea":"45","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"45","operator":[{"linea":"45","v":"="}],"Expression":[{"linea":"45","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"45","statement":"variable","value":"contador"}],"Expression2":[{"linea":"45","statement":"callMatriz", "padre":[{"linea":"45","statement":"callMatriz", "padre":[{"linea":"45","statement":"variable","value":"matrix"}],"posicion":[{"linea":"45","statement":"variable","value":"i"}]}],"posicion":[{"linea":"45","statement":"variable","value":"j"}]}]}]}]},\n' +
-    '{"linea":"46","statement":"asignation","variable":"salida","params":[],"ValExpression":[{"linea":"46","operator":[{"linea":"46","v":"="}],"Expression":[{"linea":"46","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"46","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"46","statement":"variable","value":"salida"}],"Expression2":[{"linea":"46","tipo":"string1", "value":"\\t|\\t"}]}],"Expression2":[{"linea":"46","statement":"callMatriz", "padre":[{"linea":"46","statement":"callMatriz", "padre":[{"linea":"46","statement":"variable","value":"matrix"}],"posicion":[{"linea":"46","statement":"variable","value":"i"}]}],"posicion":[{"linea":"46","statement":"variable","value":"j"}]}]}]}]}]},\n' +
+    '{"linea":"47","statement":"for","ExpresionInitial":[{"linea":"44","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"44","tipo":"let"}],"name":"j","ValExpression":[{"linea":"44","operator":[{"linea":"44","v":"="}],"Expression":[{"linea":"44","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"44","statement":"Relational","Relational":"<","Expression1":[{"linea":"44","statement":"variable","value":"j"}],"Expression2":[{"linea":"44","statement":"nativeArray", "name":"matrix" ,"hijo":[{"linea":"44","statement":"ArrayList","value":[{"linea":"44","statement":"MatrizPosition","value":[{"linea":"44","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"44","statement":"postincrement1","padre":[{"linea":"44","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"45","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"45","operator":[{"linea":"45","v":"="}],"Expression":[{"linea":"45","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"45","statement":"variable","value":"contador"}],"Expression2":[{"linea":"45","statement":"callAtributo", "value":"matrix", "hijo":[{"linea":"45","statement":"ArrayList","value":[{"linea":"45","statement":"MatrizPosition","value":[{"linea":"45","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"45","statement":"MatrizPosition","value":[{"linea":"45","statement":"variable","value":"j"}]}]}]}]}]}]},\n' +
+    '{"linea":"46","statement":"asignation","variable":"salida","params":[],"ValExpression":[{"linea":"46","operator":[{"linea":"46","v":"="}],"Expression":[{"linea":"46","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"46","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"46","statement":"variable","value":"salida"}],"Expression2":[{"linea":"46","tipo":"string1", "value":"\\t|\\t"}]}],"Expression2":[{"linea":"46","statement":"callAtributo", "value":"matrix", "hijo":[{"linea":"46","statement":"ArrayList","value":[{"linea":"46","statement":"MatrizPosition","value":[{"linea":"46","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"46","statement":"MatrizPosition","value":[{"linea":"46","statement":"variable","value":"j"}]}]}]}]}]}]}]},\n' +
     '{"linea":"48","statement":"console","expression":[{"linea":"48","statement":"variable","value":"salida"},\n' +
     '{"linea":"48","tipo":"string1", "value":"\\t|\\t"},\n' +
     '{"linea":"48","statement":"variable","value":"contador"}]}]}]},\n' +
-    '{"linea":"63","statement":"funcion","name":"sumarColumnas","type":[{"linea":"52","tipo":[{"linea":"52","tipo":"void"}],"size":[]}],"params":[{"linea":"52","statement":"parameter","name":"matrix","tipo":[{"linea":"52","tipo":[{"linea":"52","tipo":"number"}],"size":[{"linea":"52","statement":"array","elementos":[]},\n' +
-    '{"linea":"52","statement":"array","elementos":[]}]}]}],"body":[{"linea":"53","statement":"declaration","type":[{"linea":"53","tipo":[{"linea":"53","tipo":"let"}],"size":[]}], "values":[{"linea":"53","statement":"variable","tipoExpresion":[],"name":"contador","ValExpression":[{"linea":"53","operator":[{"linea":"53","v":"="}],"Expression":[{"linea":"53","tipo":"number", "value":"0"}]}]}]},\n' +
+    '{"linea":"63","statement":"funcion","name":"sumarColumnas","type":[{"linea":"52","tipo":[{"linea":"52","tipo":"void"}],"size":[]}],"params":[{"linea":"52","statement":"parameter","name":"matrix","tipo":[{"linea":"52","tipo":[{"linea":"52","tipo":"number"}],"size":[{"linea":"52","statement":"arreglo","value":[]},\n' +
+    '{"linea":"52","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"53","statement":"declaration","type":[{"linea":"53","tipo":[{"linea":"53","tipo":"let"}],"size":[]}], "values":[{"linea":"53","statement":"variable","tipoExpresion":[],"name":"contador","ValExpression":[{"linea":"53","operator":[{"linea":"53","v":"="}],"Expression":[{"linea":"53","tipo":"number", "value":"0"}]}]}]},\n' +
     '{"linea":"54","statement":"declaration","type":[{"linea":"54","tipo":[{"linea":"54","tipo":"let"}],"size":[]}], "values":[{"linea":"54","statement":"variable","tipoExpresion":[],"name":"salida","ValExpression":[{"linea":"54","operator":[{"linea":"54","v":"="}],"Expression":[{"linea":"54","tipo":"string3", "value":"R"}]}]}]},\n' +
-    '{"linea":"61","statement":"for","ExpresionInitial":[{"linea":"55","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"55","tipo":"let"}],"name":"i","ValExpression":[{"linea":"55","operator":[{"linea":"55","v":"="}],"Expression":[{"linea":"55","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"55","statement":"Relational","Relational":"<","Expression1":[{"linea":"55","statement":"variable","value":"i"}],"Expression2":[{"linea":"55","statement":"nativeArray", "padre":[{"linea":"55","statement":"variable","value":"matrix"}],"native":"length"}]}],"ExpressionFinal":[{"linea":"55","statement":"postincrement","padre":[{"linea":"55","statement":"variable","value":"i"}]}],"body":[{"linea":"56","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"56","operator":[{"linea":"56","v":"="}],"Expression":[{"linea":"56","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"59","statement":"for","ExpresionInitial":[{"linea":"57","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"57","tipo":"let"}],"name":"j","ValExpression":[{"linea":"57","operator":[{"linea":"57","v":"="}],"Expression":[{"linea":"57","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"57","statement":"Relational","Relational":"<","Expression1":[{"linea":"57","statement":"variable","value":"j"}],"Expression2":[{"linea":"57","statement":"nativeArray", "padre":[{"linea":"57","statement":"callMatriz", "padre":[{"linea":"57","statement":"variable","value":"matrix"}],"posicion":[{"linea":"57","statement":"variable","value":"i"}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"57","statement":"postincrement","padre":[{"linea":"57","statement":"variable","value":"j"}]}],"body":[{"linea":"58","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"58","operator":[{"linea":"58","v":"="}],"Expression":[{"linea":"58","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"58","statement":"variable","value":"contador"}],"Expression2":[{"linea":"58","statement":"callMatriz", "padre":[{"linea":"58","statement":"callMatriz", "padre":[{"linea":"58","statement":"variable","value":"matrix"}],"posicion":[{"linea":"58","statement":"variable","value":"j"}]}],"posicion":[{"linea":"58","statement":"variable","value":"i"}]}]}]}]}]},\n' +
+    '{"linea":"61","statement":"for","ExpresionInitial":[{"linea":"55","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"55","tipo":"let"}],"name":"i","ValExpression":[{"linea":"55","operator":[{"linea":"55","v":"="}],"Expression":[{"linea":"55","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"55","statement":"Relational","Relational":"<","Expression1":[{"linea":"55","statement":"variable","value":"i"}],"Expression2":[{"linea":"55","statement":"nativeArray", "name":"matrix" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"55","statement":"postincrement1","padre":[{"linea":"55","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"56","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"56","operator":[{"linea":"56","v":"="}],"Expression":[{"linea":"56","tipo":"number", "value":"0"}]}]},\n' +
+    '{"linea":"59","statement":"for","ExpresionInitial":[{"linea":"57","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"57","tipo":"let"}],"name":"j","ValExpression":[{"linea":"57","operator":[{"linea":"57","v":"="}],"Expression":[{"linea":"57","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"57","statement":"Relational","Relational":"<","Expression1":[{"linea":"57","statement":"variable","value":"j"}],"Expression2":[{"linea":"57","statement":"nativeArray", "name":"matrix" ,"hijo":[{"linea":"57","statement":"ArrayList","value":[{"linea":"57","statement":"MatrizPosition","value":[{"linea":"57","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"57","statement":"postincrement1","padre":[{"linea":"57","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"58","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"58","operator":[{"linea":"58","v":"="}],"Expression":[{"linea":"58","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"58","statement":"variable","value":"contador"}],"Expression2":[{"linea":"58","statement":"callAtributo", "value":"matrix", "hijo":[{"linea":"58","statement":"ArrayList","value":[{"linea":"58","statement":"MatrizPosition","value":[{"linea":"58","statement":"variable","value":"j"}]},\n' +
+    '{"linea":"58","statement":"MatrizPosition","value":[{"linea":"58","statement":"variable","value":"i"}]}]}]}]}]}]}]},\n' +
     '{"linea":"60","statement":"asignation","variable":"salida","params":[],"ValExpression":[{"linea":"60","operator":[{"linea":"60","v":"="}],"Expression":[{"linea":"60","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"60","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"60","statement":"variable","value":"salida"}],"Expression2":[{"linea":"60","tipo":"string1", "value":"\\t|\\t"}]}],"Expression2":[{"linea":"60","statement":"variable","value":"contador"}]}]}]}]},\n' +
     '{"linea":"62","statement":"console","expression":[{"linea":"62","statement":"variable","value":"salida"}]}]},\n' +
-    '{"linea":"72","statement":"funcion","name":"resta","type":[],"params":[{"linea":"66","statement":"parameter","name":"matrix1","tipo":[{"linea":"66","tipo":[{"linea":"66","tipo":"number"}],"size":[{"linea":"66","statement":"array","elementos":[]},\n' +
-    '{"linea":"66","statement":"array","elementos":[]}]}]},\n' +
-    '{"linea":"66","statement":"parameter","name":"matrix2","tipo":[{"linea":"66","tipo":[{"linea":"66","tipo":"number"}],"size":[{"linea":"66","statement":"array","elementos":[]},\n' +
-    '{"linea":"66","statement":"array","elementos":[]}]}]},\n' +
-    '{"linea":"66","statement":"parameter","name":"matrixR","tipo":[{"linea":"66","tipo":[{"linea":"66","tipo":"number"}],"size":[{"linea":"66","statement":"array","elementos":[]},\n' +
-    '{"linea":"66","statement":"array","elementos":[]}]}]}],"body":[{"linea":"71","statement":"for","ExpresionInitial":[{"linea":"67","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"67","tipo":"let"}],"name":"i","ValExpression":[{"linea":"67","operator":[{"linea":"67","v":"="}],"Expression":[{"linea":"67","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"67","statement":"Relational","Relational":"<","Expression1":[{"linea":"67","statement":"variable","value":"i"}],"Expression2":[{"linea":"67","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"67","statement":"postincrement","padre":[{"linea":"67","statement":"variable","value":"i"}]}],"body":[{"linea":"70","statement":"for","ExpresionInitial":[{"linea":"68","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"68","tipo":"let"}],"name":"j","ValExpression":[{"linea":"68","operator":[{"linea":"68","v":"="}],"Expression":[{"linea":"68","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"68","statement":"Relational","Relational":"<","Expression1":[{"linea":"68","statement":"variable","value":"j"}],"Expression2":[{"linea":"68","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"68","statement":"postincrement","padre":[{"linea":"68","statement":"variable","value":"j"}]}],"body":[{"linea":"69","statement":"asignation","variable":"matrixR","params":[{"linea":"69","statement":"ArrayList","value":[{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"69","operator":[{"linea":"69","v":"="}],"Expression":[{"linea":"69","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"69","statement":"callMatriz", "padre":[{"linea":"69","statement":"callMatriz", "padre":[{"linea":"69","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"69","statement":"variable","value":"i"}]}],"posicion":[{"linea":"69","statement":"variable","value":"j"}]}],"Expression2":[{"linea":"69","statement":"callMatriz", "padre":[{"linea":"69","statement":"callMatriz", "padre":[{"linea":"69","statement":"variable","value":"matrix2"}],"posicion":[{"linea":"69","statement":"variable","value":"i"}]}],"posicion":[{"linea":"69","statement":"variable","value":"j"}]}]}]}]}]}]}]},\n' +
-    '{"linea":"83","statement":"funcion","name":"multiplicar","type":[],"params":[{"linea":"75","statement":"parameter","name":"matrix1","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"array","elementos":[]},\n' +
-    '{"linea":"75","statement":"array","elementos":[]}]}]},\n' +
-    '{"linea":"75","statement":"parameter","name":"matrix2","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"array","elementos":[]},\n' +
-    '{"linea":"75","statement":"array","elementos":[]}]}]},\n' +
-    '{"linea":"75","statement":"parameter","name":"matrixR","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"array","elementos":[]},\n' +
-    '{"linea":"75","statement":"array","elementos":[]}]}]}],"body":[{"linea":"82","statement":"for","ExpresionInitial":[{"linea":"76","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"76","tipo":"let"}],"name":"i","ValExpression":[{"linea":"76","operator":[{"linea":"76","v":"="}],"Expression":[{"linea":"76","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"76","statement":"Relational","Relational":"<","Expression1":[{"linea":"76","statement":"variable","value":"i"}],"Expression2":[{"linea":"76","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"76","statement":"postincrement","padre":[{"linea":"76","statement":"variable","value":"i"}]}],"body":[{"linea":"81","statement":"for","ExpresionInitial":[{"linea":"77","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"77","tipo":"let"}],"name":"j","ValExpression":[{"linea":"77","operator":[{"linea":"77","v":"="}],"Expression":[{"linea":"77","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"77","statement":"Relational","Relational":"<","Expression1":[{"linea":"77","statement":"variable","value":"j"}],"Expression2":[{"linea":"77","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"77","statement":"postincrement","padre":[{"linea":"77","statement":"variable","value":"j"}]}],"body":[{"linea":"80","statement":"for","ExpresionInitial":[{"linea":"78","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"78","tipo":"let"}],"name":"k","ValExpression":[{"linea":"78","operator":[{"linea":"78","v":"="}],"Expression":[{"linea":"78","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"78","statement":"Relational","Relational":"<","Expression1":[{"linea":"78","statement":"variable","value":"k"}],"Expression2":[{"linea":"78","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"78","statement":"postincrement","padre":[{"linea":"78","statement":"variable","value":"k"}]}],"body":[{"linea":"79","statement":"asignation","variable":"matrixR","params":[{"linea":"79","statement":"ArrayList","value":[{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"79","operator":[{"linea":"79","v":"="}],"Expression":[{"linea":"79","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"79","statement":"callMatriz", "padre":[{"linea":"79","statement":"callMatriz", "padre":[{"linea":"79","statement":"variable","value":"matrixR"}],"posicion":[{"linea":"79","statement":"variable","value":"i"}]}],"posicion":[{"linea":"79","statement":"variable","value":"j"}]}],"Expression2":[{"linea":"79","statement":"Aritmetic","Aritmetic":"*","Expression1":[{"linea":"79","statement":"callMatriz", "padre":[{"linea":"79","statement":"callMatriz", "padre":[{"linea":"79","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"79","statement":"variable","value":"i"}]}],"posicion":[{"linea":"79","statement":"variable","value":"k"}]}],"Expression2":[{"linea":"79","statement":"callMatriz", "padre":[{"linea":"79","statement":"callMatriz", "padre":[{"linea":"79","statement":"variable","value":"matrix2"}],"posicion":[{"linea":"79","statement":"variable","value":"k"}]}],"posicion":[{"linea":"79","statement":"variable","value":"j"}]}]}]}]}]}]}]}]}]},\n' +
-    '{"linea":"98","statement":"funcion","name":"transpuesta","type":[],"params":[{"linea":"85","statement":"parameter","name":"matrix1","tipo":[{"linea":"85","tipo":[{"linea":"85","tipo":"number"}],"size":[{"linea":"85","statement":"array","elementos":[]},\n' +
-    '{"linea":"85","statement":"array","elementos":[]}]}]}],"body":[{"linea":"86","statement":"declaration","type":[{"linea":"86","tipo":[{"linea":"86","tipo":"const"}],"size":[]}], "values":[{"linea":"86","statement":"variable","tipoExpresion":[{"linea":"86","tipo":[{"linea":"86","tipo":"number"}],"size":[{"linea":"86","statement":"array","elementos":[]},\n' +
-    '{"linea":"86","statement":"array","elementos":[]}]}],"name":"matrixAux","ValExpression":[{"linea":"86","operator":[{"linea":"86","v":"="}],"Expression":[{"linea":"86","statement":"arreglo","value":[]}]}]}]},\n' +
-    '{"linea":"92","statement":"for","ExpresionInitial":[{"linea":"87","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"87","tipo":"let"}],"name":"i","ValExpression":[{"linea":"87","operator":[{"linea":"87","v":"="}],"Expression":[{"linea":"87","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"87","statement":"Relational","Relational":"<","Expression1":[{"linea":"87","statement":"variable","value":"i"}],"Expression2":[{"linea":"87","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"87","statement":"postincrement","padre":[{"linea":"87","statement":"variable","value":"i"}]}],"body":[{"linea":"88","statement":"asignation","variable":"matrixAux","params":[{"linea":"88","statement":"ArrayList","value":[{"linea":"88","statement":"MatrizPosition","value":[{"linea":"88","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"88","operator":[{"linea":"88","v":"="}],"Expression":[{"linea":"88","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"91","statement":"for","ExpresionInitial":[{"linea":"89","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"89","tipo":"let"}],"name":"j","ValExpression":[{"linea":"89","operator":[{"linea":"89","v":"="}],"Expression":[{"linea":"89","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"89","statement":"Relational","Relational":"<","Expression1":[{"linea":"89","statement":"variable","value":"j"}],"Expression2":[{"linea":"89","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"89","statement":"postincrement","padre":[{"linea":"89","statement":"variable","value":"j"}]}],"body":[{"linea":"90","statement":"asignation","variable":"matrixAux","params":[{"linea":"90","statement":"ArrayList","value":[{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"90","operator":[{"linea":"90","v":"="}],"Expression":[{"linea":"90","statement":"callMatriz", "padre":[{"linea":"90","statement":"callMatriz", "padre":[{"linea":"90","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"90","statement":"variable","value":"j"}]}],"posicion":[{"linea":"90","statement":"variable","value":"i"}]}]}]}]}]},\n' +
-    '{"linea":"97","statement":"for","ExpresionInitial":[{"linea":"93","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"93","tipo":"let"}],"name":"i","ValExpression":[{"linea":"93","operator":[{"linea":"93","v":"="}],"Expression":[{"linea":"93","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"93","statement":"Relational","Relational":"<","Expression1":[{"linea":"93","statement":"variable","value":"i"}],"Expression2":[{"linea":"93","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"93","statement":"postincrement","padre":[{"linea":"93","statement":"variable","value":"i"}]}],"body":[{"linea":"96","statement":"for","ExpresionInitial":[{"linea":"94","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"94","tipo":"let"}],"name":"j","ValExpression":[{"linea":"94","operator":[{"linea":"94","v":"="}],"Expression":[{"linea":"94","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"94","statement":"Relational","Relational":"<","Expression1":[{"linea":"94","statement":"variable","value":"j"}],"Expression2":[{"linea":"94","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"94","statement":"postincrement","padre":[{"linea":"94","statement":"variable","value":"j"}]}],"body":[{"linea":"95","statement":"asignation","variable":"matrix1","params":[{"linea":"95","statement":"ArrayList","value":[{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"95","operator":[{"linea":"95","v":"="}],"Expression":[{"linea":"95","statement":"callMatriz", "padre":[{"linea":"95","statement":"callMatriz", "padre":[{"linea":"95","statement":"variable","value":"matrixAux"}],"posicion":[{"linea":"95","statement":"variable","value":"i"}]}],"posicion":[{"linea":"95","statement":"variable","value":"j"}]}]}]}]}]}]},\n' +
-    '{"linea":"114","statement":"funcion","name":"minValue","type":[{"linea":"100","tipo":[{"linea":"100","tipo":"number"}],"size":[]}],"params":[{"linea":"100","statement":"parameter","name":"matrix1","tipo":[{"linea":"100","tipo":[{"linea":"100","tipo":"number"}],"size":[{"linea":"100","statement":"array","elementos":[]},\n' +
-    '{"linea":"100","statement":"array","elementos":[]}]}]}],"body":[{"linea":"102","statement":"declaration","type":[{"linea":"102","tipo":[{"linea":"102","tipo":"let"}],"size":[]}], "values":[{"linea":"102","statement":"variable","tipoExpresion":[],"name":"iAux","ValExpression":[{"linea":"102","operator":[{"linea":"102","v":"="}],"Expression":[{"linea":"102","tipo":"number", "value":"0"}]}]},\n' +
+    '{"linea":"72","statement":"funcion","name":"resta","type":[],"params":[{"linea":"66","statement":"parameter","name":"matrix1","tipo":[{"linea":"66","tipo":[{"linea":"66","tipo":"number"}],"size":[{"linea":"66","statement":"arreglo","value":[]},\n' +
+    '{"linea":"66","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"66","statement":"parameter","name":"matrix2","tipo":[{"linea":"66","tipo":[{"linea":"66","tipo":"number"}],"size":[{"linea":"66","statement":"arreglo","value":[]},\n' +
+    '{"linea":"66","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"66","statement":"parameter","name":"matrixR","tipo":[{"linea":"66","tipo":[{"linea":"66","tipo":"number"}],"size":[{"linea":"66","statement":"arreglo","value":[]},\n' +
+    '{"linea":"66","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"71","statement":"for","ExpresionInitial":[{"linea":"67","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"67","tipo":"let"}],"name":"i","ValExpression":[{"linea":"67","operator":[{"linea":"67","v":"="}],"Expression":[{"linea":"67","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"67","statement":"Relational","Relational":"<","Expression1":[{"linea":"67","statement":"variable","value":"i"}],"Expression2":[{"linea":"67","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"67","statement":"postincrement1","padre":[{"linea":"67","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"70","statement":"for","ExpresionInitial":[{"linea":"68","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"68","tipo":"let"}],"name":"j","ValExpression":[{"linea":"68","operator":[{"linea":"68","v":"="}],"Expression":[{"linea":"68","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"68","statement":"Relational","Relational":"<","Expression1":[{"linea":"68","statement":"variable","value":"j"}],"Expression2":[{"linea":"68","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"68","statement":"postincrement1","padre":[{"linea":"68","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"69","statement":"asignation","variable":"matrixR","params":[{"linea":"69","statement":"ArrayList","value":[{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"69","operator":[{"linea":"69","v":"="}],"Expression":[{"linea":"69","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"69","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"69","statement":"ArrayList","value":[{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"69","statement":"callAtributo", "value":"matrix2", "hijo":[{"linea":"69","statement":"ArrayList","value":[{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"j"}]}]}]}]}]}]}]}]}]},\n' +
+    '{"linea":"83","statement":"funcion","name":"multiplicar","type":[],"params":[{"linea":"75","statement":"parameter","name":"matrix1","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"arreglo","value":[]},\n' +
+    '{"linea":"75","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"75","statement":"parameter","name":"matrix2","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"arreglo","value":[]},\n' +
+    '{"linea":"75","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"75","statement":"parameter","name":"matrixR","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"arreglo","value":[]},\n' +
+    '{"linea":"75","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"82","statement":"for","ExpresionInitial":[{"linea":"76","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"76","tipo":"let"}],"name":"i","ValExpression":[{"linea":"76","operator":[{"linea":"76","v":"="}],"Expression":[{"linea":"76","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"76","statement":"Relational","Relational":"<","Expression1":[{"linea":"76","statement":"variable","value":"i"}],"Expression2":[{"linea":"76","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"76","statement":"postincrement1","padre":[{"linea":"76","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"81","statement":"for","ExpresionInitial":[{"linea":"77","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"77","tipo":"let"}],"name":"j","ValExpression":[{"linea":"77","operator":[{"linea":"77","v":"="}],"Expression":[{"linea":"77","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"77","statement":"Relational","Relational":"<","Expression1":[{"linea":"77","statement":"variable","value":"j"}],"Expression2":[{"linea":"77","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"77","statement":"postincrement1","padre":[{"linea":"77","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"80","statement":"for","ExpresionInitial":[{"linea":"78","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"78","tipo":"let"}],"name":"k","ValExpression":[{"linea":"78","operator":[{"linea":"78","v":"="}],"Expression":[{"linea":"78","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"78","statement":"Relational","Relational":"<","Expression1":[{"linea":"78","statement":"variable","value":"k"}],"Expression2":[{"linea":"78","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"78","statement":"postincrement1","padre":[{"linea":"78","statement":"variable","value":"k","hijo":[]}]}],"body":[{"linea":"79","statement":"asignation","variable":"matrixR","params":[{"linea":"79","statement":"ArrayList","value":[{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"79","operator":[{"linea":"79","v":"="}],"Expression":[{"linea":"79","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"79","statement":"callAtributo", "value":"matrixR", "hijo":[{"linea":"79","statement":"ArrayList","value":[{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"79","statement":"Aritmetic","Aritmetic":"*","Expression1":[{"linea":"79","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"79","statement":"ArrayList","value":[{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"k"}]}]}]}],"Expression2":[{"linea":"79","statement":"callAtributo", "value":"matrix2", "hijo":[{"linea":"79","statement":"ArrayList","value":[{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"k"}]},\n' +
+    '{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"j"}]}]}]}]}]}]}]}]}]}]}]},\n' +
+    '{"linea":"98","statement":"funcion","name":"transpuesta","type":[],"params":[{"linea":"85","statement":"parameter","name":"matrix1","tipo":[{"linea":"85","tipo":[{"linea":"85","tipo":"number"}],"size":[{"linea":"85","statement":"arreglo","value":[]},\n' +
+    '{"linea":"85","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"86","statement":"declaration","type":[{"linea":"86","tipo":[{"linea":"86","tipo":"const"}],"size":[]}], "values":[{"linea":"86","statement":"variable","tipoExpresion":[{"linea":"86","tipo":[{"linea":"86","tipo":"number"}],"size":[{"linea":"86","statement":"arreglo","value":[]},\n' +
+    '{"linea":"86","statement":"arreglo","value":[]}]}],"name":"matrixAux","ValExpression":[{"linea":"86","operator":[{"linea":"86","v":"="}],"Expression":[{"linea":"86","statement":"arreglo","value":[]}]}]}]},\n' +
+    '{"linea":"92","statement":"for","ExpresionInitial":[{"linea":"87","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"87","tipo":"let"}],"name":"i","ValExpression":[{"linea":"87","operator":[{"linea":"87","v":"="}],"Expression":[{"linea":"87","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"87","statement":"Relational","Relational":"<","Expression1":[{"linea":"87","statement":"variable","value":"i"}],"Expression2":[{"linea":"87","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"87","statement":"postincrement1","padre":[{"linea":"87","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"88","statement":"asignation","variable":"matrixAux","params":[{"linea":"88","statement":"ArrayList","value":[{"linea":"88","statement":"MatrizPosition","value":[{"linea":"88","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"88","operator":[{"linea":"88","v":"="}],"Expression":[{"linea":"88","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"91","statement":"for","ExpresionInitial":[{"linea":"89","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"89","tipo":"let"}],"name":"j","ValExpression":[{"linea":"89","operator":[{"linea":"89","v":"="}],"Expression":[{"linea":"89","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"89","statement":"Relational","Relational":"<","Expression1":[{"linea":"89","statement":"variable","value":"j"}],"Expression2":[{"linea":"89","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"89","statement":"postincrement1","padre":[{"linea":"89","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"90","statement":"asignation","variable":"matrixAux","params":[{"linea":"90","statement":"ArrayList","value":[{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"90","operator":[{"linea":"90","v":"="}],"Expression":[{"linea":"90","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"90","statement":"ArrayList","value":[{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"j"}]},\n' +
+    '{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"i"}]}]}]}]}]}]}]},\n' +
+    '{"linea":"97","statement":"for","ExpresionInitial":[{"linea":"93","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"93","tipo":"let"}],"name":"i","ValExpression":[{"linea":"93","operator":[{"linea":"93","v":"="}],"Expression":[{"linea":"93","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"93","statement":"Relational","Relational":"<","Expression1":[{"linea":"93","statement":"variable","value":"i"}],"Expression2":[{"linea":"93","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"93","statement":"postincrement1","padre":[{"linea":"93","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"96","statement":"for","ExpresionInitial":[{"linea":"94","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"94","tipo":"let"}],"name":"j","ValExpression":[{"linea":"94","operator":[{"linea":"94","v":"="}],"Expression":[{"linea":"94","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"94","statement":"Relational","Relational":"<","Expression1":[{"linea":"94","statement":"variable","value":"j"}],"Expression2":[{"linea":"94","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"94","statement":"postincrement1","padre":[{"linea":"94","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"95","statement":"asignation","variable":"matrix1","params":[{"linea":"95","statement":"ArrayList","value":[{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"95","operator":[{"linea":"95","v":"="}],"Expression":[{"linea":"95","statement":"callAtributo", "value":"matrixAux", "hijo":[{"linea":"95","statement":"ArrayList","value":[{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"j"}]}]}]}]}]}]}]}]},\n' +
+    '{"linea":"114","statement":"funcion","name":"minValue","type":[{"linea":"100","tipo":[{"linea":"100","tipo":"number"}],"size":[]}],"params":[{"linea":"100","statement":"parameter","name":"matrix1","tipo":[{"linea":"100","tipo":[{"linea":"100","tipo":"number"}],"size":[{"linea":"100","statement":"arreglo","value":[]},\n' +
+    '{"linea":"100","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"102","statement":"declaration","type":[{"linea":"102","tipo":[{"linea":"102","tipo":"let"}],"size":[]}], "values":[{"linea":"102","statement":"variable","tipoExpresion":[],"name":"iAux","ValExpression":[{"linea":"102","operator":[{"linea":"102","v":"="}],"Expression":[{"linea":"102","tipo":"number", "value":"0"}]}]},\n' +
     '{"linea":"102","statement":"variable","tipoExpresion":[],"name":"jAux","ValExpression":[{"linea":"102","operator":[{"linea":"102","v":"="}],"Expression":[{"linea":"102","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"102","statement":"variable","tipoExpresion":[],"name":"temp","ValExpression":[{"linea":"102","operator":[{"linea":"102","v":"="}],"Expression":[{"linea":"102","statement":"callMatriz", "padre":[{"linea":"102","statement":"callMatriz", "padre":[{"linea":"102","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"102","statement":"variable","value":"min"}]}],"posicion":[{"linea":"102","statement":"variable","value":"min"}]}]}]}]},\n' +
-    '{"linea":"111","statement":"for","ExpresionInitial":[{"linea":"103","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"103","tipo":"let"}],"name":"i","ValExpression":[{"linea":"103","operator":[{"linea":"103","v":"="}],"Expression":[{"linea":"103","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"103","statement":"Relational","Relational":"<","Expression1":[{"linea":"103","statement":"variable","value":"i"}],"Expression2":[{"linea":"103","statement":"nativeArray", "padre":[{"linea":"103","statement":"variable","value":"matrix1"}],"native":"length"}]}],"ExpressionFinal":[{"linea":"103","statement":"postincrement","padre":[{"linea":"103","statement":"variable","value":"i"}]}],"body":[{"linea":"110","statement":"for","ExpresionInitial":[{"linea":"104","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"104","tipo":"let"}],"name":"j","ValExpression":[{"linea":"104","operator":[{"linea":"104","v":"="}],"Expression":[{"linea":"104","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"104","statement":"Relational","Relational":"<","Expression1":[{"linea":"104","statement":"variable","value":"j"}],"Expression2":[{"linea":"104","statement":"nativeArray", "padre":[{"linea":"104","statement":"callMatriz", "padre":[{"linea":"104","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"104","statement":"variable","value":"i"}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"104","statement":"postincrement","padre":[{"linea":"104","statement":"variable","value":"j"}]}],"body":[{"linea":"109","statement":"if","Expression":[{"linea":"105","statement":"Relational","Relational":"<","Expression1":[{"linea":"105","statement":"callMatriz", "padre":[{"linea":"105","statement":"callMatriz", "padre":[{"linea":"105","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"105","statement":"variable","value":"i"}]}],"posicion":[{"linea":"105","statement":"variable","value":"j"}]}],"Expression2":[{"linea":"105","statement":"variable","value":"temp"}]}],"body":[{"linea":"106","statement":"asignation","variable":"temp","params":[],"ValExpression":[{"linea":"106","operator":[{"linea":"106","v":"="}],"Expression":[{"linea":"106","statement":"callMatriz", "padre":[{"linea":"106","statement":"callMatriz", "padre":[{"linea":"106","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"106","statement":"variable","value":"i"}]}],"posicion":[{"linea":"106","statement":"variable","value":"j"}]}]}]},\n' +
+    '{"linea":"102","statement":"variable","tipoExpresion":[],"name":"temp","ValExpression":[{"linea":"102","operator":[{"linea":"102","v":"="}],"Expression":[{"linea":"102","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"102","statement":"ArrayList","value":[{"linea":"102","statement":"MatrizPosition","value":[{"linea":"102","statement":"variable","value":"min"}]},\n' +
+    '{"linea":"102","statement":"MatrizPosition","value":[{"linea":"102","statement":"variable","value":"min"}]}]}]}]}]}]},\n' +
+    '{"linea":"111","statement":"for","ExpresionInitial":[{"linea":"103","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"103","tipo":"let"}],"name":"i","ValExpression":[{"linea":"103","operator":[{"linea":"103","v":"="}],"Expression":[{"linea":"103","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"103","statement":"Relational","Relational":"<","Expression1":[{"linea":"103","statement":"variable","value":"i"}],"Expression2":[{"linea":"103","statement":"nativeArray", "name":"matrix1" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"103","statement":"postincrement1","padre":[{"linea":"103","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"110","statement":"for","ExpresionInitial":[{"linea":"104","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"104","tipo":"let"}],"name":"j","ValExpression":[{"linea":"104","operator":[{"linea":"104","v":"="}],"Expression":[{"linea":"104","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"104","statement":"Relational","Relational":"<","Expression1":[{"linea":"104","statement":"variable","value":"j"}],"Expression2":[{"linea":"104","statement":"nativeArray", "name":"matrix1" ,"hijo":[{"linea":"104","statement":"ArrayList","value":[{"linea":"104","statement":"MatrizPosition","value":[{"linea":"104","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"104","statement":"postincrement1","padre":[{"linea":"104","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"109","statement":"if","Expression":[{"linea":"105","statement":"Relational","Relational":"<","Expression1":[{"linea":"105","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"105","statement":"ArrayList","value":[{"linea":"105","statement":"MatrizPosition","value":[{"linea":"105","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"105","statement":"MatrizPosition","value":[{"linea":"105","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"105","statement":"variable","value":"temp"}]}],"body":[{"linea":"106","statement":"asignation","variable":"temp","params":[],"ValExpression":[{"linea":"106","operator":[{"linea":"106","v":"="}],"Expression":[{"linea":"106","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"106","statement":"ArrayList","value":[{"linea":"106","statement":"MatrizPosition","value":[{"linea":"106","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"106","statement":"MatrizPosition","value":[{"linea":"106","statement":"variable","value":"j"}]}]}]}]}]},\n' +
     '{"linea":"107","statement":"asignation","variable":"iAux","params":[],"ValExpression":[{"linea":"107","operator":[{"linea":"107","v":"="}],"Expression":[{"linea":"107","statement":"variable","value":"i"}]}]},\n' +
     '{"linea":"108","statement":"asignation","variable":"jAux","params":[],"ValExpression":[{"linea":"108","operator":[{"linea":"108","v":"="}],"Expression":[{"linea":"108","statement":"variable","value":"j"}]}]}], "else":[]}]}]},\n' +
     '{"linea":"112","statement":"console","expression":[{"linea":"112","tipo":"string1", "value":"Min -> ["},\n' +
@@ -4762,11 +4956,14 @@ var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"112","tipo":"string1", "value":"] = "},\n' +
     '{"linea":"112","statement":"variable","value":"temp"}]},\n' +
     '{"linea":"113","statement":"return", "Expression":[{"linea":"113","statement":"variable","value":"temp"}]}]},\n' +
-    '{"linea":"129","statement":"funcion","name":"maxValue","type":[{"linea":"116","tipo":[{"linea":"116","tipo":"number"}],"size":[]}],"params":[{"linea":"116","statement":"parameter","name":"matrix1","tipo":[{"linea":"116","tipo":[{"linea":"116","tipo":"number"}],"size":[{"linea":"116","statement":"array","elementos":[]},\n' +
-    '{"linea":"116","statement":"array","elementos":[]}]}]}],"body":[{"linea":"117","statement":"declaration","type":[{"linea":"117","tipo":[{"linea":"117","tipo":"let"}],"size":[]}], "values":[{"linea":"117","statement":"variable","tipoExpresion":[],"name":"iAux","ValExpression":[{"linea":"117","operator":[{"linea":"117","v":"="}],"Expression":[{"linea":"117","tipo":"number", "value":"0"}]}]},\n' +
+    '{"linea":"129","statement":"funcion","name":"maxValue","type":[{"linea":"116","tipo":[{"linea":"116","tipo":"number"}],"size":[]}],"params":[{"linea":"116","statement":"parameter","name":"matrix1","tipo":[{"linea":"116","tipo":[{"linea":"116","tipo":"number"}],"size":[{"linea":"116","statement":"arreglo","value":[]},\n' +
+    '{"linea":"116","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"117","statement":"declaration","type":[{"linea":"117","tipo":[{"linea":"117","tipo":"let"}],"size":[]}], "values":[{"linea":"117","statement":"variable","tipoExpresion":[],"name":"iAux","ValExpression":[{"linea":"117","operator":[{"linea":"117","v":"="}],"Expression":[{"linea":"117","tipo":"number", "value":"0"}]}]},\n' +
     '{"linea":"117","statement":"variable","tipoExpresion":[],"name":"jAux","ValExpression":[{"linea":"117","operator":[{"linea":"117","v":"="}],"Expression":[{"linea":"117","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"117","statement":"variable","tipoExpresion":[],"name":"temp","ValExpression":[{"linea":"117","operator":[{"linea":"117","v":"="}],"Expression":[{"linea":"117","statement":"callMatriz", "padre":[{"linea":"117","statement":"callMatriz", "padre":[{"linea":"117","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"117","statement":"variable","value":"min"}]}],"posicion":[{"linea":"117","statement":"variable","value":"min"}]}]}]}]},\n' +
-    '{"linea":"126","statement":"for","ExpresionInitial":[{"linea":"118","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"118","tipo":"let"}],"name":"i","ValExpression":[{"linea":"118","operator":[{"linea":"118","v":"="}],"Expression":[{"linea":"118","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"118","statement":"Relational","Relational":"<","Expression1":[{"linea":"118","statement":"variable","value":"i"}],"Expression2":[{"linea":"118","statement":"nativeArray", "padre":[{"linea":"118","statement":"variable","value":"matrix1"}],"native":"length"}]}],"ExpressionFinal":[{"linea":"118","statement":"postincrement","padre":[{"linea":"118","statement":"variable","value":"i"}]}],"body":[{"linea":"125","statement":"for","ExpresionInitial":[{"linea":"119","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"119","tipo":"let"}],"name":"j","ValExpression":[{"linea":"119","operator":[{"linea":"119","v":"="}],"Expression":[{"linea":"119","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"119","statement":"Relational","Relational":"<","Expression1":[{"linea":"119","statement":"variable","value":"j"}],"Expression2":[{"linea":"119","statement":"nativeArray", "padre":[{"linea":"119","statement":"callMatriz", "padre":[{"linea":"119","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"119","statement":"variable","value":"i"}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"119","statement":"postincrement","padre":[{"linea":"119","statement":"variable","value":"j"}]}],"body":[{"linea":"124","statement":"if","Expression":[{"linea":"120","statement":"Relational","Relational":">","Expression1":[{"linea":"120","statement":"callMatriz", "padre":[{"linea":"120","statement":"callMatriz", "padre":[{"linea":"120","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"120","statement":"variable","value":"i"}]}],"posicion":[{"linea":"120","statement":"variable","value":"j"}]}],"Expression2":[{"linea":"120","statement":"variable","value":"temp"}]}],"body":[{"linea":"121","statement":"asignation","variable":"temp","params":[],"ValExpression":[{"linea":"121","operator":[{"linea":"121","v":"="}],"Expression":[{"linea":"121","statement":"callMatriz", "padre":[{"linea":"121","statement":"callMatriz", "padre":[{"linea":"121","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"121","statement":"variable","value":"i"}]}],"posicion":[{"linea":"121","statement":"variable","value":"j"}]}]}]},\n' +
+    '{"linea":"117","statement":"variable","tipoExpresion":[],"name":"temp","ValExpression":[{"linea":"117","operator":[{"linea":"117","v":"="}],"Expression":[{"linea":"117","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"117","statement":"ArrayList","value":[{"linea":"117","statement":"MatrizPosition","value":[{"linea":"117","statement":"variable","value":"min"}]},\n' +
+    '{"linea":"117","statement":"MatrizPosition","value":[{"linea":"117","statement":"variable","value":"min"}]}]}]}]}]}]},\n' +
+    '{"linea":"126","statement":"for","ExpresionInitial":[{"linea":"118","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"118","tipo":"let"}],"name":"i","ValExpression":[{"linea":"118","operator":[{"linea":"118","v":"="}],"Expression":[{"linea":"118","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"118","statement":"Relational","Relational":"<","Expression1":[{"linea":"118","statement":"variable","value":"i"}],"Expression2":[{"linea":"118","statement":"nativeArray", "name":"matrix1" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"118","statement":"postincrement1","padre":[{"linea":"118","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"125","statement":"for","ExpresionInitial":[{"linea":"119","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"119","tipo":"let"}],"name":"j","ValExpression":[{"linea":"119","operator":[{"linea":"119","v":"="}],"Expression":[{"linea":"119","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"119","statement":"Relational","Relational":"<","Expression1":[{"linea":"119","statement":"variable","value":"j"}],"Expression2":[{"linea":"119","statement":"nativeArray", "name":"matrix1" ,"hijo":[{"linea":"119","statement":"ArrayList","value":[{"linea":"119","statement":"MatrizPosition","value":[{"linea":"119","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"119","statement":"postincrement1","padre":[{"linea":"119","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"124","statement":"if","Expression":[{"linea":"120","statement":"Relational","Relational":">","Expression1":[{"linea":"120","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"120","statement":"ArrayList","value":[{"linea":"120","statement":"MatrizPosition","value":[{"linea":"120","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"120","statement":"MatrizPosition","value":[{"linea":"120","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"120","statement":"variable","value":"temp"}]}],"body":[{"linea":"121","statement":"asignation","variable":"temp","params":[],"ValExpression":[{"linea":"121","operator":[{"linea":"121","v":"="}],"Expression":[{"linea":"121","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"121","statement":"ArrayList","value":[{"linea":"121","statement":"MatrizPosition","value":[{"linea":"121","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"121","statement":"MatrizPosition","value":[{"linea":"121","statement":"variable","value":"j"}]}]}]}]}]},\n' +
     '{"linea":"122","statement":"asignation","variable":"iAux","params":[],"ValExpression":[{"linea":"122","operator":[{"linea":"122","v":"="}],"Expression":[{"linea":"122","statement":"variable","value":"i"}]}]},\n' +
     '{"linea":"123","statement":"asignation","variable":"jAux","params":[],"ValExpression":[{"linea":"123","operator":[{"linea":"123","v":"="}],"Expression":[{"linea":"123","statement":"variable","value":"j"}]}]}], "else":[]}]}]},\n' +
     '{"linea":"127","statement":"console","expression":[{"linea":"127","tipo":"string1", "value":"Max -> ["},\n' +
@@ -4776,15 +4973,19 @@ var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"127","tipo":"string1", "value":"] = "},\n' +
     '{"linea":"127","statement":"variable","value":"temp"}]},\n' +
     '{"linea":"128","statement":"return", "Expression":[{"linea":"128","statement":"variable","value":"temp"}]}]},\n' +
-    '{"linea":"146","statement":"funcion","name":"ordenar","type":[],"params":[{"linea":"131","statement":"parameter","name":"matrix1","tipo":[{"linea":"131","tipo":[{"linea":"131","tipo":"number"}],"size":[{"linea":"131","statement":"array","elementos":[]},\n' +
-    '{"linea":"131","statement":"array","elementos":[]}]}]}],"body":[{"linea":"132","statement":"declaration","type":[{"linea":"132","tipo":[{"linea":"132","tipo":"let"}],"size":[]}], "values":[{"linea":"132","statement":"variable","tipoExpresion":[],"name":"aux","ValExpression":[{"linea":"132","operator":[{"linea":"132","v":"="}],"Expression":[{"linea":"132","tipo":"number", "value":"0"}]}]}]},\n' +
-    '{"linea":"145","statement":"for","ExpresionInitial":[{"linea":"133","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"133","tipo":"let"}],"name":"i","ValExpression":[{"linea":"133","operator":[{"linea":"133","v":"="}],"Expression":[{"linea":"133","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"133","statement":"Relational","Relational":"<","Expression1":[{"linea":"133","statement":"variable","value":"i"}],"Expression2":[{"linea":"133","statement":"nativeArray", "padre":[{"linea":"133","statement":"variable","value":"matrix1"}],"native":"length"}]}],"ExpressionFinal":[{"linea":"133","statement":"postincrement","padre":[{"linea":"133","statement":"variable","value":"i"}]}],"body":[{"linea":"144","statement":"for","ExpresionInitial":[{"linea":"134","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"134","tipo":"let"}],"name":"j","ValExpression":[{"linea":"134","operator":[{"linea":"134","v":"="}],"Expression":[{"linea":"134","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"134","statement":"Relational","Relational":"<","Expression1":[{"linea":"134","statement":"variable","value":"j"}],"Expression2":[{"linea":"134","statement":"nativeArray", "padre":[{"linea":"134","statement":"callMatriz", "padre":[{"linea":"134","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"134","statement":"variable","value":"i"}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"134","statement":"postincrement","padre":[{"linea":"134","statement":"variable","value":"j"}]}],"body":[{"linea":"143","statement":"for","ExpresionInitial":[{"linea":"135","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"135","tipo":"let"}],"name":"k","ValExpression":[{"linea":"135","operator":[{"linea":"135","v":"="}],"Expression":[{"linea":"135","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"135","statement":"Relational","Relational":"<=","Expression1":[{"linea":"135","statement":"variable","value":"k"}],"Expression2":[{"linea":"135","statement":"variable","value":"i"}]}],"ExpressionFinal":[{"linea":"135","statement":"postincrement","padre":[{"linea":"135","statement":"variable","value":"k"}]}],"body":[{"linea":"142","statement":"for","ExpresionInitial":[{"linea":"136","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"136","tipo":"let"}],"name":"l","ValExpression":[{"linea":"136","operator":[{"linea":"136","v":"="}],"Expression":[{"linea":"136","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"136","statement":"Relational","Relational":"<=","Expression1":[{"linea":"136","statement":"variable","value":"l"}],"Expression2":[{"linea":"136","statement":"variable","value":"j"}]}],"ExpressionFinal":[{"linea":"136","statement":"postincrement","padre":[{"linea":"136","statement":"variable","value":"l"}]}],"body":[{"linea":"141","statement":"if","Expression":[{"linea":"137","statement":"Relational","Relational":"<","Expression1":[{"linea":"137","statement":"callMatriz", "padre":[{"linea":"137","statement":"callMatriz", "padre":[{"linea":"137","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"137","statement":"variable","value":"i"}]}],"posicion":[{"linea":"137","statement":"variable","value":"j"}]}],"Expression2":[{"linea":"137","statement":"callMatriz", "padre":[{"linea":"137","statement":"callMatriz", "padre":[{"linea":"137","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"137","statement":"variable","value":"k"}]}],"posicion":[{"linea":"137","statement":"variable","value":"l"}]}]}],"body":[{"linea":"138","statement":"asignation","variable":"aux","params":[],"ValExpression":[{"linea":"138","operator":[{"linea":"138","v":"="}],"Expression":[{"linea":"138","statement":"callMatriz", "padre":[{"linea":"138","statement":"callMatriz", "padre":[{"linea":"138","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"138","statement":"variable","value":"i"}]}],"posicion":[{"linea":"138","statement":"variable","value":"j"}]}]}]},\n' +
+    '{"linea":"146","statement":"funcion","name":"ordenar","type":[],"params":[{"linea":"131","statement":"parameter","name":"matrix1","tipo":[{"linea":"131","tipo":[{"linea":"131","tipo":"number"}],"size":[{"linea":"131","statement":"arreglo","value":[]},\n' +
+    '{"linea":"131","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"132","statement":"declaration","type":[{"linea":"132","tipo":[{"linea":"132","tipo":"let"}],"size":[]}], "values":[{"linea":"132","statement":"variable","tipoExpresion":[],"name":"aux","ValExpression":[{"linea":"132","operator":[{"linea":"132","v":"="}],"Expression":[{"linea":"132","tipo":"number", "value":"0"}]}]}]},\n' +
+    '{"linea":"145","statement":"for","ExpresionInitial":[{"linea":"133","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"133","tipo":"let"}],"name":"i","ValExpression":[{"linea":"133","operator":[{"linea":"133","v":"="}],"Expression":[{"linea":"133","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"133","statement":"Relational","Relational":"<","Expression1":[{"linea":"133","statement":"variable","value":"i"}],"Expression2":[{"linea":"133","statement":"nativeArray", "name":"matrix1" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"133","statement":"postincrement1","padre":[{"linea":"133","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"144","statement":"for","ExpresionInitial":[{"linea":"134","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"134","tipo":"let"}],"name":"j","ValExpression":[{"linea":"134","operator":[{"linea":"134","v":"="}],"Expression":[{"linea":"134","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"134","statement":"Relational","Relational":"<","Expression1":[{"linea":"134","statement":"variable","value":"j"}],"Expression2":[{"linea":"134","statement":"nativeArray", "name":"matrix1" ,"hijo":[{"linea":"134","statement":"ArrayList","value":[{"linea":"134","statement":"MatrizPosition","value":[{"linea":"134","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"134","statement":"postincrement1","padre":[{"linea":"134","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"143","statement":"for","ExpresionInitial":[{"linea":"135","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"135","tipo":"let"}],"name":"k","ValExpression":[{"linea":"135","operator":[{"linea":"135","v":"="}],"Expression":[{"linea":"135","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"135","statement":"Relational","Relational":"<=","Expression1":[{"linea":"135","statement":"variable","value":"k"}],"Expression2":[{"linea":"135","statement":"variable","value":"i"}]}],"ExpressionFinal":[{"linea":"135","statement":"postincrement1","padre":[{"linea":"135","statement":"variable","value":"k","hijo":[]}]}],"body":[{"linea":"142","statement":"for","ExpresionInitial":[{"linea":"136","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"136","tipo":"let"}],"name":"l","ValExpression":[{"linea":"136","operator":[{"linea":"136","v":"="}],"Expression":[{"linea":"136","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"136","statement":"Relational","Relational":"<=","Expression1":[{"linea":"136","statement":"variable","value":"l"}],"Expression2":[{"linea":"136","statement":"variable","value":"j"}]}],"ExpressionFinal":[{"linea":"136","statement":"postincrement1","padre":[{"linea":"136","statement":"variable","value":"l","hijo":[]}]}],"body":[{"linea":"141","statement":"if","Expression":[{"linea":"137","statement":"Relational","Relational":"<","Expression1":[{"linea":"137","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"137","statement":"ArrayList","value":[{"linea":"137","statement":"MatrizPosition","value":[{"linea":"137","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"137","statement":"MatrizPosition","value":[{"linea":"137","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"137","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"137","statement":"ArrayList","value":[{"linea":"137","statement":"MatrizPosition","value":[{"linea":"137","statement":"variable","value":"k"}]},\n' +
+    '{"linea":"137","statement":"MatrizPosition","value":[{"linea":"137","statement":"variable","value":"l"}]}]}]}]}],"body":[{"linea":"138","statement":"asignation","variable":"aux","params":[],"ValExpression":[{"linea":"138","operator":[{"linea":"138","v":"="}],"Expression":[{"linea":"138","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"138","statement":"ArrayList","value":[{"linea":"138","statement":"MatrizPosition","value":[{"linea":"138","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"138","statement":"MatrizPosition","value":[{"linea":"138","statement":"variable","value":"j"}]}]}]}]}]},\n' +
     '{"linea":"139","statement":"asignation","variable":"matrix1","params":[{"linea":"139","statement":"ArrayList","value":[{"linea":"139","statement":"MatrizPosition","value":[{"linea":"139","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"139","statement":"MatrizPosition","value":[{"linea":"139","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"139","operator":[{"linea":"139","v":"="}],"Expression":[{"linea":"139","statement":"callMatriz", "padre":[{"linea":"139","statement":"callMatriz", "padre":[{"linea":"139","statement":"variable","value":"matrix1"}],"posicion":[{"linea":"139","statement":"variable","value":"k"}]}],"posicion":[{"linea":"139","statement":"variable","value":"l"}]}]}]},\n' +
+    '{"linea":"139","statement":"MatrizPosition","value":[{"linea":"139","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"139","operator":[{"linea":"139","v":"="}],"Expression":[{"linea":"139","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"139","statement":"ArrayList","value":[{"linea":"139","statement":"MatrizPosition","value":[{"linea":"139","statement":"variable","value":"k"}]},\n' +
+    '{"linea":"139","statement":"MatrizPosition","value":[{"linea":"139","statement":"variable","value":"l"}]}]}]}]}]},\n' +
     '{"linea":"140","statement":"asignation","variable":"matrix1","params":[{"linea":"140","statement":"ArrayList","value":[{"linea":"140","statement":"MatrizPosition","value":[{"linea":"140","statement":"variable","value":"k"}]},\n' +
     '{"linea":"140","statement":"MatrizPosition","value":[{"linea":"140","statement":"variable","value":"l"}]}]}],"ValExpression":[{"linea":"140","operator":[{"linea":"140","v":"="}],"Expression":[{"linea":"140","statement":"variable","value":"aux"}]}]}], "else":[]}]}]}]}]}]},\n' +
-    '{"linea":"154","statement":"funcion","name":"clearMat","type":[],"params":[{"linea":"148","statement":"parameter","name":"matrix","tipo":[{"linea":"148","tipo":[{"linea":"148","tipo":"number"}],"size":[{"linea":"148","statement":"array","elementos":[]},\n' +
-    '{"linea":"148","statement":"array","elementos":[]}]}]}],"body":[{"linea":"153","statement":"for","ExpresionInitial":[{"linea":"149","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"149","tipo":"let"}],"name":"i","ValExpression":[{"linea":"149","operator":[{"linea":"149","v":"="}],"Expression":[{"linea":"149","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"149","statement":"Relational","Relational":"<","Expression1":[{"linea":"149","statement":"variable","value":"i"}],"Expression2":[{"linea":"149","statement":"nativeArray", "padre":[{"linea":"149","statement":"variable","value":"matrix"}],"native":"length"}]}],"ExpressionFinal":[{"linea":"149","statement":"postincrement","padre":[{"linea":"149","statement":"variable","value":"i"}]}],"body":[{"linea":"152","statement":"for","ExpresionInitial":[{"linea":"150","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"150","tipo":"let"}],"name":"j","ValExpression":[{"linea":"150","operator":[{"linea":"150","v":"="}],"Expression":[{"linea":"150","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"150","statement":"Relational","Relational":"<","Expression1":[{"linea":"150","statement":"variable","value":"j"}],"Expression2":[{"linea":"150","statement":"nativeArray", "padre":[{"linea":"150","statement":"callMatriz", "padre":[{"linea":"150","statement":"variable","value":"matrix"}],"posicion":[{"linea":"150","statement":"variable","value":"i"}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"150","statement":"postincrement","padre":[{"linea":"150","statement":"variable","value":"j"}]}],"body":[{"linea":"151","statement":"asignation","variable":"matrix","params":[{"linea":"151","statement":"ArrayList","value":[{"linea":"151","statement":"MatrizPosition","value":[{"linea":"151","statement":"variable","value":"i"}]},\n' +
+    '{"linea":"154","statement":"funcion","name":"clearMat","type":[],"params":[{"linea":"148","statement":"parameter","name":"matrix","tipo":[{"linea":"148","tipo":[{"linea":"148","tipo":"number"}],"size":[{"linea":"148","statement":"arreglo","value":[]},\n' +
+    '{"linea":"148","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"153","statement":"for","ExpresionInitial":[{"linea":"149","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"149","tipo":"let"}],"name":"i","ValExpression":[{"linea":"149","operator":[{"linea":"149","v":"="}],"Expression":[{"linea":"149","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"149","statement":"Relational","Relational":"<","Expression1":[{"linea":"149","statement":"variable","value":"i"}],"Expression2":[{"linea":"149","statement":"nativeArray", "name":"matrix" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"149","statement":"postincrement1","padre":[{"linea":"149","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"152","statement":"for","ExpresionInitial":[{"linea":"150","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"150","tipo":"let"}],"name":"j","ValExpression":[{"linea":"150","operator":[{"linea":"150","v":"="}],"Expression":[{"linea":"150","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"150","statement":"Relational","Relational":"<","Expression1":[{"linea":"150","statement":"variable","value":"j"}],"Expression2":[{"linea":"150","statement":"nativeArray", "name":"matrix" ,"hijo":[{"linea":"150","statement":"ArrayList","value":[{"linea":"150","statement":"MatrizPosition","value":[{"linea":"150","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"150","statement":"postincrement1","padre":[{"linea":"150","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"151","statement":"asignation","variable":"matrix","params":[{"linea":"151","statement":"ArrayList","value":[{"linea":"151","statement":"MatrizPosition","value":[{"linea":"151","statement":"variable","value":"i"}]},\n' +
     '{"linea":"151","statement":"MatrizPosition","value":[{"linea":"151","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"151","operator":[{"linea":"151","v":"="}],"Expression":[{"linea":"151","tipo":"number", "value":"0"}]}]}]}]}]},\n' +
     '{"linea":"157","statement":"CallFunction","name":"llenado", "parameters":[{"linea":"157","statement":"variable","value":"matrixA"},\n' +
     '{"linea":"157","statement":"variable","value":"matrixB"},\n' +
@@ -4846,10 +5047,6 @@ var jsondataprueba = '{"linea":"196","S":[{"linea":"1","statement":"declaration"
     '{"linea":"195","statement":"CallFunction","name":"sumarColumnas", "parameters":[{"linea":"195","statement":"variable","value":"matrixA"}]},\n' +
     '{"linea":"195","statement":""},\n' +
     '{"linea":"196","statement":""}]}';
-var jsondata2 = '{"linea":"7","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[],"name":"a","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","tipo":"number", "value":"0"}]}]}]},\n' +
-    '{"linea":"6","statement":"dowhile","body":[{"linea":"4","statement":"console","expression":[{"linea":"4","statement":"variable","value":"a"}]},\n' +
-    '{"linea":"5","statement":"postincrement1","padre":[{"linea":"5","statement":"variable","value":"a","hijo":[]}]}],"Expression":[{"linea":"6","statement":"Relational","Relational":"<","Expression1":[{"linea":"6","statement":"variable","value":"a"}],"Expression2":[{"linea":"6","tipo":"number", "value":"10"}]}]},\n' +
-    '{"linea":"7","statement":""}]}';
 var instrucciones = [];
 var tablasimbolo = new tablasimbolos();
 var jsondata = '';
@@ -4858,6 +5055,7 @@ var salida = '';
 var lineas = 0;
 var ts = '';
 generatinginformationExample();
+//console.log(instrucciones)
 execute();
 function getTs() {
     ts = '{ \"simbolos\":[';
@@ -4880,38 +5078,57 @@ function getTs() {
 }
 function execute() {
     tablasimbolo = new tablasimbolos();
+    output = [];
     salida = '{\"salida\":[\n';
     if (erroresSemanticos == '') {
         for (var _i = 0, instrucciones_1 = instrucciones; _i < instrucciones_1.length; _i++) {
             var value = instrucciones_1[_i];
             if (value instanceof functions) {
+                //console.log(value);
                 value.execute(tablasimbolo);
             }
         }
+        //getTs();
+        //console.log(tablasimbolo)
         for (var _a = 0, instrucciones_2 = instrucciones; _a < instrucciones_2.length; _a++) {
             var value = instrucciones_2[_a];
             if (value instanceof statement) {
-                var result = value.execute(tablasimbolo);
-                if (result[0] > 0) {
-                    if (result[1] instanceof Array) {
-                        for (var _b = 0, _c = result[1]; _b < _c.length; _b++) {
-                            var resultadito = _c[_b];
-                            salida += resultadito + ',\n';
-                        }
-                    }
-                    else {
-                        if (value.type == TypeStatement.NativeStatement) {
-                            salida += result[1] + ',\n';
-                        }
-                    }
-                }
-                else if (result[0] == 0) {
-                    console.log("finish without error...");
+                if (value instanceof functions) {
                 }
                 else {
-                    salida += '{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Linea: ' + value.linea + ', ' + result[1] + '\"},\n';
-                    console.log('finish with error...');
-                    break;
+                    var result = value.execute(tablasimbolo);
+                    if (result[0] > 0) {
+                        if (output.length > 0) {
+                            for (var _b = 0, output_1 = output; _b < output_1.length; _b++) {
+                                var resultadito = output_1[_b];
+                                salida += resultadito + ',\n';
+                            }
+                            output = [];
+                        }
+                        /*
+                        if(result[1] instanceof Array)
+                        {
+                            for(let resultadito of result[1])
+                            {
+                                salida += resultadito+',\n';
+                            }
+                        }
+                        else {
+                            if(value.type == TypeStatement.NativeStatement)
+                            {
+                                salida += result[1]+',\n';
+                            }
+                        }
+                        */
+                    }
+                    else if (result[0] == 0) {
+                        console.log("finish without error...");
+                    }
+                    else {
+                        salida += '{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Linea: ' + value.linea + ', ' + result[1] + '\"},\n';
+                        console.log('finish with error...');
+                        break;
+                    }
                 }
             }
         }
@@ -4966,10 +5183,11 @@ function getStatement(data) {
                 instrucciones.push(declaration);
             break;
         case "CallFunction":
-            break;
+            return getCallFunction1(data);
         case "asignation":
             return getAsignation(data);
         case "Argument":
+            //no usado
             break;
         case "ArrayList":
             return getArrayList(data);
@@ -4983,15 +5201,22 @@ function getStatement(data) {
                 instrucciones.push(variable);
             break;
         case "variableArray":
+            //no usado
             break;
         case "funcion":
+            return getFunction(data);
         case "continue":
+            return getContinue();
         case "break":
+            return getBreak();
         case "return":
+            return getReturn(data);
         case "switch":
+            return getSwitch(data);
         case "case":
+            return getCases(data);
         case "default":
-            break;
+            return getDefault(data);
         case "if":
             return getIf(data);
         case "dowhile":
@@ -5005,6 +5230,7 @@ function getStatement(data) {
         case "forof":
             return getForOf(data);
         case "parameter":
+            return getParameter(data);
         case "array":
             //no usado
             break;
@@ -5020,7 +5246,7 @@ function getStatement(data) {
         case "callAtributo":
             return callAtributo(data);
         case "callFuncion":
-            break;
+            return getCallFunction(data);
         case "nativeArray":
             return nativeMatriz(data);
         case "postincrement1":
@@ -5373,10 +5599,11 @@ function getExpressiones(data) {
                 case "declaration":
                     return declarationStatement(data);
                 case "CallFunction":
-                    break;
+                    return getCallFunction1(data);
                 case "asignation":
                     return getAsignation(data);
                 case "Argument":
+                    //no usado
                     break;
                 case "ArrayList":
                     return getArrayList(data);
@@ -5390,11 +5617,17 @@ function getExpressiones(data) {
                     //no usado
                     break;
                 case "funcion":
+                    return getFunction(data);
                 case "continue":
+                    return getContinue();
                 case "break":
+                    return getBreak();
                 case "return":
+                    return getReturn(data);
                 case "switch":
+                    return getSwitch(data);
                 case "case":
+                    return getCases(data);
                 case "typebody":
                     return typeBody(data);
                 case "arreglo":
@@ -5404,11 +5637,11 @@ function getExpressiones(data) {
                 case "callAtributo":
                     return callAtributo(data);
                 case "callFuncion":
-                    break;
+                    return getCallFunction(data);
                 case "nativeArray":
                     return nativeMatriz(data);
                 case "default":
-                    break;
+                    return getDefault(data);
                 case "if":
                     return getIf(data);
                 case "dowhile":
@@ -5422,7 +5655,7 @@ function getExpressiones(data) {
                 case "forof":
                     return getForOf(data);
                 case "parameter":
-                    break;
+                    return getParameter(data);
                 case "array":
                     //no usado
                     break;
@@ -6050,11 +6283,11 @@ function getPredecrement1(data) {
         autoin.Assigment = increments.predecrement;
         autoin.atributo = atributos;
         autoin.position = position;
-        console.log(autoin);
+        //console.log(autoin)
         return autoin;
     }
     catch (e) {
-        console.log(e);
+        //console.log(e);
         return null;
     }
 }
@@ -7215,6 +7448,472 @@ function getDoWhile(data) {
         }
         doit.type = TypeStatement.IterationStatement;
         return doit;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getSwitch(data) {
+    try {
+        /*
+        "linea": "13",
+      "statement": "switch",
+      "Expression": [
+        {
+          "linea": "2",
+          "statement": "variable",
+          "value": "mensaje"
+        }
+      ],
+      "values": [
+        {
+          "linea": "6",
+          "statement": "case",
+          "Expression": [
+            {
+              "linea": "4",
+              "tipo": "string3",
+              "value": "hola"
+            }
+          ],
+          "body": [
+            {
+              "linea": "5",
+              "statement": "console",
+              "expression": [
+                {
+                  "linea": "5",
+                  "tipo": "string3",
+                  "value": "como estas?"
+                }
+              ]
+            },
+            {
+              "linea": "6",
+              "statement": ""
+            },
+            {
+              "linea": "6",
+              "statement": ""
+            }
+          ]
+        },
+        {
+          "linea": "12",
+          "statement": "case",
+          "Expression": [
+            {
+              "linea": "7",
+              "tipo": "string3",
+              "value": "como estas"
+            }
+          ],
+          "body": [
+            {
+              "linea": "8",
+              "statement": "console",
+              "expression": [
+                {
+                  "linea": "8",
+                  "tipo": "string3",
+                  "value": "bien y tu que tal"
+                }
+              ]
+            },
+            {
+              "linea": "9",
+              "statement": ""
+            },
+            {
+              "linea": "9",
+              "statement": ""
+            },
+            {
+              "linea": "10",
+              "statement": ""
+            },
+            {
+              "linea": "10",
+              "statement": ""
+            },
+            {
+              "linea": "11",
+              "statement": "console",
+              "expression": [
+                {
+                  "linea": "11",
+                  "tipo": "string3",
+                  "value": "no reconozco tu mensaje"
+                }
+              ]
+            },
+            {
+              "linea": "12",
+              "statement": ""
+            },
+            {
+              "linea": "12",
+              "statement": ""
+            }
+          ]
+        }
+      ]
+         */
+        var suitch = new SwitchStatement();
+        suitch.linea = data.linea;
+        suitch.val = getExpressiones(data.Expression[0]);
+        for (var _i = 0, _a = data.values; _i < _a.length; _i++) {
+            var caso = _a[_i];
+            var cas = getExpressiones(caso);
+            if (cas != null) {
+                if (cas instanceof cases)
+                    suitch.cases.push(cas);
+                if (cas instanceof defaults)
+                    suitch["default"] = cas;
+            }
+        }
+        //console.log(suitch)
+        return suitch;
+    }
+    catch (e) {
+        //console.log(e)
+        return null;
+    }
+}
+function getCases(data) {
+    try {
+        /*
+        "linea": "6",
+          "statement": "case",
+          "Expression": [
+            {
+              "linea": "4",
+              "tipo": "string3",
+              "value": "hola"
+            }
+          ],
+          "body": [
+            {
+              "linea": "5",
+              "statement": "console",
+              "expression": [
+                {
+                  "linea": "5",
+                  "tipo": "string3",
+                  "value": "como estas?"
+                }
+              ]
+            },
+            {
+              "linea": "6",
+              "statement": ""
+            },
+            {
+              "linea": "6",
+              "statement": ""
+            }
+          ]
+        },
+         */
+        var casesito = new cases();
+        casesito.linea = data.linea;
+        casesito.ValueExpression = getExpressiones(data.Expression[0]);
+        for (var _i = 0, _a = data.body; _i < _a.length; _i++) {
+            var body = _a[_i];
+            var k = getExpressiones(body);
+            if (k != null)
+                casesito.body.push(k);
+        }
+        //console.log(casesito)
+        return casesito;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getDefault(data) {
+    try {
+        /*
+        "linea": "12",
+          "statement": "default",
+          "Expression": [],
+          "body": [
+            {
+              "linea": "11",
+              "statement": "console",
+              "expression": [
+                {
+                  "linea": "11",
+                  "tipo": "string3",
+                  "value": "no reconozco tu mensaje"
+                }
+              ]
+            },
+            {
+              "linea": "12",
+              "statement": ""
+            },
+            {
+              "linea": "12",
+              "statement": ""
+            }
+          ]
+         */
+        var defal = new defaults();
+        defal.linea = data.linea;
+        defal.body = [];
+        for (var _i = 0, _a = data.body; _i < _a.length; _i++) {
+            var body = _a[_i];
+            var k = getExpressiones(body);
+            if (k != null)
+                defal.body.push(k);
+        }
+        //console.log(defal)
+        return defal;
+    }
+    catch (e) {
+        //console.log(e)
+        return null;
+    }
+}
+function getBreak() {
+    return new BreakStatements();
+}
+function getContinue() {
+    return new ContinueStatements();
+}
+function getReturn(data) {
+    try {
+        /*
+        "linea": "3",
+          "statement": "return",
+          "Expression": [
+            {
+              "linea": "3",
+              "tipo": "string3",
+              "value": "hola"
+            }
+          ]
+         */
+        var retorno = new ReturnStatements();
+        retorno.linea = data.linea;
+        if (data.Expression.length > 0) {
+            retorno.Expresion = getExpressiones(data.Expression[0]);
+        }
+        else {
+            retorno.Expresion = new Nulls();
+        }
+        return retorno;
+    }
+    catch (e) {
+        return null;
+    }
+}
+function getCallFunction(data) {
+    try {
+        /*
+        "linea": "11",
+                  "statement": "callFuncion",
+                  "padre": [
+                    {
+                      "linea": "11",
+                      "statement": "variable",
+                      "value": "b"
+                    }
+                  ],
+                  "argumentos": [
+                    {
+                      "linea": "11",
+                      "tipo": "string3",
+                      "value": "hola"
+                    }
+                  ]
+         */
+        var calling = new expression();
+        calling.linea = data.linea;
+        calling.name = data.padre[0].value;
+        calling.parameters = [];
+        calling.isCallFunction = true;
+        for (var _i = 0, _a = data.argumentos; _i < _a.length; _i++) {
+            var parametro = _a[_i];
+            var k = getExpressiones(parametro);
+            if (k != null)
+                calling.parameters.push(k);
+        }
+        return calling;
+    }
+    catch (e) {
+        //console.log(e);
+        return null;
+    }
+}
+function getCallFunction1(data) {
+    try {
+        /*
+        "linea": "194",
+      "statement": "CallFunction",
+      "name": "sumarFilas",
+      "parameters": [
+        {
+          "linea": "194",
+          "statement": "variable",
+          "value": "matrixA"
+        }
+      ]
+         */
+        var calling = new expression();
+        calling.linea = data.linea;
+        calling.name = data.name;
+        calling.parameters = [];
+        calling.isCallFunction = true;
+        for (var _i = 0, _a = data.parameters; _i < _a.length; _i++) {
+            var parametro = _a[_i];
+            var k = getExpressiones(parametro);
+            if (k != null)
+                calling.parameters.push(k);
+        }
+        return calling;
+    }
+    catch (e) {
+        //console.log(e);
+        return null;
+    }
+}
+function getFunction(data) {
+    try {
+        /*
+        "linea": "8",
+      "statement": "funcion",
+      "name": "b",
+      "type": [],
+      "params": [
+        {
+          "linea": "5",
+          "statement": "parameter",
+          "name": "mensaje",
+          "tipo": [
+            {
+              "linea": "5",
+              "tipo": [
+                {
+                  "linea": "5",
+                  "tipo": "string"
+                }
+              ],
+              "size": []
+            }
+          ]
+        }
+      ],
+      "body": [
+        {
+          "linea": "7",
+          "statement": "return",
+          "Expression": [
+            {
+              "linea": "7",
+              "statement": "Aritmetic",
+              "Aritmetic": "+",
+              "Expression1": [
+                {
+                  "linea": "7",
+                  "tipo": "string3",
+                  "value": "mms "
+                }
+              ],
+              "Expression2": [
+                {
+                  "linea": "7",
+                  "statement": "variable",
+                  "value": "mensaje"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+         */
+        var func = new functions();
+        func.linea = data.linea;
+        func.name = data.name;
+        if (data.type.length > 0) {
+            func.tipo = getTypeF(data.type[0]);
+        }
+        func.tipo = TypeValue.Object;
+        func.type = TypeStatement.FunctionStatement;
+        for (var _i = 0, _a = data.params; _i < _a.length; _i++) {
+            var parametro = _a[_i];
+            var k = getExpressiones(parametro);
+            if (k != null)
+                func.Parameters.push(k);
+        }
+        for (var _b = 0, _c = data.body; _b < _c.length; _b++) {
+            var body = _c[_b];
+            var k = getExpressiones(body);
+            if (k != null)
+                func.body.push(k);
+        }
+        return func;
+    }
+    catch (e) {
+        //console.log(e);
+        return null;
+    }
+}
+function getTypeF(data) {
+    /*
+    "type": [
+        {
+          "linea": "1",
+          "tipo": [
+            {
+              "linea": "1",
+              "tipo": "string"
+            }
+          ],
+          "size": []
+        }
+      ],
+     */
+    if (data.size.length > 0)
+        return TypeValue.Array;
+    switch (data.tipo[0].tipo) {
+        case "string":
+            return TypeValue.String;
+        case "number":
+            return TypeValue.Number;
+        case "boolean":
+            return TypeValue.Boolean;
+        case "void":
+            return TypeValue["void"];
+        default:
+            return TypeValue.Object;
+    }
+}
+function getParameter(data) {
+    try {
+        /*
+        "linea": "5",
+          "statement": "parameter",
+          "name": "mensaje",
+          "tipo": [
+            {
+              "linea": "5",
+              "tipo": [
+                {
+                  "linea": "5",
+                  "tipo": "string"
+                }
+              ],
+              "size": []
+            }
+          ]
+         */
+        var parametrito = new Parameter();
+        parametrito.linea = data.linea;
+        parametrito.name = data.name;
+        parametrito.tipo = getTypeF(data.tipo[0]);
+        return parametrito;
     }
     catch (e) {
         return null;
