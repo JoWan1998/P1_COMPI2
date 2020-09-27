@@ -30,6 +30,9 @@
 'log'                           return 'LOG'
 'graficar_ts'                   return 'GRAHPTS'
 
+"break"                         return 'BREAK'
+"continue"                      return 'CONTINUE'
+"default"                       return 'DEFAULT'
 "case"                          return 'CASE'
 "switch"                        return 'SWITCH'
 "function"                      return 'FUNCTION'
@@ -631,15 +634,11 @@ CaseBlock
     {
         $$ = $2;
     }
-    | OPENBRACE CaseClausesOpt DefaultClause CaseClausesOpt CLOSEBRACE
-    {
-        $$ = $2 +',\n'+$3+',\n'+$4;
-    }
 ;
 
 CaseClausesOpt
     :
-    | CaseClauses
+    | CaseClauses1
     {
         $$ = $1;
     }
@@ -672,9 +671,14 @@ CaseClause
     {
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"case\",\"Expression\":['+$2+'],\"body\":['+$4+']}';
     }
-    | EOF
+    | DEFAULT ':'
     {
-       $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"default\",\"Expression\":[],\"body\":[]}';
+    }
+
+    | DEFAULT ':' Source1
+    {
+        $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"default\",\"Expression\":[],\"body\":['+$3+']}';
     }
 ;
 

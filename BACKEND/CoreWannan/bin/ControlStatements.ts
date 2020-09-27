@@ -3,7 +3,7 @@
         UNIVERSIDAD DE SAN CARLOS DE GUATEMALA - 2020
         JOSE ORLANDO WANNAN ESCOBAR - 201612331
         GUATEMALA
- */
+
 class IfStatement extends statement
 {
     StateCode: number;
@@ -301,3 +301,4 @@ class defaults extends statement
     }
 
 }
+*/

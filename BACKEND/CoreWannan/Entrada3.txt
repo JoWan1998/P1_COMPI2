@@ -36,3 +36,16 @@ d.root = 1500;
 console.log(a1)
 console.log(b)
 console.log(d.root)
+let mensaje = 'hola'
+switch(mensaje)
+{
+  case 'hola':
+    console.log('como estas?')
+    break;
+  case 'como estas':
+    console.log('bien y tu que tal')
+    break;
+  default:
+    console.log('no reconozco tu mensaje')
+    break;
+}
