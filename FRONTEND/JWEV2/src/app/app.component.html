@@ -1,4 +1,4 @@
-<nav class="navbar navbar-dark navbar-expand-sm fixed-top">
+<nav class="navbar navbar-dark navbar-expand-sm fixed-top ">
   <div class="container">
     <button class="navbar-toggler bg-dark" type="button" (click)="isMenuCollapsed = !isMenuCollapsed">
       <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-menu-app-fill" fill="white" xmlns="http://www.w3.org/2000/svg">
@@ -83,14 +83,63 @@
     </div>
   </div>
 </nav>
+<div class="example-spacer"></div>
+<div class="example-spacer"></div>
+<div class="example-spacer"></div>
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">MatrioshTS</h1>
+    <p class="lead">UNIVERSIDAD DE SAN CARLOS DE GUATEMALA, ORGANIZACION Y LENGUAJES DE COMPILADORES 2</p>
+  </div>
+</div>
+<!--
 <header class="jumbotron bg-light">
   <div class="container">
     <div class="row row-header">
-      <div class="col-12 col-md-6 col-sm">
+      <div class="col-12 col-md col-sm col-lg">
+        <ngb-carousel *ngIf="images">
+          <ng-template ngbSlide>
+            <div class="picsum-img-wrapper">
+              <img [src]="images[0]" alt="Random first slide">
+            </div>
+            <div class="carousel-caption">
+              <h3>10 seconds between slides...</h3>
+              <p>This carousel uses customized default values.</p>
+            </div>
+          </ng-template>
+          <ng-template ngbSlide>
+            <div class="picsum-img-wrapper">
+              <img [src]="images[1]" alt="Random second slide">
+            </div>
+            <div class="carousel-caption">
+              <h3>No mouse events...</h3>
+              <p>This carousel doesn't pause or resume on mouse events</p>
+            </div>
+          </ng-template>
+          <ng-template ngbSlide>
+            <div class="picsum-img-wrapper">
+              <img [src]="images[2]"  alt="Random third slide">
+            </div>
+            <div class="carousel-caption">
+              <h3>No keyboard...</h3>
+              <p>This carousel uses customized default values.</p>
+            </div>
+          </ng-template>
+          <ng-template ngbSlide>
+            <div class="picsum-img-wrapper">
+              <img [src]="images[3]" alt="Random fourth slide">
+            </div>
+            <div class="carousel-caption">
+              <h3>And no wrap after last slide.</h3>
+              <p>This carousel uses customized default values.</p>
+            </div>
+          </ng-template>
+        </ngb-carousel>
       </div>
     </div>
   </div>
 </header>
+-->
 <div class="container-fluid">
               <app-toasts aria-live="polite" aria-atomic="true"></app-toasts>
 
@@ -102,19 +151,28 @@
 
               <div class="row row-content bg-dark">
                 <div class="col">
-                  <div class="col-md-auto col-sm-auto col-lg-auto">
+                  <div class="col-md-auto col-sm-auto col-lg-auto ">
                     <p>
                       <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-file-code-fill" fill="white" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM6.646 5.646a.5.5 0 1 1 .708.708L5.707 8l1.647 1.646a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2zm2.708 0a.5.5 0 1 0-.708.708L10.293 8 8.646 9.646a.5.5 0 0 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2z"/>
                       </svg>
                       <a href="#" class="text-light"><b>&nbsp; CODIGO</b></a>
+
                     </p>
-                    <ngx-codemirror id="codemirrorCode"
+                    <ngx-codemirror class="mat-elevation-z8" id="codemirrorCode"
                                     #codemirror
                                     [options]="codeMirrorOptions"
                                     [(ngModel)]="obj"
                                     (ngModelChange)="setEditorContent($event)">
                     </ngx-codemirror>
+                    <button type="button" class="btn btn-dark" (click)="openScrollableContent4(longContent4)" >
+                      GraphTs
+                      <span class="badge badge-light">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-bookshelf" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M2.5 0a.5.5 0 0 1 .5.5V2h10V.5a.5.5 0 0 1 1 0v15a.5.5 0 0 1-1 0V15H3v.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5zM3 14h10v-3H3v3zm0-4h10V7H3v3zm0-4h10V3H3v3z"/>
+                          </svg>
+                        </span>
+                    </button>
                   </div>
                 </div>
                 <div class="col">
@@ -125,7 +183,7 @@
                       </svg>
                       <a href="#" class="text-warning"><b>&nbsp; TRADUCCION</b></a>
                     </p>
-                    <ngx-codemirror id="codemirrorTraductor"
+                    <ngx-codemirror class="mat-elevation-z8" id="codemirrorTraductor"
                                     #codemirror1
                                     [options]="codeMirrorOptions0"
                                     [(ngModel)]="obj2"
@@ -150,7 +208,7 @@
                       </svg>
                       <a href="#" class="text-info"><b>&nbsp; SALIDA</b></a>
                     </p>
-                    <ngx-codemirror id="codemirrorSalida"
+                    <ngx-codemirror class="mat-elevation-z8" id="codemirrorSalida"
                                     #codemirror2
                                     [options]="codeMirrorOptions1"
                                     [(ngModel)]="obj1"
@@ -507,15 +565,23 @@
         <h5><strong>LINKS</strong></h5>
         <ul class="list-unstyled">
           <li>
-            <a href="https://portal.ingenieria.usac.edu.gt/">
-              <button type="button" class="btn btn-outline-info">
-                USAC
-                <span class="badge badge-light">
-                  <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-star-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
-                  </svg>
-                </span>
-              </button>
+            <a href="https://portal.ingenieria.usac.edu.gt/" class="badge badge-primary">
+              <b>USAC</b>
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/JoWan1998" class="badge badge-dark">
+              <b>GitHub</b>
+            </a>
+          </li>
+          <li>
+            <a href="mailto:jwannan13@gmail.com" class="badge badge-warning">
+              <b>Correo</b>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/in/josé-orlando-wannan-escobar-913618113" class="badge badge-info">
+              <b>Linkedin</b>
             </a>
           </li>
         </ul>

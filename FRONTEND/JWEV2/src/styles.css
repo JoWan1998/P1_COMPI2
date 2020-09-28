@@ -6,6 +6,7 @@
 @import '~codemirror/theme/yonce.css';
 @import '~codemirror/addon/fold/foldgutter.css';
 @import '~codemirror/addon/lint/lint.css';
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Candara, sans-serif; }
