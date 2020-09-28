@@ -4,6 +4,12 @@
 
 
 // ANALISIS LEXICO
+
+%{
+    var lexicos = [];
+    var sintacticos = [];
+%}
+
 %lex
 %options case-insensitive
 %%
@@ -99,7 +105,10 @@
 '?'                             return '?'
 
 <<EOF>>                         return 'EOF';
-.                               { console.error('Error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column+';'); }
+.                               {
+                                        console.error('Error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column+';');
+                                        lexicos.push('{\"token\":\"' + yytext + '\", \"linea\": \"' + yylloc.first_line + '\", \"columna\": \"' + yylloc.first_column+'\"}');
+                                }
 
 /lex
 
@@ -121,8 +130,8 @@
 // ANALISIS SINTACTICO
 
 S
-    : Source { $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"S\":['+$1+']}'; return $$;}
-    | EOF { $$ = '{}'; return $$;}
+    : Source { $$ =[];  $$.push('{\"linea\":\"'+(yylineno+1)+'\",\"S\":['+$1+']}'); $$.push(lexicos); $$.push(sintacticos); return $$;}
+    | EOF { $$ =[]; $$.push('{}'); $$.push(lexicos); $$.push(sintacticos); return $$;}
 ;
 
 Source
@@ -202,6 +211,8 @@ Statement
       }
     | error
       {
+        console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column);
+        sintacticos.push('{\"token\":\"'+yytext+'\", \"linea\":\"'+this._$.first_line+'\", \"columna\":\"'+this._$.first_column+'\"}');
         $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"statement\":\"\"}';
       }
 ;

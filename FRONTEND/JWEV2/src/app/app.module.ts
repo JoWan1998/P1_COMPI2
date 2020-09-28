@@ -12,10 +12,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { LayoutModule } from '@angular/cdk/layout';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ToastsContainer } from './toasts-container.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ToastsContainer
   ],
   imports: [
     BrowserModule,

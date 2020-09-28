@@ -6,23 +6,33 @@ const max = 4;
 
 function llenado(matrix1 : number[][], matrix2 : number[][], matrix3 : number[][]) : void{
     for(let i = min; i < max; i++){
-        matrix1[i] = [];
-        matrix2[i] = [];
-        matrix3[i] = [];
+        matrix1.push([]);
+        matrix2.push([]);
+        matrix3.push([]);
 
-        for(let j = min; j < max; j++){
-            matrix1[i][j] = j * 3 + i;
-            matrix2[i][j] = i ** 3 - j ** 2;
-            matrix3[i][j] = 0;
+        for(let j = min; j < max; j++)
+        {
+            matrix1[i].push(j * 3 + i);
+            matrix2[i].push(i ** 3 - j ** 2);
+            matrix3[i].push(0);
         }
     }
+  console.log('------------------------')
+  print(matrix1)
+  console.log('------------------------')
+  print(matrix2)
+  console.log('------------------------')
+  print(matrix3)
 }
 
-function print(matrix : number[][]) : void{
-    for(let i = 0; i < matrix.length; i++){
-        let salida = '';
+function print(matrix : number[][]) : void
+{
+  let salida = '';
+  for(let i = 0; i < matrix.length; i++)
+  {
+        salida = '';
         for(let j = 0; j < matrix[i].length; j++){
-            salida = salida + "\t|\t" + matrix[i][j];
+            salida = salida + " | " + matrix[i][j];
         }
         console.log(salida);
     }
@@ -38,10 +48,11 @@ function suma(matrix1 : number[][], matrix2 : number[][], matrixR : number[][]){
 
 function sumarFilas(matrix : number[][]) : void{
     let contador = 0;
+  	let salida = '';
     console.log("\t\t\t\t\t\t\t\t\t\tR");
     for(let i = 0; i < matrix.length; i++){
         contador = 0;
-        let salida = '';
+        salida = '';
         for(let j = 0; j < matrix[i].length; j++){
             contador = contador + matrix[i][j];
 			salida = salida + "\t|\t" + matrix[i][j];
@@ -154,7 +165,7 @@ function clearMat(matrix : number[][]){
     }
 }
 
-
+console.log('llenado');
 llenado(matrixA,matrixB, matrixR);
 console.log("Matrix A");
 print(matrixA);

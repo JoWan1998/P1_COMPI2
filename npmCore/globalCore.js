@@ -17,15 +17,16 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var output = [];
+var outs = [];
 /*
     simbologia de estados
     -2 -> error instanciar variable
     -1 -> error
-    0 -> finalizado
-    1 -> sin errores
-    2 -> sin errores, break
-    3 -> sin errores, continue
-    4 -> sin errores, return
+     0 -> finalizado
+     1 -> sin errores
+     2 -> sin errores, break
+     3 -> sin errores, continue
+     4 -> sin errores, return
  */
 var tablasimbolos = /** @class */ (function () {
     function tablasimbolos(tabla, CF) {
@@ -63,9 +64,12 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
+            //output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Its impossible to the machine locate the sym.token\"}')
             return [-1, null];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Its impossible to the machine locate the sym.token, sym:' + name);
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Its impossible to the machine locate the sym.token, sym:' + name + '\"}');
             return [-2, 'Unexpected Error, cannot get information of the variable'];
         }
     };
@@ -77,6 +81,7 @@ var tablasimbolos = /** @class */ (function () {
                 var simbolo = _a[_i];
                 if (simbolo instanceof sym) {
                     if (simbolo.name == name) {
+                        //console.log(simbolo.ambito)
                         if (simbolo.ambito == this.ambitoLevel && this.ambitoLevel > 0 && simbolo.ambito > 0) {
                             ambitoglob = false;
                             ambitoloc = true;
@@ -87,6 +92,7 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
+            //console.log(ambitoglob, ambitoloc)
             if (ambitoglob) {
                 for (var _b = 0, _c = this.simbolos; _b < _c.length; _b++) {
                     var simbolo = _c[_b];
@@ -147,9 +153,12 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
+            //output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [UPDATE] Its impossible to the machine locate the sym.token, sym:'+name+'\"}')
             return [-1, 'We cannot find the object: ' + name];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Its impossible to the machine locate the sym.token, sym:' + name);
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [UPDATE] Its impossible to the machine locate the sym.token, sym:' + name + '\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -172,6 +181,7 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
+            //console.log(ambitoglob)
             if (ambitoglob) {
                 for (var _b = 0, _c = this.simbolos; _b < _c.length; _b++) {
                     var simbolo = _c[_b];
@@ -241,9 +251,12 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
+            //output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [GET] Its impossible to the machine locate the sym.token, sym:'+name+'\"}')
             return [-1, 'We cannot find the object: ' + name];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Its impossible to the machine locate the sym.token, sym:' + name);
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [GET] Its impossible to the machine locate the sym.token, sym:' + name + '\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -265,6 +278,7 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
+            //console.log(ambitoglob,ambitoloc)
             if (ambitoglob) {
                 for (var _b = 0, _c = this.simbolos; _b < _c.length; _b++) {
                     var simbolo = _c[_b];
@@ -297,9 +311,13 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
+            //output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [GETSYM] Its impossible to the machine locate the sym.token, sym:'+name+'\"}')
             return [-1, 'We cannot find the object: ' + name];
         }
         catch (e) {
+            //console.log(e);
+            outs.push('Error: Ocurrio un error inesperado, Its impossible to the machine locate the sym.token, sym:' + name);
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [GETSYM] Its impossible to the machine locate the sym.token, sym:' + name + '\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -313,9 +331,12 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
+            //output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [GETTYPE] Its impossible to the machine locate the sym.token, sym:'+name+'\"}')
             return [-1, 'the object doesn\'t exists'];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Its impossible to the machine locate the sym.token, sym:' + name);
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [GETTYPE] Its impossible to the machine locate the sym.token, sym:' + name + '\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -329,9 +350,12 @@ var tablasimbolos = /** @class */ (function () {
                     }
                 }
             }
+            //output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [GETTYPEVALUE] Its impossible to the machine locate the sym.token, sym:'+name+'\"}')
             return [-1, 'the object doesn\'t exists'];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Its impossible to the machine locate the sym.token, sym:' + name);
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [GETTYPEVALUE] Its impossible to the machine locate the sym.token, sym:' + name + '\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -353,9 +377,14 @@ var tablasimbolos = /** @class */ (function () {
                 this.simbolos.push(simbolo);
                 return [1, null];
             }
-            return [-2, 'we can\'t locate the variable, it\'s probably the variable doesn\'t exists'];
+            outs.push('Error: Ocurrio un error inesperado, Its impossible to the machine locate the sym.token, sym:' + name + ', because its aleready defined');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Its impossible to the machine insert the sym.token, because its aleready defined\"}');
+            erroresSemanticos.push('You cant set this sym.token, the object its already exists.');
+            return [-2, 'we can\'t locate the variable, it\'s probably the variable exists'];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Its impossible to the machine locate the sym.token, sym:' + name);
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" [INSERT] Its impossible to the machine locate the sym.token, sym:' + name + '\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -388,6 +417,8 @@ var sym = /** @class */ (function () {
             }
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Its imposible defined or get the sym.token');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  its imposible defined or get the sym.token\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -522,6 +553,7 @@ var SwitchStatement = /** @class */ (function (_super) {
             for (var _i = 0, _a = this.cases; _i < _a.length; _i++) {
                 var statements = _a[_i];
                 if (statements instanceof cases) {
+                    //console.log('SW->', this.val.execute(tablasimbolo))
                     statements.val = this.val;
                     var value = statements.execute(tablasimbolo_1);
                     switch (value[0]) {
@@ -531,34 +563,42 @@ var SwitchStatement = /** @class */ (function (_super) {
                             return value;
                         case 0: //-> finalizado
                             state = 0;
-                            if (value[1] != null) {
-                                if (value[1] instanceof Array) {
-                                    for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
-                                        var m = _c[_b];
-                                        this.value.push(m);
+                            if (statements instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                            var m = _c[_b];
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else {
+                                        this.value.push(value[1]);
                                     }
                                 }
-                                else {
-                                    this.value.push(value[1]);
-                                }
                             }
-                            break;
+                            return [0, this.value];
                         case 1: //-> sin errores
                             state = 1;
-                            if (value[1] != null) {
-                                if (value[1] instanceof Array) {
-                                    for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
-                                        var m = _e[_d];
-                                        this.value.push(m);
+                            if (statements instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                            var m = _e[_d];
+                                            this.value.push(m);
+                                        }
+                                    }
+                                    else {
+                                        this.value.push(value[1]);
                                     }
                                 }
-                                else {
-                                    this.value.push(value[1]);
-                                }
                             }
-                            break;
+                            return [1, this.value];
                         case 2: //-> sin errores, break
-                            return [2, this.value];
+                            return [1, this.value];
                         case 3: //-> sin errores, continue
                             return [3, this.value];
                         case 4: //-> sin errores, return
@@ -605,16 +645,18 @@ var SwitchStatement = /** @class */ (function (_super) {
                         }
                         break;
                     case 2: //-> sin errores, break
-                        return [2, null];
+                        return [1, null];
                     case 3: //-> sin errores, continue
                         return [3, null];
                     case 4: //-> sin errores, return
                         return [4, value[1]];
                 }
             }
-            return [state, this.value];
+            return [1, this.value];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-1, 'Unexpected error, we cannot find the error...'];
         }
     };
@@ -644,8 +686,9 @@ var cases = /** @class */ (function (_super) {
             valInitial1.Function = RelationalExpr.Igual;
             valInitial1.Expression1 = this.val;
             valInitial1.Expression2 = this.ValueExpression;
+            this.StateCode = -1;
             var valInitial = valInitial1.execute(tablasimbolo);
-            //console.log(valInitial);
+            //console.log('CS->', this.ValueExpression.execute(tablasimbolo));
             if (valInitial[0] < 0)
                 return [-1, null];
             if (valInitial[1]) {
@@ -660,34 +703,43 @@ var cases = /** @class */ (function (_super) {
                             return value;
                         case 0: //-> finalizado
                             this.StateCode = 0;
-                            if (value[1] != null) {
-                                if (value[1] instanceof Array) {
-                                    for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
-                                        var m = _c[_b];
-                                        this.value.push(m);
+                            if (statement0 instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
+                                            var m = _c[_b];
+                                            this.value.push(m);
+                                        }
                                     }
-                                }
-                                else {
-                                    this.value.push(value[1]);
+                                    else {
+                                        this.value.push(value[1]);
+                                    }
                                 }
                             }
                             break;
                         case 1: //-> sin errores
                             this.StateCode = 1;
-                            if (value[1] != null) {
-                                if (value[1] instanceof Array) {
-                                    for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
-                                        var m = _e[_d];
-                                        this.value.push(m);
+                            if (statement0 instanceof autoincrements) {
+                            }
+                            else {
+                                if (value[1] != null) {
+                                    if (value[1] instanceof Array) {
+                                        for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
+                                            var m = _e[_d];
+                                            this.value.push(m);
+                                        }
                                     }
-                                }
-                                else {
-                                    this.value.push(value[1]);
+                                    else {
+                                        this.value.push(value[1]);
+                                    }
                                 }
                             }
                             break;
                         case 2: //-> sin errores, break
-                            return [2, this.value];
+                            this.StateCode = 1;
+                            break;
                         case 3: //-> sin errores, continue
                             return [3, this.value];
                         case 4: //-> sin errores, return
@@ -701,6 +753,8 @@ var cases = /** @class */ (function (_super) {
         }
         catch (e) {
             //console.log(e);
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
@@ -770,6 +824,8 @@ var defaults = /** @class */ (function (_super) {
             return [1, this.value];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-1, 'Unexpected Error, we cannot find the error'];
         }
     };
@@ -1365,9 +1421,13 @@ var autoincrements = /** @class */ (function (_super) {
                         }
                 }
             }
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-1, null];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-2, null];
         }
     };
@@ -1753,25 +1813,41 @@ var autoincrements = /** @class */ (function (_super) {
 var arrays = /** @class */ (function (_super) {
     __extends(arrays, _super);
     function arrays() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.call(this) || this;
+        _this.niu = false;
+        return _this;
     }
     arrays.prototype.execute = function () {
         return [1, this];
     };
     arrays.prototype.getValue = function (position, tablasimbolo) {
         try {
-            var a = position.pop();
-            var result = a.execute(tablasimbolo);
-            if (result[0] > 0) {
-                if (position.length > 0) {
-                    return this.getValorA(position, this.values[result[1]], tablasimbolo);
-                }
-                else {
-                    return [1, this.values[result[1]]];
+            if (position.length > 0) {
+                var a = position.pop();
+                var result = a.execute(tablasimbolo);
+                //console.log('R', result);
+                if (result[0] > 0) {
+                    result[1] = Math.round(result[1]);
+                    //console.log(result[1])
+                    if (position.length > 0) {
+                        //console.log('m1->>', position.length,' pos: '+result[1])
+                        //console.log(this.values, '->>>>>', this.values[result[1]])
+                        if (this.values[result[1]] instanceof arrays)
+                            return this.getValorA(position, this.values[result[1]].getAll(), tablasimbolo);
+                    }
+                    else {
+                        //console.log('pos: ',result[1], 'value: ',this.values[result[1]], ' values: ',this.values[result[1]].getAll());
+                        return [1, this.values[result[1]]];
+                    }
                 }
             }
+            erroresSemanticos.push('Linea: ' + this.linea + ', EL objeto al que apunta no es un arreglo');
+            return [-1, 'EL objeto al que apunta no es un arreglo'];
         }
         catch (e) {
+            //console.log(e)
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-1, null];
         }
     };
@@ -1780,20 +1856,41 @@ var arrays = /** @class */ (function (_super) {
             var a = position.pop();
             var result = a.execute(tablasimbolo);
             if (result[0] > 0) {
+                result[1] = Math.round(result[1]);
                 if (position.length > 0) {
-                    return this.getValorA(position, objeto[result[1]], tablasimbolo);
+                    //console.log('m2->>', position.length, 'pos: '+result[1])
+                    //console.log(objeto, '->>>>>', objeto[result[1]])
+                    if (objeto[result[1]] instanceof arrays)
+                        return this.getValorA(position, objeto[result[1]].getAll(), tablasimbolo);
                 }
                 else {
+                    //console.log(objeto[result[1]])
                     return [1, objeto[result[1]]];
                 }
             }
+            erroresSemanticos.push('Linea: ' + this.linea + ', EL objeto al que apunta no es un arreglo');
+            return [-1, 'EL objeto al que apunta no es un arreglo'];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-1, null];
         }
     };
     arrays.prototype.getAll = function () {
         return this.values;
+    };
+    arrays.prototype.get1 = function (position) {
+        var a = 0;
+        for (var _i = 0, _a = this.values; _i < _a.length; _i++) {
+            var value = _a[_i];
+            if (a == position) {
+                //console.log(value);
+                return value;
+            }
+            a++;
+        }
+        return null;
     };
     arrays.prototype.get = function (position) {
         var a = 0;
@@ -1804,15 +1901,20 @@ var arrays = /** @class */ (function (_super) {
             }
             a++;
         }
+        outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+        output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
         return [-1, null];
     };
     arrays.prototype.setValue = function (tablasimbolo, position, value) {
         try {
-            if (position instanceof Array) {
+            //console.log(101,value);
+            if (position.length > 0) {
                 if (value == null) {
                     var a = position.pop();
                     var result = a.execute(tablasimbolo);
+                    //console.log(a);
                     if (result[0] > 0) {
+                        result[1] = Math.round(result[1]);
                         if (position.length > 0) {
                             var tt = this.setValorA(tablasimbolo, this.values[result[1]], position, null);
                             if (tt[0] > 0) {
@@ -1820,6 +1922,7 @@ var arrays = /** @class */ (function (_super) {
                                 return [1, null];
                             }
                             else {
+                                erroresSemanticos.push('Linea: ' + this.linea + ', Bad Exposure.... in Arrays');
                                 return [-1, null];
                             }
                         }
@@ -1829,24 +1932,31 @@ var arrays = /** @class */ (function (_super) {
                         }
                     }
                     else {
+                        outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+                        output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
                         return [-1, null];
                     }
                 }
                 else {
                     if (value instanceof statement) {
                         var vals = value.execute(tablasimbolo);
+                        //console.log(11,vals)
                         if (vals[0] > 0) {
                             var a = position.pop();
                             var result = a.execute(tablasimbolo);
+                            //console.log('Pos: ',result)
                             if (result[0] > 0) {
+                                result[1] = Math.round(result[1]);
                                 if (position.length > 0) {
-                                    var tt = this.setValorA(tablasimbolo, this.values[result[1]], position, vals[1]);
-                                    if (tt[0] > 0) {
-                                        this.values[result[1]] = tt[1];
-                                        return [1, null];
-                                    }
-                                    else {
-                                        return [-1, null];
+                                    if (this.values[result[1]] instanceof arrays) {
+                                        var tt = this.setValorA(tablasimbolo, this.values[result[1]].getAll(), position, value);
+                                        if (tt[0] > 0) {
+                                            this.values[result[1]].values = tt[1];
+                                            return [1, null];
+                                        }
+                                        else {
+                                            return [-1, null];
+                                        }
                                     }
                                 }
                                 else {
@@ -1859,14 +1969,18 @@ var arrays = /** @class */ (function (_super) {
                             }
                         }
                         else {
-                            return [-1, null];
+                            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+                            return [-1, 'Value cannot be executed'];
                         }
                     }
                 }
             }
+            erroresSemanticos.push('Linea: ' + this.linea + ', No puedes asignar a una matriz una posicion no existente, por favor verifica tu declaracion');
             return [-1, null];
         }
         catch (e) {
+            //console.log(e);
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
             return [-1, null];
         }
     };
@@ -1877,35 +1991,46 @@ var arrays = /** @class */ (function (_super) {
                 if (vals[0] > 0) {
                     var a = position.pop();
                     var result = a.execute(tablasimbolo);
+                    //console.log('Pos: ',result)
                     if (result[0] > 0) {
+                        result[1] = Math.round(result[1]);
                         if (position.length > 0) {
-                            var tt = this.setValorA(tablasimbolo, objeto[result[1]], position, vals[1]);
-                            if (tt[0] > 0) {
-                                objeto[result[1]] = tt[1];
-                                return [1, objeto];
-                            }
-                            else {
-                                return [-1, null];
+                            if (objeto[result[1]] instanceof arrays) {
+                                var tt = this.setValorA(tablasimbolo, objeto[result[1]].getAll(), position, vals[1]);
+                                if (tt[0] > 0) {
+                                    objeto[result[1]].values = tt[1];
+                                    return [1, objeto];
+                                }
+                                else {
+                                    erroresSemanticos.push('Linea: ' + this.linea + ', Bad Exposure... in Arrays');
+                                    return [-1, null];
+                                }
                             }
                         }
                         else {
-                            objeto[result[1]] == vals[1];
+                            objeto[result[1]] = vals[1];
+                            //console.log(objeto)
                             return [1, objeto];
                         }
                     }
                     else {
+                        erroresSemanticos.push('Linea: ' + this.linea + ', Bad Exposure... in Arrays');
                         return [-1, null];
                     }
                 }
                 else {
+                    erroresSemanticos.push('Linea: ' + this.linea + ', Bad Exposure... in Arrays');
                     return [-1, null];
                 }
             }
             else {
+                erroresSemanticos.push('Linea: ' + this.linea + ', Bad Exposure... in Arrays');
                 return [-1, null];
             }
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-1, null];
         }
     };
@@ -1917,9 +2042,12 @@ var arrays = /** @class */ (function (_super) {
                     return [1, null];
                 }
             }
+            erroresSemanticos.push('Linea: ' + this.linea + ', Bad position, Array cant get this position');
             return [-1, null];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-1, null];
         }
     };
@@ -1929,9 +2057,71 @@ var arrays = /** @class */ (function (_super) {
     arrays.prototype.traduction = function () {
         return "";
     };
+    arrays.prototype.push1 = function (values, positions, tablasimbolos) {
+        try {
+            var value = values.execute(tablasimbolos);
+            if (value[0] > 0) {
+                if (positions.length > 0) {
+                    //console.log(positions)
+                    var a = positions.pop();
+                    var result = a.execute(tablasimbolos);
+                    //console.log(result[1], this.values)
+                    if (result[0] > 0) {
+                        result[1] = Math.round(result[1]);
+                        if (this.values[result[1]] instanceof arrays) {
+                            var k = this.push2(this.values[result[1]], value[1], positions, tablasimbolos);
+                            if (k != null) {
+                                this.values[result[1]] = k;
+                                return [1, null];
+                            }
+                        }
+                    }
+                }
+                else {
+                    this.values.push(value);
+                    //console.log(this.values)
+                    return [1, null];
+                }
+            }
+            return [-2, null];
+        }
+        catch (e) {
+            return [-1, null];
+        }
+    };
+    arrays.prototype.push2 = function (objeto, value, positions, tablasimbolos) {
+        try {
+            //console.log(objeto)
+            if (positions.length > 0) {
+                var a = positions.pop();
+                var result = a.execute(tablasimbolos);
+                if (result[0] > 0) {
+                    result[1] = Math.round(result[1]);
+                    if (objeto[result[1]] instanceof arrays) {
+                        var k = this.push2(objeto[result[1]], value, positions, tablasimbolos);
+                        if (k != null) {
+                            objeto[result[1]] = k;
+                            return objeto;
+                        }
+                    }
+                }
+            }
+            else {
+                objeto.values.push(value);
+                //console.log(objeto)
+                return objeto;
+            }
+            return objeto;
+        }
+        catch (e) {
+            return null;
+        }
+    };
     arrays.prototype.push = function (value) {
+        //console.log(this.values);
         try {
             this.values.push(value);
+            //console.log(this.values);
             return [1, null];
         }
         catch (e) {
@@ -1972,6 +2162,18 @@ var Asignation = /** @class */ (function (_super) {
     }
     Asignation.prototype.execute = function (tablasimbolo) {
         try {
+            //console.log(this.name, this.position)
+            var positions = [];
+            for (var _i = 0, _a = this.position; _i < _a.length; _i++) {
+                var pos = _a[_i];
+                positions.push(pos);
+            }
+            var atributos = [];
+            for (var _b = 0, _c = this.atributo; _b < _c.length; _b++) {
+                var pos = _c[_b];
+                atributos.push(pos);
+            }
+            //console.log(this.Expression)
             if (this.atributo.length > 0 && this.position.length > 0) {
                 if (this.Assigment == typeAssigment.igual) {
                     var value = this.Expression.execute(tablasimbolo);
@@ -1983,7 +2185,7 @@ var Asignation = /** @class */ (function (_super) {
                                 var simbolito = simbolo[1];
                                 if (simbolito.getValue() instanceof arrays) {
                                     var arrs = simbolito.getValue();
-                                    var result = this.operateArrAtr(arrs, tablasimbolo, this.position, this.atributo, this.Expression);
+                                    var result = this.operateArrAtr(arrs, tablasimbolo, positions, atributos, this.Expression);
                                     if (result[0] > 0) {
                                         return tablasimbolo.update(this.name, result[1]);
                                     }
@@ -1997,7 +2199,7 @@ var Asignation = /** @class */ (function (_super) {
                                 var simbolito = simbolo[1];
                                 if (simbolito.getValue() instanceof types) {
                                     var arrs = simbolito.getValue();
-                                    var result = this.operateAtrArr(arrs, tablasimbolo, this.atributo, this.position, this.Expression);
+                                    var result = this.operateAtrArr(arrs, tablasimbolo, atributos, positions, this.Expression);
                                     if (result[0] > 0) {
                                         return tablasimbolo.update(this.name, result[1]);
                                     }
@@ -2012,15 +2214,18 @@ var Asignation = /** @class */ (function (_super) {
             else if (this.atributo.length > 0) {
                 if (this.Assigment == typeAssigment.igual) {
                     var value = this.Expression.execute(tablasimbolo);
+                    //console.log(this.Expression);
                     if (value[0] > 0) {
                         var simbolo = tablasimbolo.getsym(this.name);
                         if (simbolo[0] > 0) {
                             var simbolito = simbolo[1];
                             if (simbolito.getValue() instanceof types) {
                                 var atr = simbolito.getValue();
-                                var val = this.operateAtr(atr, tablasimbolo, this.atributo, this.Expression);
+                                //console.log(atr);
+                                var val = this.operateAtr(atr, tablasimbolo, atributos, value[1]);
+                                //console.log(val[1]);
                                 if (val[0] > 0) {
-                                    return tablasimbolo.update(this.name, atr);
+                                    return tablasimbolo.update(this.name, val[1]);
                                 }
                             }
                         }
@@ -2031,6 +2236,7 @@ var Asignation = /** @class */ (function (_super) {
             }
             else if (this.position.length > 0) {
                 if (this.Assigment == typeAssigment.igual) {
+                    //console.log(this.Expression)
                     var value = this.Expression.execute(tablasimbolo);
                     if (value[0] > 0) {
                         var simbolo = tablasimbolo.getsym(this.name);
@@ -2038,7 +2244,9 @@ var Asignation = /** @class */ (function (_super) {
                             var simbolito = simbolo[1];
                             if (simbolito.getValue() instanceof arrays) {
                                 var arrs = simbolito.getValue();
-                                var k = arrs.setValue(tablasimbolo, this.position, this.Expression);
+                                //console.log(arrs);
+                                var k = arrs.setValue(tablasimbolo, positions, this.Expression);
+                                //console.log(k)
                                 if (k[0] > 0)
                                     return tablasimbolo.update(this.name, arrs);
                             }
@@ -2118,10 +2326,14 @@ var Asignation = /** @class */ (function (_super) {
                         break;
                 }
             }
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object\"}');
             return [-1, 'cannot be aplied ' + typeAssigment[this.Assigment] + ', in the object'];
         }
         catch (e) {
             //console.log(e)
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -2209,6 +2421,7 @@ var Asignation = /** @class */ (function (_super) {
             var atr = atributos.pop();
             if (atributos.length > 0) {
                 var atrsub0 = objeto.getValueAtributo(atr);
+                //console.log(objeto);
                 if (atrsub0[0] > 0) {
                     if (atrsub0[1] instanceof types) {
                         var atrsub = this.operateAtr(atrsub0[1], tablasimbolo, atributos, value);
@@ -2230,6 +2443,7 @@ var Asignation = /** @class */ (function (_super) {
             return [-1, null];
         }
         catch (e) {
+            outs.push('Salida: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -2410,6 +2624,8 @@ var IfStatement = /** @class */ (function (_super) {
             return [this.StateCode, this.value];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -2452,6 +2668,8 @@ var OperatorTernario = /** @class */ (function (_super) {
             return [this.StateCode, this.value];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -2472,6 +2690,7 @@ var expression = /** @class */ (function (_super) {
     __extends(expression, _super);
     function expression() {
         var _this = _super.call(this) || this;
+        _this.Expresion = null;
         _this.atributo = [];
         _this.position = [];
         _this.name = "";
@@ -2483,6 +2702,16 @@ var expression = /** @class */ (function (_super) {
     }
     expression.prototype.getValueAtributo = function (tablasimbolo) {
         //get all atributes
+        var positions = [];
+        var atributos = [];
+        for (var _i = 0, _a = this.position; _i < _a.length; _i++) {
+            var pos = _a[_i];
+            positions.push(pos);
+        }
+        for (var _b = 0, _c = this.atributo; _b < _c.length; _b++) {
+            var atr = _c[_b];
+            atributos.push(atr);
+        }
         try {
             if (this.atributo.length > 0) {
                 if (this.name != "") {
@@ -2492,7 +2721,8 @@ var expression = /** @class */ (function (_super) {
                             var simbolito1 = simbolo[1];
                             if (simbolito1.getValue() instanceof types) {
                                 var valors = simbolito1.getValue();
-                                var val = valors.getValuesAtributo(this.atributo, tablasimbolo);
+                                var val = valors.getValuesAtributo(atributos, tablasimbolo);
+                                //console.log(val);
                                 if (val[0] > 0) {
                                     try {
                                         if (val[1].value instanceof Nulls) {
@@ -2521,6 +2751,16 @@ var expression = /** @class */ (function (_super) {
     };
     expression.prototype.getValueAtributoArray = function (tablasimbolo) {
         //get all atributes
+        var positions = [];
+        var atributos = [];
+        for (var _i = 0, _a = this.position; _i < _a.length; _i++) {
+            var pos = _a[_i];
+            positions.push(pos);
+        }
+        for (var _b = 0, _c = this.atributo; _b < _c.length; _b++) {
+            var atr = _c[_b];
+            atributos.push(atr);
+        }
         try {
             if (this.atributo.length > 0) {
                 if (this.name != "") {
@@ -2530,13 +2770,13 @@ var expression = /** @class */ (function (_super) {
                             var simbolito1 = simbolo[1];
                             if (simbolito1.getValue() instanceof types) {
                                 var valors = simbolito1.getValue();
-                                var val = valors.getValuesAtributo(this.atributo, tablasimbolo);
+                                var val = valors.getValuesAtributo(atributos, tablasimbolo);
                                 if (val[0] > 0) {
                                     try {
                                         if (val[1].value instanceof arrays) {
                                             var valors2 = val[1].value;
                                             if (this.position.length > 0) {
-                                                var vae = valors2.getValue(this.position, tablasimbolo);
+                                                var vae = valors2.getValue(positions, tablasimbolo);
                                                 if (vae[0] > 0) {
                                                     try {
                                                         var result = vae[1].execute(tablasimbolo);
@@ -2569,7 +2809,18 @@ var expression = /** @class */ (function (_super) {
         }
     };
     expression.prototype.getValuesArrayAtributo = function (tablasimbolo) {
+        var Expression = this.Expresion;
         //get all values array
+        var positions = [];
+        var atributos = [];
+        for (var _i = 0, _a = this.position; _i < _a.length; _i++) {
+            var pos = _a[_i];
+            positions.push(pos);
+        }
+        for (var _b = 0, _c = this.atributo; _b < _c.length; _b++) {
+            var atr = _c[_b];
+            atributos.push(atr);
+        }
         try {
             if (this.name != "") {
                 var simbolo = tablasimbolo.getsym(this.name);
@@ -2579,11 +2830,11 @@ var expression = /** @class */ (function (_super) {
                         if (simbolito1.getValue() instanceof arrays) {
                             var valors = simbolito1.getValue();
                             if (this.position.length > 0) {
-                                var val = valors.getValue(this.position, tablasimbolo);
+                                var val = valors.getValue(positions, tablasimbolo);
                                 if (val[0] > 0) {
                                     if (val[1] instanceof types) {
                                         var valors2 = val[1];
-                                        var vae = valors2.getValuesAtributo(this.atributo, tablasimbolo);
+                                        var vae = valors2.getValuesAtributo(atributos, tablasimbolo);
                                         if (vae[0] > 0) {
                                             try {
                                                 if (vae[1].value instanceof Nulls) {
@@ -2611,10 +2862,10 @@ var expression = /** @class */ (function (_super) {
             }
             else {
                 if (this.position.length > 0) {
-                    var valors = this.Expresion;
+                    var valors = Expression;
                     var val = valors.execute(tablasimbolo);
                     if (val[0] > 0) {
-                        var resu = val[1].getValue(this.position, tablasimbolo);
+                        var resu = val[1].getValue(positions, tablasimbolo);
                         if (resu[0] > 0) {
                             var result = resu[1].execute(tablasimbolo);
                             if (result[0] > 0)
@@ -2623,7 +2874,7 @@ var expression = /** @class */ (function (_super) {
                     }
                 }
                 else {
-                    var valors = this.Expresion;
+                    var valors = Expression;
                     var val = valors.execute(tablasimbolo);
                     if (val[0] > 0) {
                         return val[1].getAll();
@@ -2637,7 +2888,19 @@ var expression = /** @class */ (function (_super) {
         }
     };
     expression.prototype.getValuesArray = function (tablasimbolo) {
+        var Expression = this.Expresion;
         //get all values array
+        var positions = [];
+        var atributos = [];
+        for (var _i = 0, _a = this.position; _i < _a.length; _i++) {
+            var pos = _a[_i];
+            positions.push(pos);
+        }
+        for (var _b = 0, _c = this.atributo; _b < _c.length; _b++) {
+            var atr = _c[_b];
+            atributos.push(atr);
+        }
+        //console.log(positions)
         try {
             if (this.name != "") {
                 var simbolo = tablasimbolo.getsym(this.name);
@@ -2645,16 +2908,19 @@ var expression = /** @class */ (function (_super) {
                     if (simbolo[1] instanceof sym) {
                         var simbolito1 = simbolo[1];
                         if (simbolito1.getValue() instanceof arrays) {
+                            //console.log(simbolito1)
                             var valors = simbolito1.getValue();
                             if (this.position.length > 0) {
-                                var val = valors.getValue(this.position, tablasimbolo);
+                                var val = valors.getValue(positions, tablasimbolo);
                                 if (val[0] > 0) {
-                                    try {
+                                    if (val[1] instanceof statement) {
                                         var result = val[1].execute(tablasimbolo);
+                                        //console.log(result)
                                         if (result[0] > 0)
                                             return result[1];
                                     }
-                                    catch (e) {
+                                    else {
+                                        //console.log(val[1])
                                         return val[1];
                                     }
                                 }
@@ -2668,10 +2934,10 @@ var expression = /** @class */ (function (_super) {
             }
             else {
                 if (this.position.length > 0) {
-                    var valors = this.Expresion;
+                    var valors = Expression;
                     var val = valors.execute(tablasimbolo);
                     if (val[0] > 0) {
-                        var resu = val[1].getValue(this.position, tablasimbolo);
+                        var resu = val[1].getValue(positions, tablasimbolo);
                         if (resu[0] > 0) {
                             var result = resu[1].execute(tablasimbolo);
                             if (result[0] > 0)
@@ -2680,7 +2946,7 @@ var expression = /** @class */ (function (_super) {
                     }
                 }
                 else {
-                    var valors = this.Expresion;
+                    var valors = Expression;
                     var val = valors.execute(tablasimbolo);
                     if (val[0] > 0) {
                         return val[1].getAll();
@@ -2690,6 +2956,7 @@ var expression = /** @class */ (function (_super) {
             return null;
         }
         catch (e) {
+            console.log(e);
             return null;
         }
     };
@@ -2700,8 +2967,12 @@ var expression = /** @class */ (function (_super) {
                 var func = val[1];
                 var funcion = func.value;
                 //console.log(this.parameters)
+                //console.log(funcion);
                 var res = funcion.executeV(tablasimbolo, this.parameters);
+                //console.log(res);
                 if (res[0] > 0) {
+                    if (res[1] == null)
+                        return '__jw__';
                     return res[1];
                 }
             }
@@ -2713,15 +2984,23 @@ var expression = /** @class */ (function (_super) {
     };
     expression.prototype.getValue = function (tablasimbolo) {
         //get data in especific
-        //console.log(this)
+        //console.log(this.position)
+        var Expression = this.Expresion;
+        this.Expresion = null;
+        this.Expresion = Expression;
         var positions = [];
         var atributos = [];
         for (var _i = 0, _a = this.position; _i < _a.length; _i++) {
             var pos = _a[_i];
             positions.push(pos);
         }
-        for (var _b = 0, _c = this.atributo; _b < _c.length; _b++) {
-            var atr = _c[_b];
+        var temp = [];
+        for (var _b = 0, positions_1 = positions; _b < positions_1.length; _b++) {
+            var tempo = positions_1[_b];
+            temp.push(tempo);
+        }
+        for (var _c = 0, _d = this.atributo; _c < _d.length; _c++) {
+            var atr = _d[_c];
             atributos.push(atr);
         }
         try {
@@ -2730,12 +3009,14 @@ var expression = /** @class */ (function (_super) {
                     case NativeArray.Length:
                         var simbolo = tablasimbolo.getsym(this.name);
                         if (simbolo[0] > 0) {
+                            //console.log(simbolo)
                             if (simbolo[1] instanceof sym) {
                                 var simbolito1 = simbolo[1];
                                 if (simbolito1.getValue() instanceof arrays) {
                                     var valors = simbolito1.getValue();
+                                    //console.log(valors);
                                     if (this.position.length > 0) {
-                                        var val1 = valors.getValue(this.position, tablasimbolo);
+                                        var val1 = valors.getValue(temp, tablasimbolo);
                                         if (val1[0] > 0) {
                                             if (val1[1] instanceof arrays) {
                                                 var retorno = val1[1];
@@ -2744,7 +3025,8 @@ var expression = /** @class */ (function (_super) {
                                         }
                                     }
                                     else {
-                                        return valors.length();
+                                        //console.log(valors.values.length)
+                                        return valors.values.length;
                                     }
                                 }
                             }
@@ -2764,7 +3046,7 @@ var expression = /** @class */ (function (_super) {
                                                 var retorno = val1[1];
                                                 var retorno1 = retorno.pop();
                                                 if (retorno1[0] > 0) {
-                                                    var m = valors.setValue(tablasimbolo, this.position, retorno);
+                                                    var m = valors.setValue(tablasimbolo, temp, retorno);
                                                     if (m[0] > 0) {
                                                         var k = tablasimbolo.update(this.name, valors);
                                                         if (k[0] > 0)
@@ -2787,39 +3069,55 @@ var expression = /** @class */ (function (_super) {
                         }
                         break;
                     case NativeArray.Push:
-                        var value = this.Expresion.execute(tablasimbolo);
-                        if (value[0] > 0) {
-                            var simbolo2 = tablasimbolo.getsym(this.name);
-                            if (simbolo2[0] > 0) {
-                                if (simbolo2[1] instanceof sym) {
-                                    var simbolito1 = simbolo2[1];
-                                    if (simbolito1.getValue() instanceof arrays) {
-                                        var valors = simbolito1.getValue();
-                                        if (this.position.length > 0) {
-                                            var val1 = valors.getValue(positions, tablasimbolo);
-                                            if (val1[0] > 0) {
-                                                if (val1[1] instanceof arrays) {
-                                                    var retorno = val1[1];
-                                                    var bb = retorno.push(this.Expresion);
+                        var simbolo2 = tablasimbolo.getsym(this.name);
+                        //console.log(simbolo2);
+                        //console.log('Ambito ---- ', tablasimbolo.ambitoLevel)
+                        //console.log(this.position, this.name, value[1]);
+                        if (simbolo2[0] > 0) {
+                            if (simbolo2[1] instanceof sym) {
+                                var simbolito1 = simbolo2[1];
+                                //console.log(simbolito1.getValue())
+                                if (simbolito1.getValue() instanceof arrays) {
+                                    var valors = simbolito1.getValue();
+                                    if (this.position.length > 0) {
+                                        var bb = valors.push1(this.Expresion, temp, tablasimbolo);
+                                        if (bb[0] > 0) {
+                                            var k = tablasimbolo.update(this.name, valors);
+                                            if (k[0] > 0)
+                                                return valors.length() + 1;
+                                        }
+                                    }
+                                    else {
+                                        var value = Expression.execute(tablasimbolo);
+                                        //console.log('Ambito ---- ', tablasimbolo.ambitoLevel)
+                                        //console.log(this.position, this.name, value[1]);
+                                        if (value[0] > 0) {
+                                            if (value[1] instanceof arrays) {
+                                                if (value[1].niu) {
+                                                    value[1].values = [];
+                                                    var bb = valors.push(value[1]);
                                                     if (bb[0] > 0) {
-                                                        var m = valors.setValue(tablasimbolo, this.position, retorno);
-                                                        //console.log(valors)
-                                                        if (m[0] > 0) {
-                                                            var k = tablasimbolo.update(this.name, valors);
-                                                            if (k[0] > 0)
-                                                                return retorno.length();
-                                                        }
+                                                        var k = tablasimbolo.update(this.name, valors);
+                                                        if (k[0] > 0)
+                                                            return valors.length() + 1;
+                                                    }
+                                                }
+                                                else {
+                                                    var bb = valors.push(value[1]);
+                                                    if (bb[0] > 0) {
+                                                        var k = tablasimbolo.update(this.name, valors);
+                                                        if (k[0] > 0)
+                                                            return valors.length() + 1;
                                                     }
                                                 }
                                             }
-                                        }
-                                        else {
-                                            var bb = valors.push(this.Expresion);
-                                            //console.log(bb);
-                                            if (bb[0] > 0) {
-                                                var k = tablasimbolo.update(this.name, valors);
-                                                if (k[0] > 0)
-                                                    return valors.length() + 1;
+                                            else {
+                                                var bb = valors.push(value[1]);
+                                                if (bb[0] > 0) {
+                                                    var k = tablasimbolo.update(this.name, valors);
+                                                    if (k[0] > 0)
+                                                        return valors.length() + 1;
+                                                }
                                             }
                                         }
                                     }
@@ -2849,6 +3147,7 @@ var expression = /** @class */ (function (_super) {
                 }
                 else {
                     var simbolo = tablasimbolo.getsym(this.name);
+                    //console.log(simbolo);
                     if (simbolo[0] > 0) {
                         if (simbolo[1] instanceof sym) {
                             var simbolito1 = simbolo[1];
@@ -2860,39 +3159,40 @@ var expression = /** @class */ (function (_super) {
                 }
             }
             else {
+                //console.log(this);
                 switch (this.valueType) {
                     case TypeValue["null"]:
                         return "__jw__";
                     case TypeValue.Array:
-                        if (this.Expresion instanceof arrays) {
-                            return this.Expresion.getAll();
+                        if (Expression instanceof arrays) {
+                            return Expression.getAll();
                         }
                         break;
                     case TypeValue.Boolean:
-                        if (this.Expresion instanceof Booleans) {
-                            return this.Expresion.getValue();
+                        if (Expression instanceof Booleans) {
+                            return Expression.getValue();
                         }
                         break;
                     case TypeValue["const"]:
-                        return this.Expresion.execute(tablasimbolo);
+                        return Expression.execute(tablasimbolo);
                     case TypeValue.let:
-                        return this.Expresion.execute(tablasimbolo);
+                        return Expression.execute(tablasimbolo);
                     case TypeValue.Number:
-                        if (this.Expresion instanceof Numbers) {
-                            return this.Expresion.getValue();
+                        if (Expression instanceof Numbers) {
+                            return Expression.getValue();
                         }
                         break;
                     case TypeValue.Object:
                         var simbolo = tablasimbolo.getsym(this.name);
                         return simbolo[1];
                     case TypeValue.String:
-                        if (this.Expresion instanceof Strings) {
-                            return this.Expresion.getValue();
+                        if (Expression instanceof Strings) {
+                            return Expression.getValue();
                         }
                         break;
                     case TypeValue.type:
-                        if (this.Expresion instanceof types) {
-                            return this.Expresion;
+                        if (Expression instanceof types) {
+                            return Expression;
                         }
                         break;
                     case TypeValue["var"]:
@@ -2908,12 +3208,25 @@ var expression = /** @class */ (function (_super) {
                         break;
                     case TypeValue["void"]:
                         return '__jw__';
+                    default:
+                        var simbolo0 = tablasimbolo.getsym(this.name);
+                        //console.log(simbolo0)
+                        if (simbolo0[0] > 0) {
+                            if (simbolo0[1] instanceof sym) {
+                                var simbolito1 = simbolo0[1];
+                                return simbolito1.getValue();
+                            }
+                        }
                 }
             }
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return null;
         }
         catch (e) {
             //console.log(e)
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return null;
         }
     };
@@ -2921,15 +3234,19 @@ var expression = /** @class */ (function (_super) {
         //get all data from all version of types
         try {
             var data = this.getValue(tablasimbolo);
-            //console.log(data)
+            //console.log(this.name)
             if (data != null) {
                 if (data == '__jw__')
                     return [1, null];
                 return [1, data];
             }
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, We cant get the data');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',We cant get the data\"}');
             return [-1, 'We cant get the data'];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ',Unexpected Error, cannot be execute the instruction\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -2952,6 +3269,7 @@ var ArichmeticExpression = /** @class */ (function (_super) {
         try {
             var izq = (this.Expression1 != null) ? this.Expression1.execute(tablasimbolo) : [-1, null];
             var der = (this.Expression2 != null) ? this.Expression2.execute(tablasimbolo) : [-1, null];
+            //console.log(izq, der)
             if (izq[0] > 0 && der[0] > 0) {
                 switch (this.Function) {
                     case ArichmeticExpr.suma:
@@ -2963,6 +3281,7 @@ var ArichmeticExpression = /** @class */ (function (_super) {
                     case ArichmeticExpr.multiplicacion:
                         return [1, izq[1] * der[1]];
                     case ArichmeticExpr.modulo:
+                        //console.log(izq[1]%der[1])
                         return [1, izq[1] % der[1]];
                     case ArichmeticExpr.negacion:
                         return [1, -izq[1]];
@@ -2975,9 +3294,13 @@ var ArichmeticExpression = /** @class */ (function (_super) {
                         }
                 }
             }
-            return [-1, null];
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, An Lost Expression cant result');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', An Lost Expression cant result\"}');
+            return [-1, 'Arichmetic Exception not defined values...'];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -3038,9 +3361,13 @@ var LogialExpression = /** @class */ (function (_super) {
                         return [1, !izq[1]];
                 }
             }
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, An Lost Expression cant result');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', An Lost Expression cant result\"}');
             return [-1, null];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -3072,6 +3399,7 @@ var RelationalExpression = /** @class */ (function (_super) {
         try {
             var izq = (this.Expression1 != null) ? this.Expression1.execute(tablasimbolo) : [1, null];
             var der = (this.Expression2 != null) ? this.Expression2.execute(tablasimbolo) : [1, null];
+            //console.log(izq, der)
             if (izq[0] == 1 && der[0] == 1) {
                 switch (this.Function) {
                     case RelationalExpr.Igual:
@@ -3088,9 +3416,13 @@ var RelationalExpression = /** @class */ (function (_super) {
                         return [1, izq[1] != der[1]];
                 }
             }
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, An Lost Expression cant result');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', An Lost Expression cant result\"}');
             return [-1, null];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, we cannot find the error...\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -3135,7 +3467,12 @@ var functions = /** @class */ (function (_super) {
     };
     functions.prototype.executeV = function (tablasimbolo1, parameters) {
         try {
-            //console.log(this)
+            var tempBody = [];
+            for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
+                var btemp = _a[_i];
+                tempBody.push(btemp);
+            }
+            //console.log(this.name)
             var tablasimbolo_3 = new tablasimbolos(tablasimbolo1, true);
             //console.log(this.Parameters.length == parameters.length)
             if (this.Parameters.length == parameters.length) {
@@ -3315,31 +3652,29 @@ var functions = /** @class */ (function (_super) {
                     }
                 }
                 //console.log(tablasimbolo)
-                for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
-                    var statement1 = _a[_i];
-                    //console.log(tablasimbolo);
+                for (var _b = 0, tempBody_1 = tempBody; _b < tempBody_1.length; _b++) {
+                    var statement1 = tempBody_1[_b];
+                    //console.log(this.name, tablasimbolo);
                     var value = statement1.execute(tablasimbolo_3);
-                    //console.log(value);
+                    //console.log(this.name, value, statement1); //-> [4,5] -> value = [4,5] -> value = [4,5]
+                    //console.log('----------------------------------')
+                    //console.log(this.name, tablasimbolo)
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
                             return value;
                         case -1: //-> error
                             return value;
                         case 0: //-> finalizado
-                            this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
                             this.StateCode = 0;
                             this.value = value[1];
                             break;
                         case 1: //-> sin errores
-                            this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
                             this.StateCode = 1;
                             this.value = value[1];
                             break;
                         case 2: //-> sin errores, break
-                            this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
                             break;
                         case 3: //-> sin errores, continue
-                            this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
                             break;
                         case 4: //-> sin errores, return
                             this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
@@ -3347,11 +3682,16 @@ var functions = /** @class */ (function (_super) {
                             return [4, value[1]];
                     }
                 }
+                this.actualizarTs(tablasimbolo1, tablasimbolo_3, parameters);
                 return [1, null];
             }
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, Internal Error, Parameters length is not the same length, length: ' + this.Parameters.length + ', length_send: ' + parameters.length);
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Internal Error, Parameters length is not the same length, length: ' + this.Parameters.length + ', length_send: ' + parameters.length + '"}');
             return [-1, 'Internal Error, Parameters length is not the same length, length: ' + this.Parameters.length + ", length_send: " + parameters.length];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, we cannot find the error...\"}');
             return [-1, 'Unexpected Error, we cannot find a solution for this error'];
         }
     };
@@ -3372,7 +3712,6 @@ var functions = /** @class */ (function (_super) {
                         if (simbol[0] > 0) {
                             var valor = simbol[1];
                             var insert = tablasimbolos.update(value.name, valor.getValue());
-                            console.log(insert);
                         }
                     }
                 }
@@ -3416,22 +3755,28 @@ var WhileStatements = /** @class */ (function (_super) {
         try {
             this.value = [];
             var state = true;
-            var tablasimbolo_4 = new tablasimbolos(tablasimbolo1, false);
+            var tempBody = [];
+            for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
+                var btemp = _a[_i];
+                tempBody.push(btemp);
+            }
             while (state) {
+                var tablasimbolo_4 = new tablasimbolos(tablasimbolo1, false);
                 var valInitial = this.ValueExpression.execute(tablasimbolo_4);
                 if (valInitial[0] < 0)
                     return [-1, null];
                 if (!valInitial[1])
                     break;
                 var internalState = 0;
-                for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
-                    var statement0 = _a[_i];
+                for (var _b = 0, tempBody_2 = tempBody; _b < tempBody_2.length; _b++) {
+                    var statement0 = tempBody_2[_b];
                     var value = statement0.execute(tablasimbolo_4);
+                    //console.log(value);
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
-                            return [-2, null];
+                            return value;
                         case -1: //-> error
-                            return [-1, null];
+                            return value;
                         case 0: //-> finalizado
                             this.StateCode = 0;
                             if (statement0 instanceof autoincrements) {
@@ -3439,8 +3784,8 @@ var WhileStatements = /** @class */ (function (_super) {
                             else {
                                 if (value[1] != null) {
                                     if (value[1] instanceof Array) {
-                                        for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
-                                            var m = _c[_b];
+                                        for (var _c = 0, _d = value[1]; _c < _d.length; _c++) {
+                                            var m = _d[_c];
                                             this.value.push(m);
                                         }
                                     }
@@ -3452,14 +3797,13 @@ var WhileStatements = /** @class */ (function (_super) {
                             break;
                         case 1: //-> sin errores
                             this.StateCode = 1;
-                            this.StateCode = 1;
                             if (statement0 instanceof autoincrements) {
                             }
                             else {
                                 if (value[1] != null) {
                                     if (value[1] instanceof Array) {
-                                        for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
-                                            var m = _e[_d];
+                                        for (var _e = 0, _f = value[1]; _e < _f.length; _e++) {
+                                            var m = _f[_e];
                                             this.value.push(m);
                                         }
                                     }
@@ -3490,6 +3834,8 @@ var WhileStatements = /** @class */ (function (_super) {
         }
         catch (e) {
             //console.log(e);
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, we cannot find the error...\"}');
             return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
@@ -3513,18 +3859,25 @@ var DoWhileStatements = /** @class */ (function (_super) {
     DoWhileStatements.prototype.execute = function (tablasimblolo1) {
         try {
             this.value = [];
-            var tablasimblolo = new tablasimbolos(tablasimblolo1, false);
+            //let tablasimblolo:tablasimbolos = new tablasimbolos(tablasimblolo1,false)
             var state = true;
+            var tempBody = [];
+            for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
+                var btemp = _a[_i];
+                tempBody.push(btemp);
+            }
             while (state) {
+                var tablasimblolo = new tablasimbolos(tablasimblolo1, false);
                 var internalState = 0;
-                for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
-                    var statement0 = _a[_i];
+                for (var _b = 0, tempBody_3 = tempBody; _b < tempBody_3.length; _b++) {
+                    var statement0 = tempBody_3[_b];
                     var value = statement0.execute(tablasimblolo);
+                    //console.log(value, statement0);
                     switch (value[0]) {
                         case -2: //-> error instanciar variable
-                            return [-2, null];
+                            return value;
                         case -1: //-> error
-                            return [-1, null];
+                            return value;
                         case 0: //-> finalizado
                             this.StateCode = 0;
                             if (statement0 instanceof autoincrements) {
@@ -3532,8 +3885,8 @@ var DoWhileStatements = /** @class */ (function (_super) {
                             else {
                                 if (value[1] != null) {
                                     if (value[1] instanceof Array) {
-                                        for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
-                                            var m = _c[_b];
+                                        for (var _c = 0, _d = value[1]; _c < _d.length; _c++) {
+                                            var m = _d[_c];
                                             this.value.push(m);
                                         }
                                     }
@@ -3545,14 +3898,13 @@ var DoWhileStatements = /** @class */ (function (_super) {
                             break;
                         case 1: //-> sin errores
                             this.StateCode = 1;
-                            this.StateCode = 1;
                             if (statement0 instanceof autoincrements) {
                             }
                             else {
                                 if (value[1] != null) {
                                     if (value[1] instanceof Array) {
-                                        for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
-                                            var m = _e[_d];
+                                        for (var _e = 0, _f = value[1]; _e < _f.length; _e++) {
+                                            var m = _f[_e];
                                             this.value.push(m);
                                         }
                                     }
@@ -3579,6 +3931,7 @@ var DoWhileStatements = /** @class */ (function (_super) {
                 if (internalState == 2)
                     break;
                 var valInitial = this.ValueExpression.execute(tablasimblolo);
+                //console.log(valInitial)
                 if (valInitial[0] < 0)
                     return [-1, null];
                 if (!valInitial[1])
@@ -3587,6 +3940,8 @@ var DoWhileStatements = /** @class */ (function (_super) {
             return [1, this.value];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, we cannot find the error...\"}');
             return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
@@ -3612,19 +3967,30 @@ var ForStatements1 = /** @class */ (function (_super) {
     }
     ForStatements1.prototype.execute = function (tablasimbolo1) {
         try {
-            this.value = [];
-            var tablasimbolo_5 = new tablasimbolos(tablasimbolo1, false);
-            var initial = this.valueInitial.execute(tablasimbolo_5);
+            //this.value = []
+            //console.log(this.body)
+            //let tablasimbolo:tablasimbolos = new tablasimbolos(tablasimbolo1,false)
+            var tablasimbolo2 = new tablasimbolos(tablasimbolo1, false);
+            var initial = this.valueInitial.execute(tablasimbolo2);
+            var tempBody = [];
+            for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
+                var btemp = _a[_i];
+                tempBody.push(btemp);
+            }
             if (initial[0] > 0) {
+                //console.log(tablasimbolo)
                 var state = true;
                 while (state) {
                     var internalState = 0;
-                    var condicion = this.condicion.execute(tablasimbolo_5);
+                    var condicion = this.condicion.execute(tablasimbolo2);
+                    //console.log(condicion)
                     if (condicion[0] < 0)
                         return [-1, 'Condition Iteration For, Error, cannot execute the  Condition'];
                     if (condicion[1]) {
-                        for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
-                            var statement1 = _a[_i];
+                        var tablasimbolo_5 = new tablasimbolos(tablasimbolo2, false);
+                        //console.log(condicion[1])
+                        for (var _b = 0, tempBody_4 = tempBody; _b < tempBody_4.length; _b++) {
+                            var statement1 = tempBody_4[_b];
                             var value = statement1.execute(tablasimbolo_5);
                             switch (value[0]) {
                                 case -2: //-> error instanciar variable
@@ -3638,8 +4004,8 @@ var ForStatements1 = /** @class */ (function (_super) {
                                     else {
                                         if (value[1] != null) {
                                             if (value[1] instanceof Array) {
-                                                for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
-                                                    var m = _c[_b];
+                                                for (var _c = 0, _d = value[1]; _c < _d.length; _c++) {
+                                                    var m = _d[_c];
                                                     this.value.push(m);
                                                 }
                                             }
@@ -3656,8 +4022,8 @@ var ForStatements1 = /** @class */ (function (_super) {
                                     else {
                                         if (value[1] != null) {
                                             if (value[1] instanceof Array) {
-                                                for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
-                                                    var m = _e[_d];
+                                                for (var _e = 0, _f = value[1]; _e < _f.length; _e++) {
+                                                    var m = _f[_e];
                                                     this.value.push(m);
                                                 }
                                             }
@@ -3683,7 +4049,7 @@ var ForStatements1 = /** @class */ (function (_super) {
                             continue;
                         if (internalState == 2)
                             state = false;
-                        var post = this.postIterator.execute(tablasimbolo_5);
+                        var post = this.postIterator.execute(tablasimbolo2);
                         if (post[0] < 0)
                             return [-1, 'Post Iteration For, Error, cannot execute the Post Condition'];
                     }
@@ -3695,6 +4061,8 @@ var ForStatements1 = /** @class */ (function (_super) {
             return [1, this.value];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, we cannot find the error...\"}');
             return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
@@ -3812,10 +4180,71 @@ var ForStatements3 = /** @class */ (function (_super) {
     }
     ForStatements3.prototype.execute = function (tablasimbolo1) {
         var tablasimbolo = new tablasimbolos(tablasimbolo1, false);
+        var tempBody = [];
+        for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
+            var btemp = _a[_i];
+            tempBody.push(btemp);
+        }
         try {
             this.value = [];
             var internalState = 0;
             tablasimbolo.insert(this.identificador, null, TypeSym.Variable, TypeValue.Object);
+            for (var _b = 0, tempBody_5 = tempBody; _b < tempBody_5.length; _b++) {
+                var statement1 = tempBody_5[_b];
+                var value = statement1.execute(tablasimbolo);
+                switch (value[0]) {
+                    case -2: //-> error instanciar variable
+                        return value;
+                    case -1: //-> error
+                        return value;
+                    case 0: //-> finalizado
+                        this.StateCode = 0;
+                        if (statement1 instanceof autoincrements) {
+                        }
+                        else {
+                            if (value[1] != null) {
+                                if (value[1] instanceof Array) {
+                                    for (var _c = 0, _d = value[1]; _c < _d.length; _c++) {
+                                        var m = _d[_c];
+                                        this.value.push(m);
+                                    }
+                                }
+                                else {
+                                    this.value.push(value[1]);
+                                }
+                            }
+                        }
+                        break;
+                    case 1: //-> sin errores
+                        this.StateCode = 1;
+                        if (statement1 instanceof autoincrements) {
+                        }
+                        else {
+                            if (value[1] != null) {
+                                if (value[1] instanceof Array) {
+                                    for (var _e = 0, _f = value[1]; _e < _f.length; _e++) {
+                                        var m = _f[_e];
+                                        this.value.push(m);
+                                    }
+                                }
+                                else {
+                                    this.value.push(value[1]);
+                                }
+                            }
+                        }
+                        break;
+                    case 2: //-> sin errores, break
+                        internalState = 2;
+                        break;
+                    case 3: //-> sin errores, continue
+                        internalState = 3;
+                        break;
+                    case 4: //-> sin errores, return
+                        return [4, value[1]];
+                }
+                if (internalState == 3 || internalState == 2)
+                    break;
+            }
             if (this.Expression instanceof expression) {
                 var vals = this.Expression.execute(tablasimbolo);
                 if (vals[0] > 0) {
@@ -3823,62 +4252,6 @@ var ForStatements3 = /** @class */ (function (_super) {
                         var kk = vals[1].getAll();
                         for (var pos in kk) {
                             tablasimbolo.update(this.identificador, pos);
-                            for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
-                                var statement1 = _a[_i];
-                                var value = statement1.execute(tablasimbolo);
-                                switch (value[0]) {
-                                    case -2: //-> error instanciar variable
-                                        return value;
-                                    case -1: //-> error
-                                        return value;
-                                    case 0: //-> finalizado
-                                        this.StateCode = 0;
-                                        if (statement1 instanceof autoincrements) {
-                                        }
-                                        else {
-                                            if (value[1] != null) {
-                                                if (value[1] instanceof Array) {
-                                                    for (var _b = 0, _c = value[1]; _b < _c.length; _b++) {
-                                                        var m = _c[_b];
-                                                        this.value.push(m);
-                                                    }
-                                                }
-                                                else {
-                                                    this.value.push(value[1]);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    case 1: //-> sin errores
-                                        this.StateCode = 1;
-                                        if (statement1 instanceof autoincrements) {
-                                        }
-                                        else {
-                                            if (value[1] != null) {
-                                                if (value[1] instanceof Array) {
-                                                    for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
-                                                        var m = _e[_d];
-                                                        this.value.push(m);
-                                                    }
-                                                }
-                                                else {
-                                                    this.value.push(value[1]);
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    case 2: //-> sin errores, break
-                                        internalState = 2;
-                                        break;
-                                    case 3: //-> sin errores, continue
-                                        internalState = 3;
-                                        break;
-                                    case 4: //-> sin errores, return
-                                        return [4, value[1]];
-                                }
-                                if (internalState == 3 || internalState == 2)
-                                    break;
-                            }
                             if (internalState == 3)
                                 continue;
                             if (internalState == 2)
@@ -3891,8 +4264,8 @@ var ForStatements3 = /** @class */ (function (_super) {
                 var valores = this.Expression.getAll();
                 for (var post in valores) {
                     tablasimbolo.update(this.identificador, post);
-                    for (var _f = 0, _g = this.body; _f < _g.length; _f++) {
-                        var statement1 = _g[_f];
+                    for (var _g = 0, tempBody_6 = tempBody; _g < tempBody_6.length; _g++) {
+                        var statement1 = tempBody_6[_g];
                         var value = statement1.execute(tablasimbolo);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
@@ -3955,9 +4328,13 @@ var ForStatements3 = /** @class */ (function (_super) {
             }
             if (this.StateCode >= 0)
                 return [1, this.value];
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, Cannot applied iterators in For...in, because only Arrays is permited!.');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Cannot applied iterators in For...in, because only Arrays is permited!.\"}');
             return [-1, 'Cannot applied iterators in For...in, because only Arrays is permited!.'];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, we cannot find the error...\"}');
             return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
@@ -3982,6 +4359,11 @@ var ForStatements4 = /** @class */ (function (_super) {
         var tablasimbolo = new tablasimbolos(tablasimbolo1, false);
         try {
             this.value = [];
+            var tempBody = [];
+            for (var _i = 0, _a = this.body; _i < _a.length; _i++) {
+                var btemp = _a[_i];
+                tempBody.push(btemp);
+            }
             var internalState = 0;
             tablasimbolo.insert(this.identificador, null, TypeSym.Variable, TypeValue.Object);
             if (this.Expression instanceof expression) {
@@ -3989,15 +4371,15 @@ var ForStatements4 = /** @class */ (function (_super) {
                 if (vals[0] > 0) {
                     if (vals[1] instanceof arrays) {
                         var kk = vals[1].getAll();
-                        for (var _i = 0, kk_1 = kk; _i < kk_1.length; _i++) {
-                            var pos = kk_1[_i];
+                        for (var _b = 0, kk_1 = kk; _b < kk_1.length; _b++) {
+                            var pos = kk_1[_b];
                             if (pos instanceof arrays) {
                                 var km = pos.getAll();
-                                for (var _a = 0, km_1 = km; _a < km_1.length; _a++) {
-                                    var posi = km_1[_a];
+                                for (var _c = 0, km_1 = km; _c < km_1.length; _c++) {
+                                    var posi = km_1[_c];
                                     tablasimbolo.update(this.identificador, posi.execute(tablasimbolo)[1]);
-                                    for (var _b = 0, _c = this.body; _b < _c.length; _b++) {
-                                        var statement1 = _c[_b];
+                                    for (var _d = 0, tempBody_7 = tempBody; _d < tempBody_7.length; _d++) {
+                                        var statement1 = tempBody_7[_d];
                                         var value = statement1.execute(tablasimbolo);
                                         switch (value[0]) {
                                             case -2: //-> error instanciar variable
@@ -4011,8 +4393,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                                                 else {
                                                     if (value[1] != null) {
                                                         if (value[1] instanceof Array) {
-                                                            for (var _d = 0, _e = value[1]; _d < _e.length; _d++) {
-                                                                var m = _e[_d];
+                                                            for (var _e = 0, _f = value[1]; _e < _f.length; _e++) {
+                                                                var m = _f[_e];
                                                                 this.value.push(m);
                                                             }
                                                         }
@@ -4030,8 +4412,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                                                 else {
                                                     if (value[1] != null) {
                                                         if (value[1] instanceof Array) {
-                                                            for (var _f = 0, _g = value[1]; _f < _g.length; _f++) {
-                                                                var m = _g[_f];
+                                                            for (var _g = 0, _h = value[1]; _g < _h.length; _g++) {
+                                                                var m = _h[_g];
                                                                 this.value.push(m);
                                                             }
                                                         }
@@ -4061,8 +4443,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                             }
                             else {
                                 tablasimbolo.update(this.identificador, pos.execute(tablasimbolo)[1]);
-                                for (var _h = 0, _j = this.body; _h < _j.length; _h++) {
-                                    var statement1 = _j[_h];
+                                for (var _j = 0, tempBody_8 = tempBody; _j < tempBody_8.length; _j++) {
+                                    var statement1 = tempBody_8[_j];
                                     var value = statement1.execute(tablasimbolo);
                                     switch (value[0]) {
                                         case -2: //-> error instanciar variable
@@ -4128,8 +4510,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                         for (var _p = 0, _q = vals[1]; _p < _q.length; _p++) {
                             var pos = _q[_p];
                             tablasimbolo.update(this.identificador, pos);
-                            for (var _r = 0, _s = this.body; _r < _s.length; _r++) {
-                                var statement1 = _s[_r];
+                            for (var _r = 0, tempBody_9 = tempBody; _r < tempBody_9.length; _r++) {
+                                var statement1 = tempBody_9[_r];
                                 var value = statement1.execute(tablasimbolo);
                                 switch (value[0]) {
                                     case -2: //-> error instanciar variable
@@ -4143,8 +4525,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                                         else {
                                             if (value[1] != null) {
                                                 if (value[1] instanceof Array) {
-                                                    for (var _t = 0, _u = value[1]; _t < _u.length; _t++) {
-                                                        var m = _u[_t];
+                                                    for (var _s = 0, _t = value[1]; _s < _t.length; _s++) {
+                                                        var m = _t[_s];
                                                         this.value.push(m);
                                                     }
                                                 }
@@ -4161,8 +4543,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                                         else {
                                             if (value[1] != null) {
                                                 if (value[1] instanceof Array) {
-                                                    for (var _v = 0, _w = value[1]; _v < _w.length; _v++) {
-                                                        var m = _w[_v];
+                                                    for (var _u = 0, _v = value[1]; _u < _v.length; _u++) {
+                                                        var m = _v[_u];
                                                         this.value.push(m);
                                                     }
                                                 }
@@ -4194,11 +4576,11 @@ var ForStatements4 = /** @class */ (function (_super) {
             }
             else if (this.Expression instanceof arrays) {
                 var valores = this.Expression.getAll();
-                for (var _x = 0, valores_1 = valores; _x < valores_1.length; _x++) {
-                    var post = valores_1[_x];
+                for (var _w = 0, valores_1 = valores; _w < valores_1.length; _w++) {
+                    var post = valores_1[_w];
                     tablasimbolo.update(this.identificador, post.execute(tablasimbolo)[1]);
-                    for (var _y = 0, _z = this.body; _y < _z.length; _y++) {
-                        var statement1 = _z[_y];
+                    for (var _x = 0, tempBody_10 = tempBody; _x < tempBody_10.length; _x++) {
+                        var statement1 = tempBody_10[_x];
                         var value = statement1.execute(tablasimbolo);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
@@ -4212,8 +4594,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                                 else {
                                     if (value[1] != null) {
                                         if (value[1] instanceof Array) {
-                                            for (var _0 = 0, _1 = value[1]; _0 < _1.length; _0++) {
-                                                var m = _1[_0];
+                                            for (var _y = 0, _z = value[1]; _y < _z.length; _y++) {
+                                                var m = _z[_y];
                                                 this.value.push(m);
                                             }
                                         }
@@ -4230,8 +4612,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                                 else {
                                     if (value[1] != null) {
                                         if (value[1] instanceof Array) {
-                                            for (var _2 = 0, _3 = value[1]; _2 < _3.length; _2++) {
-                                                var m = _3[_2];
+                                            for (var _0 = 0, _1 = value[1]; _0 < _1.length; _0++) {
+                                                var m = _1[_0];
                                                 this.value.push(m);
                                             }
                                         }
@@ -4261,11 +4643,11 @@ var ForStatements4 = /** @class */ (function (_super) {
             }
             else if (this.Expression instanceof Strings) {
                 var valores1 = this.Expression.execute();
-                for (var _4 = 0, valores1_1 = valores1; _4 < valores1_1.length; _4++) {
-                    var va = valores1_1[_4];
+                for (var _2 = 0, valores1_1 = valores1; _2 < valores1_1.length; _2++) {
+                    var va = valores1_1[_2];
                     tablasimbolo.update(this.identificador, va);
-                    for (var _5 = 0, _6 = this.body; _5 < _6.length; _5++) {
-                        var statement1 = _6[_5];
+                    for (var _3 = 0, tempBody_11 = tempBody; _3 < tempBody_11.length; _3++) {
+                        var statement1 = tempBody_11[_3];
                         var value = statement1.execute(tablasimbolo);
                         switch (value[0]) {
                             case -2: //-> error instanciar variable
@@ -4279,8 +4661,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                                 else {
                                     if (value[1] != null) {
                                         if (value[1] instanceof Array) {
-                                            for (var _7 = 0, _8 = value[1]; _7 < _8.length; _7++) {
-                                                var m = _8[_7];
+                                            for (var _4 = 0, _5 = value[1]; _4 < _5.length; _4++) {
+                                                var m = _5[_4];
                                                 this.value.push(m);
                                             }
                                         }
@@ -4297,8 +4679,8 @@ var ForStatements4 = /** @class */ (function (_super) {
                                 else {
                                     if (value[1] != null) {
                                         if (value[1] instanceof Array) {
-                                            for (var _9 = 0, _10 = value[1]; _9 < _10.length; _9++) {
-                                                var m = _10[_9];
+                                            for (var _6 = 0, _7 = value[1]; _6 < _7.length; _6++) {
+                                                var m = _7[_6];
                                                 this.value.push(m);
                                             }
                                         }
@@ -4328,9 +4710,13 @@ var ForStatements4 = /** @class */ (function (_super) {
             }
             if (this.StateCode >= 0)
                 return [1, this.value];
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, We cannot applied the instructions, because For...Of only iterate Strings and Arrays...');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', We cannot applied the instructions, because For...Of only iterate Strings and Arrays...\"}');
             return [-1, 'We cannot applied the instructions, because For...Of only iterate Strings and Arrays...'];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, we cannot find the error...\"}');
             return [-1, 'Unexpected Error, we cannot find the error...'];
         }
     };
@@ -4468,11 +4854,12 @@ var NativeStatement = /** @class */ (function (_super) {
                 for (var _i = 0, _a = this.Expression; _i < _a.length; _i++) {
                     var valu = _a[_i];
                     //console.log(this.Expression)
-                    //console.log(tablasimbolo)
+                    //console.log('console-> ',tablasimbolo)
                     if (this.Expression == null)
                         return [-1, null];
                     //console.log(this.Expression);
                     var value = valu.execute(tablasimbolo);
+                    //console.log(value);
                     if (value[0] < 0)
                         return [-1, null];
                     //this.htmlYouWantToAdd = "<p><b>value[1]</b></p>";
@@ -4480,6 +4867,7 @@ var NativeStatement = /** @class */ (function (_super) {
                         resultado += "null";
                     }
                     else {
+                        //console.log(1998, value[1])
                         if (value[1] instanceof arrays) {
                             try {
                                 resultado += '[ ';
@@ -4487,7 +4875,7 @@ var NativeStatement = /** @class */ (function (_super) {
                                 for (var _b = 0, _c = value[1].getAll(); _b < _c.length; _b++) {
                                     var m = _c[_b];
                                     a++;
-                                    resultado += m.execute(tablasimbolo)[1];
+                                    resultado += m;
                                     if (a < value[1].getAll().length)
                                         resultado += ' , ';
                                 }
@@ -4498,19 +4886,48 @@ var NativeStatement = /** @class */ (function (_super) {
                             }
                         }
                         else {
-                            resultado += value[1];
+                            if (value[1].toString().includes('\n')) {
+                                var vales = value[1].split('\n');
+                                for (var _d = 0, vales_1 = vales; _d < vales_1.length; _d++) {
+                                    var vale = vales_1[_d];
+                                    outs.push('Linea: ' + this.linea + ', valor: ' + vale);
+                                    output.push('{\"linea\":\"' + this.linea + '\", \"valor\":\"' + vale + '\"}');
+                                }
+                            }
+                            else {
+                                resultado += value[1];
+                            }
                         }
                     }
                 }
+                outs.push('Linea: ' + this.linea + ', valor: ' + resultado);
                 output.push('{\"linea\":\"' + this.linea + '\", \"valor\":\"' + resultado + '\"}');
                 return [1, '{\"linea\":\"' + this.linea + '\", \"valor\":\"' + resultado + '\"}'];
             }
             else {
+                ghs = '{ \"simbolos\":[';
+                var m = 0;
+                for (var _e = 0, _f = tablasimbolo.simbolos; _e < _f.length; _e++) {
+                    var simbolo = _f[_e];
+                    var string = '{';
+                    string += '\"name\":\"' + simbolo.name + '\",';
+                    string += '\"ambito\":\"' + simbolo.ambito + '\",';
+                    string += '\"tipo\":\"' + TypeSym[simbolo.tipo] + '\",';
+                    string += '\"type\":\"' + TypeValue[simbolo.tipoValue] + '\"';
+                    string += '}';
+                    m++;
+                    if (m < tablasimbolo.simbolos.length)
+                        string += ',';
+                    ghs += string;
+                }
+                ghs += ']}';
                 return [1, this.graph];
             }
         }
         catch (e) {
             //console.log(e)
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return [-1, null];
         }
     };
@@ -4542,6 +4959,8 @@ var types = /** @class */ (function (_super) {
                 return [1, atr];
             }
         }
+        outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot get Atributte');
+        output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot get the atributte\"}');
         return [-1, null];
     };
     types.prototype.getValuesAtributo1 = function (objeto, atributos, tablasimbolo) {
@@ -4564,9 +4983,13 @@ var types = /** @class */ (function (_super) {
                     return [1, atratr[1]];
                 }
             }
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return [-1, null];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return [-1, null];
         }
     };
@@ -4590,9 +5013,13 @@ var types = /** @class */ (function (_super) {
                     return [1, atratr[1]];
                 }
             }
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot get Attribute');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot get the atributte\"}');
             return [-1, null];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return [-1, null];
         }
     };
@@ -4604,6 +5031,8 @@ var types = /** @class */ (function (_super) {
                 return [1, null];
             }
         }
+        outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+        output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot set the atributte\"}');
         return [-1, null];
     };
     types.prototype.grahp = function () {
@@ -4721,6 +5150,8 @@ var declarations = /** @class */ (function (_super) {
                                 this.value = value[1];
                                 break;
                             default:
+                                outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, we can\'t identified the error.');
+                                output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', An Error was ocurred, we can\'t identified the error.\"}');
                                 return [-1, 'An Error was ocurred, we can\'t identified the error.'];
                         }
                     }
@@ -4729,6 +5160,8 @@ var declarations = /** @class */ (function (_super) {
             return [1, null];
         }
         catch (e) {
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\"  Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -4769,14 +5202,19 @@ var declaration0 = /** @class */ (function (_super) {
             }
             else {
                 var valor = this.Expression.execute(tablasimbolo);
+                //console.log(valor);
                 if (valor[0] > 0) {
                     return tablasimbolo.insert(this.name, valor[1], this.tipoSim, this.tipo);
                 }
             }
-            return [-1, 'Error, cannot be execute the instruction'];
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Error [declaration] Linea: ' + this.linea + ', cannot be execute the instruction\"}');
+            return [-1, 'Error [declaration] Linea: ' + this.linea + ', cannot be execute the instruction'];
         }
         catch (e) {
             //console.log(e)
+            outs.push('Error: Ocurrio un error inesperado, Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction');
+            output.push('{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Error [declaration] Linea: ' + this.linea + ', Unexpected Error, cannot be execute the instruction\"}');
             return [-2, 'Unexpected Error, cannot be execute the instruction'];
         }
     };
@@ -4833,6 +5271,7 @@ var ReturnStatements = /** @class */ (function (_super) {
     ReturnStatements.prototype.execute = function (tablasimbolo) {
         try {
             var val = this.Expresion.execute(tablasimbolo);
+            //console.log(val)
             if (val[0] > 0)
                 return [4, val[1]];
             return [-1, 'An error appears, in Return instructions, maybe you will be inspect the return expression...'];
@@ -4854,209 +5293,161 @@ var ReturnStatements = /** @class */ (function (_super) {
     JOSE WANNAN - 201612331 @2020
  */
 var jsondataprueba = '';
-var jsondata2 = '{"linea":"196","S":[{"linea":"1","statement":"declaration","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"let"}],"size":[]}], "values":[{"linea":"1","statement":"variable","tipoExpresion":[{"linea":"1","tipo":[{"linea":"1","tipo":"number"}],"size":[{"linea":"1","statement":"arreglo","value":[]},\n' +
-    '{"linea":"1","statement":"arreglo","value":[]}]}],"name":"matrixA","ValExpression":[{"linea":"1","operator":[{"linea":"1","v":"="}],"Expression":[{"linea":"1","statement":"arreglo","value":[]}]}]}]},\n' +
-    '{"linea":"2","statement":"declaration","type":[{"linea":"2","tipo":[{"linea":"2","tipo":"let"}],"size":[]}], "values":[{"linea":"2","statement":"variable","tipoExpresion":[{"linea":"2","tipo":[{"linea":"2","tipo":"number"}],"size":[{"linea":"2","statement":"arreglo","value":[]},\n' +
-    '{"linea":"2","statement":"arreglo","value":[]}]}],"name":"matrixB","ValExpression":[{"linea":"2","operator":[{"linea":"2","v":"="}],"Expression":[{"linea":"2","statement":"arreglo","value":[]}]}]}]},\n' +
-    '{"linea":"3","statement":"declaration","type":[{"linea":"3","tipo":[{"linea":"3","tipo":"let"}],"size":[]}], "values":[{"linea":"3","statement":"variable","tipoExpresion":[{"linea":"3","tipo":[{"linea":"3","tipo":"number"}],"size":[{"linea":"3","statement":"arreglo","value":[]},\n' +
-    '{"linea":"3","statement":"arreglo","value":[]}]}],"name":"matrixR","ValExpression":[{"linea":"3","operator":[{"linea":"3","v":"="}],"Expression":[{"linea":"3","statement":"arreglo","value":[]}]}]}]},\n' +
-    '{"linea":"4","statement":"declaration","type":[{"linea":"4","tipo":[{"linea":"4","tipo":"const"}],"size":[]}], "values":[{"linea":"4","statement":"variable","tipoExpresion":[],"name":"min","ValExpression":[{"linea":"4","operator":[{"linea":"4","v":"="}],"Expression":[{"linea":"4","tipo":"number", "value":"0"}]}]}]},\n' +
-    '{"linea":"5","statement":"declaration","type":[{"linea":"5","tipo":[{"linea":"5","tipo":"const"}],"size":[]}], "values":[{"linea":"5","statement":"variable","tipoExpresion":[],"name":"max","ValExpression":[{"linea":"5","operator":[{"linea":"5","v":"="}],"Expression":[{"linea":"5","tipo":"number", "value":"4"}]}]}]},\n' +
-    '{"linea":"18","statement":"funcion","name":"llenado","type":[{"linea":"7","tipo":[{"linea":"7","tipo":"void"}],"size":[]}],"params":[{"linea":"7","statement":"parameter","name":"matrix1","tipo":[{"linea":"7","tipo":[{"linea":"7","tipo":"number"}],"size":[{"linea":"7","statement":"arreglo","value":[]},\n' +
-    '{"linea":"7","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"7","statement":"parameter","name":"matrix2","tipo":[{"linea":"7","tipo":[{"linea":"7","tipo":"number"}],"size":[{"linea":"7","statement":"arreglo","value":[]},\n' +
-    '{"linea":"7","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"7","statement":"parameter","name":"matrix3","tipo":[{"linea":"7","tipo":[{"linea":"7","tipo":"number"}],"size":[{"linea":"7","statement":"arreglo","value":[]},\n' +
-    '{"linea":"7","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"17","statement":"for","ExpresionInitial":[{"linea":"8","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"8","tipo":"let"}],"name":"i","ValExpression":[{"linea":"8","operator":[{"linea":"8","v":"="}],"Expression":[{"linea":"8","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"8","statement":"Relational","Relational":"<","Expression1":[{"linea":"8","statement":"variable","value":"i"}],"Expression2":[{"linea":"8","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"8","statement":"postincrement1","padre":[{"linea":"8","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"9","statement":"asignation","variable":"matrix1","params":[{"linea":"9","statement":"ArrayList","value":[{"linea":"9","statement":"MatrizPosition","value":[{"linea":"9","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"9","operator":[{"linea":"9","v":"="}],"Expression":[{"linea":"9","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"10","statement":"asignation","variable":"matrix2","params":[{"linea":"10","statement":"ArrayList","value":[{"linea":"10","statement":"MatrizPosition","value":[{"linea":"10","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"10","operator":[{"linea":"10","v":"="}],"Expression":[{"linea":"10","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"11","statement":"asignation","variable":"matrix3","params":[{"linea":"11","statement":"ArrayList","value":[{"linea":"11","statement":"MatrizPosition","value":[{"linea":"11","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"11","operator":[{"linea":"11","v":"="}],"Expression":[{"linea":"11","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"16","statement":"for","ExpresionInitial":[{"linea":"12","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"12","tipo":"let"}],"name":"j","ValExpression":[{"linea":"12","operator":[{"linea":"12","v":"="}],"Expression":[{"linea":"12","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"12","statement":"Relational","Relational":"<","Expression1":[{"linea":"12","statement":"variable","value":"j"}],"Expression2":[{"linea":"12","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"12","statement":"postincrement1","padre":[{"linea":"12","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"13","statement":"asignation","variable":"matrix1","params":[{"linea":"13","statement":"ArrayList","value":[{"linea":"13","statement":"MatrizPosition","value":[{"linea":"13","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"13","statement":"MatrizPosition","value":[{"linea":"13","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"13","operator":[{"linea":"13","v":"="}],"Expression":[{"linea":"13","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"13","statement":"Aritmetic","Aritmetic":"*","Expression1":[{"linea":"13","statement":"variable","value":"j"}],"Expression2":[{"linea":"13","tipo":"number", "value":"3"}]}],"Expression2":[{"linea":"13","statement":"variable","value":"i"}]}]}]},\n' +
-    '{"linea":"14","statement":"asignation","variable":"matrix2","params":[{"linea":"14","statement":"ArrayList","value":[{"linea":"14","statement":"MatrizPosition","value":[{"linea":"14","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"14","statement":"MatrizPosition","value":[{"linea":"14","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"14","operator":[{"linea":"14","v":"="}],"Expression":[{"linea":"14","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"14","statement":"Aritmetic","Aritmetic":"**","Expression1":[{"linea":"14","statement":"variable","value":"i"}],"Expression2":[{"linea":"14","tipo":"number", "value":"3"}]}],"Expression2":[{"linea":"14","statement":"Aritmetic","Aritmetic":"**","Expression1":[{"linea":"14","statement":"variable","value":"j"}],"Expression2":[{"linea":"14","tipo":"number", "value":"2"}]}]}]}]},\n' +
-    '{"linea":"15","statement":"asignation","variable":"matrix3","params":[{"linea":"15","statement":"ArrayList","value":[{"linea":"15","statement":"MatrizPosition","value":[{"linea":"15","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"15","statement":"MatrizPosition","value":[{"linea":"15","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"15","operator":[{"linea":"15","v":"="}],"Expression":[{"linea":"15","tipo":"number", "value":"0"}]}]}]}]}]},\n' +
-    '{"linea":"28","statement":"funcion","name":"print","type":[{"linea":"20","tipo":[{"linea":"20","tipo":"void"}],"size":[]}],"params":[{"linea":"20","statement":"parameter","name":"matrix","tipo":[{"linea":"20","tipo":[{"linea":"20","tipo":"number"}],"size":[{"linea":"20","statement":"arreglo","value":[]},\n' +
-    '{"linea":"20","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"27","statement":"for","ExpresionInitial":[{"linea":"21","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"21","tipo":"let"}],"name":"i","ValExpression":[{"linea":"21","operator":[{"linea":"21","v":"="}],"Expression":[{"linea":"21","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"21","statement":"Relational","Relational":"<","Expression1":[{"linea":"21","statement":"variable","value":"i"}],"Expression2":[{"linea":"21","statement":"nativeArray", "name":"matrix" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"21","statement":"postincrement1","padre":[{"linea":"21","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"22","statement":"declaration","type":[{"linea":"22","tipo":[{"linea":"22","tipo":"let"}],"size":[]}], "values":[{"linea":"22","statement":"variable","tipoExpresion":[],"name":"salida","ValExpression":[{"linea":"22","operator":[{"linea":"22","v":"="}],"Expression":[{"linea":"22","tipo":"string3", "value":""}]}]}]},\n' +
-    '{"linea":"25","statement":"for","ExpresionInitial":[{"linea":"23","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"23","tipo":"let"}],"name":"j","ValExpression":[{"linea":"23","operator":[{"linea":"23","v":"="}],"Expression":[{"linea":"23","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"23","statement":"Relational","Relational":"<","Expression1":[{"linea":"23","statement":"variable","value":"j"}],"Expression2":[{"linea":"23","statement":"nativeArray", "name":"matrix" ,"hijo":[{"linea":"23","statement":"ArrayList","value":[{"linea":"23","statement":"MatrizPosition","value":[{"linea":"23","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"23","statement":"postincrement1","padre":[{"linea":"23","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"24","statement":"asignation","variable":"salida","params":[],"ValExpression":[{"linea":"24","operator":[{"linea":"24","v":"="}],"Expression":[{"linea":"24","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"24","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"24","statement":"variable","value":"salida"}],"Expression2":[{"linea":"24","tipo":"string1", "value":"\\t|\\t"}]}],"Expression2":[{"linea":"24","statement":"callAtributo", "value":"matrix", "hijo":[{"linea":"24","statement":"ArrayList","value":[{"linea":"24","statement":"MatrizPosition","value":[{"linea":"24","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"24","statement":"MatrizPosition","value":[{"linea":"24","statement":"variable","value":"j"}]}]}]}]}]}]}]},\n' +
-    '{"linea":"26","statement":"console","expression":[{"linea":"26","statement":"variable","value":"salida"}]}]}]},\n' +
-    '{"linea":"36","statement":"funcion","name":"suma","type":[],"params":[{"linea":"30","statement":"parameter","name":"matrix1","tipo":[{"linea":"30","tipo":[{"linea":"30","tipo":"number"}],"size":[{"linea":"30","statement":"arreglo","value":[]},\n' +
-    '{"linea":"30","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"30","statement":"parameter","name":"matrix2","tipo":[{"linea":"30","tipo":[{"linea":"30","tipo":"number"}],"size":[{"linea":"30","statement":"arreglo","value":[]},\n' +
-    '{"linea":"30","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"30","statement":"parameter","name":"matrixR","tipo":[{"linea":"30","tipo":[{"linea":"30","tipo":"number"}],"size":[{"linea":"30","statement":"arreglo","value":[]},\n' +
-    '{"linea":"30","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"35","statement":"for","ExpresionInitial":[{"linea":"31","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"31","tipo":"let"}],"name":"i","ValExpression":[{"linea":"31","operator":[{"linea":"31","v":"="}],"Expression":[{"linea":"31","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"31","statement":"Relational","Relational":"<","Expression1":[{"linea":"31","statement":"variable","value":"i"}],"Expression2":[{"linea":"31","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"31","statement":"postincrement1","padre":[{"linea":"31","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"34","statement":"for","ExpresionInitial":[{"linea":"32","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"32","tipo":"let"}],"name":"j","ValExpression":[{"linea":"32","operator":[{"linea":"32","v":"="}],"Expression":[{"linea":"32","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"32","statement":"Relational","Relational":"<","Expression1":[{"linea":"32","statement":"variable","value":"j"}],"Expression2":[{"linea":"32","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"32","statement":"postincrement1","padre":[{"linea":"32","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"33","statement":"asignation","variable":"matrixR","params":[{"linea":"33","statement":"ArrayList","value":[{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"33","operator":[{"linea":"33","v":"="}],"Expression":[{"linea":"33","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"33","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"33","statement":"ArrayList","value":[{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"33","statement":"callAtributo", "value":"matrix2", "hijo":[{"linea":"33","statement":"ArrayList","value":[{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"33","statement":"MatrizPosition","value":[{"linea":"33","statement":"variable","value":"j"}]}]}]}]}]}]}]}]}]},\n' +
-    '{"linea":"50","statement":"funcion","name":"sumarFilas","type":[{"linea":"38","tipo":[{"linea":"38","tipo":"void"}],"size":[]}],"params":[{"linea":"38","statement":"parameter","name":"matrix","tipo":[{"linea":"38","tipo":[{"linea":"38","tipo":"number"}],"size":[{"linea":"38","statement":"arreglo","value":[]},\n' +
-    '{"linea":"38","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"39","statement":"declaration","type":[{"linea":"39","tipo":[{"linea":"39","tipo":"let"}],"size":[]}], "values":[{"linea":"39","statement":"variable","tipoExpresion":[],"name":"contador","ValExpression":[{"linea":"39","operator":[{"linea":"39","v":"="}],"Expression":[{"linea":"39","tipo":"number", "value":"0"}]}]}]},\n' +
-    '{"linea":"40","statement":"console","expression":[{"linea":"40","tipo":"string1", "value":"\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tR"}]},\n' +
-    '{"linea":"49","statement":"for","ExpresionInitial":[{"linea":"41","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"41","tipo":"let"}],"name":"i","ValExpression":[{"linea":"41","operator":[{"linea":"41","v":"="}],"Expression":[{"linea":"41","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"41","statement":"Relational","Relational":"<","Expression1":[{"linea":"41","statement":"variable","value":"i"}],"Expression2":[{"linea":"41","statement":"nativeArray", "name":"matrix" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"41","statement":"postincrement1","padre":[{"linea":"41","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"42","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"42","operator":[{"linea":"42","v":"="}],"Expression":[{"linea":"42","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"43","statement":"declaration","type":[{"linea":"43","tipo":[{"linea":"43","tipo":"let"}],"size":[]}], "values":[{"linea":"43","statement":"variable","tipoExpresion":[],"name":"salida","ValExpression":[{"linea":"43","operator":[{"linea":"43","v":"="}],"Expression":[{"linea":"43","tipo":"string3", "value":""}]}]}]},\n' +
-    '{"linea":"47","statement":"for","ExpresionInitial":[{"linea":"44","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"44","tipo":"let"}],"name":"j","ValExpression":[{"linea":"44","operator":[{"linea":"44","v":"="}],"Expression":[{"linea":"44","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"44","statement":"Relational","Relational":"<","Expression1":[{"linea":"44","statement":"variable","value":"j"}],"Expression2":[{"linea":"44","statement":"nativeArray", "name":"matrix" ,"hijo":[{"linea":"44","statement":"ArrayList","value":[{"linea":"44","statement":"MatrizPosition","value":[{"linea":"44","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"44","statement":"postincrement1","padre":[{"linea":"44","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"45","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"45","operator":[{"linea":"45","v":"="}],"Expression":[{"linea":"45","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"45","statement":"variable","value":"contador"}],"Expression2":[{"linea":"45","statement":"callAtributo", "value":"matrix", "hijo":[{"linea":"45","statement":"ArrayList","value":[{"linea":"45","statement":"MatrizPosition","value":[{"linea":"45","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"45","statement":"MatrizPosition","value":[{"linea":"45","statement":"variable","value":"j"}]}]}]}]}]}]},\n' +
-    '{"linea":"46","statement":"asignation","variable":"salida","params":[],"ValExpression":[{"linea":"46","operator":[{"linea":"46","v":"="}],"Expression":[{"linea":"46","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"46","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"46","statement":"variable","value":"salida"}],"Expression2":[{"linea":"46","tipo":"string1", "value":"\\t|\\t"}]}],"Expression2":[{"linea":"46","statement":"callAtributo", "value":"matrix", "hijo":[{"linea":"46","statement":"ArrayList","value":[{"linea":"46","statement":"MatrizPosition","value":[{"linea":"46","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"46","statement":"MatrizPosition","value":[{"linea":"46","statement":"variable","value":"j"}]}]}]}]}]}]}]},\n' +
-    '{"linea":"48","statement":"console","expression":[{"linea":"48","statement":"variable","value":"salida"},\n' +
-    '{"linea":"48","tipo":"string1", "value":"\\t|\\t"},\n' +
-    '{"linea":"48","statement":"variable","value":"contador"}]}]}]},\n' +
-    '{"linea":"63","statement":"funcion","name":"sumarColumnas","type":[{"linea":"52","tipo":[{"linea":"52","tipo":"void"}],"size":[]}],"params":[{"linea":"52","statement":"parameter","name":"matrix","tipo":[{"linea":"52","tipo":[{"linea":"52","tipo":"number"}],"size":[{"linea":"52","statement":"arreglo","value":[]},\n' +
-    '{"linea":"52","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"53","statement":"declaration","type":[{"linea":"53","tipo":[{"linea":"53","tipo":"let"}],"size":[]}], "values":[{"linea":"53","statement":"variable","tipoExpresion":[],"name":"contador","ValExpression":[{"linea":"53","operator":[{"linea":"53","v":"="}],"Expression":[{"linea":"53","tipo":"number", "value":"0"}]}]}]},\n' +
-    '{"linea":"54","statement":"declaration","type":[{"linea":"54","tipo":[{"linea":"54","tipo":"let"}],"size":[]}], "values":[{"linea":"54","statement":"variable","tipoExpresion":[],"name":"salida","ValExpression":[{"linea":"54","operator":[{"linea":"54","v":"="}],"Expression":[{"linea":"54","tipo":"string3", "value":"R"}]}]}]},\n' +
-    '{"linea":"61","statement":"for","ExpresionInitial":[{"linea":"55","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"55","tipo":"let"}],"name":"i","ValExpression":[{"linea":"55","operator":[{"linea":"55","v":"="}],"Expression":[{"linea":"55","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"55","statement":"Relational","Relational":"<","Expression1":[{"linea":"55","statement":"variable","value":"i"}],"Expression2":[{"linea":"55","statement":"nativeArray", "name":"matrix" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"55","statement":"postincrement1","padre":[{"linea":"55","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"56","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"56","operator":[{"linea":"56","v":"="}],"Expression":[{"linea":"56","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"59","statement":"for","ExpresionInitial":[{"linea":"57","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"57","tipo":"let"}],"name":"j","ValExpression":[{"linea":"57","operator":[{"linea":"57","v":"="}],"Expression":[{"linea":"57","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"57","statement":"Relational","Relational":"<","Expression1":[{"linea":"57","statement":"variable","value":"j"}],"Expression2":[{"linea":"57","statement":"nativeArray", "name":"matrix" ,"hijo":[{"linea":"57","statement":"ArrayList","value":[{"linea":"57","statement":"MatrizPosition","value":[{"linea":"57","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"57","statement":"postincrement1","padre":[{"linea":"57","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"58","statement":"asignation","variable":"contador","params":[],"ValExpression":[{"linea":"58","operator":[{"linea":"58","v":"="}],"Expression":[{"linea":"58","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"58","statement":"variable","value":"contador"}],"Expression2":[{"linea":"58","statement":"callAtributo", "value":"matrix", "hijo":[{"linea":"58","statement":"ArrayList","value":[{"linea":"58","statement":"MatrizPosition","value":[{"linea":"58","statement":"variable","value":"j"}]},\n' +
-    '{"linea":"58","statement":"MatrizPosition","value":[{"linea":"58","statement":"variable","value":"i"}]}]}]}]}]}]}]},\n' +
-    '{"linea":"60","statement":"asignation","variable":"salida","params":[],"ValExpression":[{"linea":"60","operator":[{"linea":"60","v":"="}],"Expression":[{"linea":"60","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"60","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"60","statement":"variable","value":"salida"}],"Expression2":[{"linea":"60","tipo":"string1", "value":"\\t|\\t"}]}],"Expression2":[{"linea":"60","statement":"variable","value":"contador"}]}]}]}]},\n' +
-    '{"linea":"62","statement":"console","expression":[{"linea":"62","statement":"variable","value":"salida"}]}]},\n' +
-    '{"linea":"72","statement":"funcion","name":"resta","type":[],"params":[{"linea":"66","statement":"parameter","name":"matrix1","tipo":[{"linea":"66","tipo":[{"linea":"66","tipo":"number"}],"size":[{"linea":"66","statement":"arreglo","value":[]},\n' +
-    '{"linea":"66","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"66","statement":"parameter","name":"matrix2","tipo":[{"linea":"66","tipo":[{"linea":"66","tipo":"number"}],"size":[{"linea":"66","statement":"arreglo","value":[]},\n' +
-    '{"linea":"66","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"66","statement":"parameter","name":"matrixR","tipo":[{"linea":"66","tipo":[{"linea":"66","tipo":"number"}],"size":[{"linea":"66","statement":"arreglo","value":[]},\n' +
-    '{"linea":"66","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"71","statement":"for","ExpresionInitial":[{"linea":"67","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"67","tipo":"let"}],"name":"i","ValExpression":[{"linea":"67","operator":[{"linea":"67","v":"="}],"Expression":[{"linea":"67","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"67","statement":"Relational","Relational":"<","Expression1":[{"linea":"67","statement":"variable","value":"i"}],"Expression2":[{"linea":"67","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"67","statement":"postincrement1","padre":[{"linea":"67","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"70","statement":"for","ExpresionInitial":[{"linea":"68","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"68","tipo":"let"}],"name":"j","ValExpression":[{"linea":"68","operator":[{"linea":"68","v":"="}],"Expression":[{"linea":"68","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"68","statement":"Relational","Relational":"<","Expression1":[{"linea":"68","statement":"variable","value":"j"}],"Expression2":[{"linea":"68","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"68","statement":"postincrement1","padre":[{"linea":"68","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"69","statement":"asignation","variable":"matrixR","params":[{"linea":"69","statement":"ArrayList","value":[{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"69","operator":[{"linea":"69","v":"="}],"Expression":[{"linea":"69","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"69","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"69","statement":"ArrayList","value":[{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"69","statement":"callAtributo", "value":"matrix2", "hijo":[{"linea":"69","statement":"ArrayList","value":[{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"69","statement":"MatrizPosition","value":[{"linea":"69","statement":"variable","value":"j"}]}]}]}]}]}]}]}]}]},\n' +
-    '{"linea":"83","statement":"funcion","name":"multiplicar","type":[],"params":[{"linea":"75","statement":"parameter","name":"matrix1","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"arreglo","value":[]},\n' +
-    '{"linea":"75","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"75","statement":"parameter","name":"matrix2","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"arreglo","value":[]},\n' +
-    '{"linea":"75","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"75","statement":"parameter","name":"matrixR","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"arreglo","value":[]},\n' +
-    '{"linea":"75","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"82","statement":"for","ExpresionInitial":[{"linea":"76","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"76","tipo":"let"}],"name":"i","ValExpression":[{"linea":"76","operator":[{"linea":"76","v":"="}],"Expression":[{"linea":"76","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"76","statement":"Relational","Relational":"<","Expression1":[{"linea":"76","statement":"variable","value":"i"}],"Expression2":[{"linea":"76","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"76","statement":"postincrement1","padre":[{"linea":"76","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"81","statement":"for","ExpresionInitial":[{"linea":"77","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"77","tipo":"let"}],"name":"j","ValExpression":[{"linea":"77","operator":[{"linea":"77","v":"="}],"Expression":[{"linea":"77","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"77","statement":"Relational","Relational":"<","Expression1":[{"linea":"77","statement":"variable","value":"j"}],"Expression2":[{"linea":"77","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"77","statement":"postincrement1","padre":[{"linea":"77","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"80","statement":"for","ExpresionInitial":[{"linea":"78","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"78","tipo":"let"}],"name":"k","ValExpression":[{"linea":"78","operator":[{"linea":"78","v":"="}],"Expression":[{"linea":"78","statement":"variable","value":"min"}]}]}],"Expressionvalue":[{"linea":"78","statement":"Relational","Relational":"<","Expression1":[{"linea":"78","statement":"variable","value":"k"}],"Expression2":[{"linea":"78","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"78","statement":"postincrement1","padre":[{"linea":"78","statement":"variable","value":"k","hijo":[]}]}],"body":[{"linea":"79","statement":"asignation","variable":"matrixR","params":[{"linea":"79","statement":"ArrayList","value":[{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"79","operator":[{"linea":"79","v":"="}],"Expression":[{"linea":"79","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"79","statement":"callAtributo", "value":"matrixR", "hijo":[{"linea":"79","statement":"ArrayList","value":[{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"79","statement":"Aritmetic","Aritmetic":"*","Expression1":[{"linea":"79","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"79","statement":"ArrayList","value":[{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"k"}]}]}]}],"Expression2":[{"linea":"79","statement":"callAtributo", "value":"matrix2", "hijo":[{"linea":"79","statement":"ArrayList","value":[{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"k"}]},\n' +
-    '{"linea":"79","statement":"MatrizPosition","value":[{"linea":"79","statement":"variable","value":"j"}]}]}]}]}]}]}]}]}]}]}]},\n' +
-    '{"linea":"98","statement":"funcion","name":"transpuesta","type":[],"params":[{"linea":"85","statement":"parameter","name":"matrix1","tipo":[{"linea":"85","tipo":[{"linea":"85","tipo":"number"}],"size":[{"linea":"85","statement":"arreglo","value":[]},\n' +
-    '{"linea":"85","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"86","statement":"declaration","type":[{"linea":"86","tipo":[{"linea":"86","tipo":"const"}],"size":[]}], "values":[{"linea":"86","statement":"variable","tipoExpresion":[{"linea":"86","tipo":[{"linea":"86","tipo":"number"}],"size":[{"linea":"86","statement":"arreglo","value":[]},\n' +
-    '{"linea":"86","statement":"arreglo","value":[]}]}],"name":"matrixAux","ValExpression":[{"linea":"86","operator":[{"linea":"86","v":"="}],"Expression":[{"linea":"86","statement":"arreglo","value":[]}]}]}]},\n' +
-    '{"linea":"92","statement":"for","ExpresionInitial":[{"linea":"87","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"87","tipo":"let"}],"name":"i","ValExpression":[{"linea":"87","operator":[{"linea":"87","v":"="}],"Expression":[{"linea":"87","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"87","statement":"Relational","Relational":"<","Expression1":[{"linea":"87","statement":"variable","value":"i"}],"Expression2":[{"linea":"87","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"87","statement":"postincrement1","padre":[{"linea":"87","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"88","statement":"asignation","variable":"matrixAux","params":[{"linea":"88","statement":"ArrayList","value":[{"linea":"88","statement":"MatrizPosition","value":[{"linea":"88","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"88","operator":[{"linea":"88","v":"="}],"Expression":[{"linea":"88","statement":"arreglo","value":[]}]}]},\n' +
-    '{"linea":"91","statement":"for","ExpresionInitial":[{"linea":"89","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"89","tipo":"let"}],"name":"j","ValExpression":[{"linea":"89","operator":[{"linea":"89","v":"="}],"Expression":[{"linea":"89","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"89","statement":"Relational","Relational":"<","Expression1":[{"linea":"89","statement":"variable","value":"j"}],"Expression2":[{"linea":"89","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"89","statement":"postincrement1","padre":[{"linea":"89","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"90","statement":"asignation","variable":"matrixAux","params":[{"linea":"90","statement":"ArrayList","value":[{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"90","operator":[{"linea":"90","v":"="}],"Expression":[{"linea":"90","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"90","statement":"ArrayList","value":[{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"j"}]},\n' +
-    '{"linea":"90","statement":"MatrizPosition","value":[{"linea":"90","statement":"variable","value":"i"}]}]}]}]}]}]}]},\n' +
-    '{"linea":"97","statement":"for","ExpresionInitial":[{"linea":"93","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"93","tipo":"let"}],"name":"i","ValExpression":[{"linea":"93","operator":[{"linea":"93","v":"="}],"Expression":[{"linea":"93","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"93","statement":"Relational","Relational":"<","Expression1":[{"linea":"93","statement":"variable","value":"i"}],"Expression2":[{"linea":"93","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"93","statement":"postincrement1","padre":[{"linea":"93","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"96","statement":"for","ExpresionInitial":[{"linea":"94","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"94","tipo":"let"}],"name":"j","ValExpression":[{"linea":"94","operator":[{"linea":"94","v":"="}],"Expression":[{"linea":"94","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"94","statement":"Relational","Relational":"<","Expression1":[{"linea":"94","statement":"variable","value":"j"}],"Expression2":[{"linea":"94","statement":"variable","value":"max"}]}],"ExpressionFinal":[{"linea":"94","statement":"postincrement1","padre":[{"linea":"94","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"95","statement":"asignation","variable":"matrix1","params":[{"linea":"95","statement":"ArrayList","value":[{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"95","operator":[{"linea":"95","v":"="}],"Expression":[{"linea":"95","statement":"callAtributo", "value":"matrixAux", "hijo":[{"linea":"95","statement":"ArrayList","value":[{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"95","statement":"MatrizPosition","value":[{"linea":"95","statement":"variable","value":"j"}]}]}]}]}]}]}]}]},\n' +
-    '{"linea":"114","statement":"funcion","name":"minValue","type":[{"linea":"100","tipo":[{"linea":"100","tipo":"number"}],"size":[]}],"params":[{"linea":"100","statement":"parameter","name":"matrix1","tipo":[{"linea":"100","tipo":[{"linea":"100","tipo":"number"}],"size":[{"linea":"100","statement":"arreglo","value":[]},\n' +
-    '{"linea":"100","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"102","statement":"declaration","type":[{"linea":"102","tipo":[{"linea":"102","tipo":"let"}],"size":[]}], "values":[{"linea":"102","statement":"variable","tipoExpresion":[],"name":"iAux","ValExpression":[{"linea":"102","operator":[{"linea":"102","v":"="}],"Expression":[{"linea":"102","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"102","statement":"variable","tipoExpresion":[],"name":"jAux","ValExpression":[{"linea":"102","operator":[{"linea":"102","v":"="}],"Expression":[{"linea":"102","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"102","statement":"variable","tipoExpresion":[],"name":"temp","ValExpression":[{"linea":"102","operator":[{"linea":"102","v":"="}],"Expression":[{"linea":"102","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"102","statement":"ArrayList","value":[{"linea":"102","statement":"MatrizPosition","value":[{"linea":"102","statement":"variable","value":"min"}]},\n' +
-    '{"linea":"102","statement":"MatrizPosition","value":[{"linea":"102","statement":"variable","value":"min"}]}]}]}]}]}]},\n' +
-    '{"linea":"111","statement":"for","ExpresionInitial":[{"linea":"103","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"103","tipo":"let"}],"name":"i","ValExpression":[{"linea":"103","operator":[{"linea":"103","v":"="}],"Expression":[{"linea":"103","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"103","statement":"Relational","Relational":"<","Expression1":[{"linea":"103","statement":"variable","value":"i"}],"Expression2":[{"linea":"103","statement":"nativeArray", "name":"matrix1" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"103","statement":"postincrement1","padre":[{"linea":"103","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"110","statement":"for","ExpresionInitial":[{"linea":"104","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"104","tipo":"let"}],"name":"j","ValExpression":[{"linea":"104","operator":[{"linea":"104","v":"="}],"Expression":[{"linea":"104","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"104","statement":"Relational","Relational":"<","Expression1":[{"linea":"104","statement":"variable","value":"j"}],"Expression2":[{"linea":"104","statement":"nativeArray", "name":"matrix1" ,"hijo":[{"linea":"104","statement":"ArrayList","value":[{"linea":"104","statement":"MatrizPosition","value":[{"linea":"104","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"104","statement":"postincrement1","padre":[{"linea":"104","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"109","statement":"if","Expression":[{"linea":"105","statement":"Relational","Relational":"<","Expression1":[{"linea":"105","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"105","statement":"ArrayList","value":[{"linea":"105","statement":"MatrizPosition","value":[{"linea":"105","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"105","statement":"MatrizPosition","value":[{"linea":"105","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"105","statement":"variable","value":"temp"}]}],"body":[{"linea":"106","statement":"asignation","variable":"temp","params":[],"ValExpression":[{"linea":"106","operator":[{"linea":"106","v":"="}],"Expression":[{"linea":"106","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"106","statement":"ArrayList","value":[{"linea":"106","statement":"MatrizPosition","value":[{"linea":"106","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"106","statement":"MatrizPosition","value":[{"linea":"106","statement":"variable","value":"j"}]}]}]}]}]},\n' +
-    '{"linea":"107","statement":"asignation","variable":"iAux","params":[],"ValExpression":[{"linea":"107","operator":[{"linea":"107","v":"="}],"Expression":[{"linea":"107","statement":"variable","value":"i"}]}]},\n' +
-    '{"linea":"108","statement":"asignation","variable":"jAux","params":[],"ValExpression":[{"linea":"108","operator":[{"linea":"108","v":"="}],"Expression":[{"linea":"108","statement":"variable","value":"j"}]}]}], "else":[]}]}]},\n' +
-    '{"linea":"112","statement":"console","expression":[{"linea":"112","tipo":"string1", "value":"Min -> ["},\n' +
-    '{"linea":"112","statement":"variable","value":"iAux"},\n' +
-    '{"linea":"112","tipo":"string1", "value":","},\n' +
-    '{"linea":"112","statement":"variable","value":"jAux"},\n' +
-    '{"linea":"112","tipo":"string1", "value":"] = "},\n' +
-    '{"linea":"112","statement":"variable","value":"temp"}]},\n' +
-    '{"linea":"113","statement":"return", "Expression":[{"linea":"113","statement":"variable","value":"temp"}]}]},\n' +
-    '{"linea":"129","statement":"funcion","name":"maxValue","type":[{"linea":"116","tipo":[{"linea":"116","tipo":"number"}],"size":[]}],"params":[{"linea":"116","statement":"parameter","name":"matrix1","tipo":[{"linea":"116","tipo":[{"linea":"116","tipo":"number"}],"size":[{"linea":"116","statement":"arreglo","value":[]},\n' +
-    '{"linea":"116","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"117","statement":"declaration","type":[{"linea":"117","tipo":[{"linea":"117","tipo":"let"}],"size":[]}], "values":[{"linea":"117","statement":"variable","tipoExpresion":[],"name":"iAux","ValExpression":[{"linea":"117","operator":[{"linea":"117","v":"="}],"Expression":[{"linea":"117","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"117","statement":"variable","tipoExpresion":[],"name":"jAux","ValExpression":[{"linea":"117","operator":[{"linea":"117","v":"="}],"Expression":[{"linea":"117","tipo":"number", "value":"0"}]}]},\n' +
-    '{"linea":"117","statement":"variable","tipoExpresion":[],"name":"temp","ValExpression":[{"linea":"117","operator":[{"linea":"117","v":"="}],"Expression":[{"linea":"117","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"117","statement":"ArrayList","value":[{"linea":"117","statement":"MatrizPosition","value":[{"linea":"117","statement":"variable","value":"min"}]},\n' +
-    '{"linea":"117","statement":"MatrizPosition","value":[{"linea":"117","statement":"variable","value":"min"}]}]}]}]}]}]},\n' +
-    '{"linea":"126","statement":"for","ExpresionInitial":[{"linea":"118","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"118","tipo":"let"}],"name":"i","ValExpression":[{"linea":"118","operator":[{"linea":"118","v":"="}],"Expression":[{"linea":"118","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"118","statement":"Relational","Relational":"<","Expression1":[{"linea":"118","statement":"variable","value":"i"}],"Expression2":[{"linea":"118","statement":"nativeArray", "name":"matrix1" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"118","statement":"postincrement1","padre":[{"linea":"118","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"125","statement":"for","ExpresionInitial":[{"linea":"119","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"119","tipo":"let"}],"name":"j","ValExpression":[{"linea":"119","operator":[{"linea":"119","v":"="}],"Expression":[{"linea":"119","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"119","statement":"Relational","Relational":"<","Expression1":[{"linea":"119","statement":"variable","value":"j"}],"Expression2":[{"linea":"119","statement":"nativeArray", "name":"matrix1" ,"hijo":[{"linea":"119","statement":"ArrayList","value":[{"linea":"119","statement":"MatrizPosition","value":[{"linea":"119","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"119","statement":"postincrement1","padre":[{"linea":"119","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"124","statement":"if","Expression":[{"linea":"120","statement":"Relational","Relational":">","Expression1":[{"linea":"120","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"120","statement":"ArrayList","value":[{"linea":"120","statement":"MatrizPosition","value":[{"linea":"120","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"120","statement":"MatrizPosition","value":[{"linea":"120","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"120","statement":"variable","value":"temp"}]}],"body":[{"linea":"121","statement":"asignation","variable":"temp","params":[],"ValExpression":[{"linea":"121","operator":[{"linea":"121","v":"="}],"Expression":[{"linea":"121","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"121","statement":"ArrayList","value":[{"linea":"121","statement":"MatrizPosition","value":[{"linea":"121","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"121","statement":"MatrizPosition","value":[{"linea":"121","statement":"variable","value":"j"}]}]}]}]}]},\n' +
-    '{"linea":"122","statement":"asignation","variable":"iAux","params":[],"ValExpression":[{"linea":"122","operator":[{"linea":"122","v":"="}],"Expression":[{"linea":"122","statement":"variable","value":"i"}]}]},\n' +
-    '{"linea":"123","statement":"asignation","variable":"jAux","params":[],"ValExpression":[{"linea":"123","operator":[{"linea":"123","v":"="}],"Expression":[{"linea":"123","statement":"variable","value":"j"}]}]}], "else":[]}]}]},\n' +
-    '{"linea":"127","statement":"console","expression":[{"linea":"127","tipo":"string1", "value":"Max -> ["},\n' +
-    '{"linea":"127","statement":"variable","value":"iAux"},\n' +
-    '{"linea":"127","tipo":"string1", "value":","},\n' +
-    '{"linea":"127","statement":"variable","value":"jAux"},\n' +
-    '{"linea":"127","tipo":"string1", "value":"] = "},\n' +
-    '{"linea":"127","statement":"variable","value":"temp"}]},\n' +
-    '{"linea":"128","statement":"return", "Expression":[{"linea":"128","statement":"variable","value":"temp"}]}]},\n' +
-    '{"linea":"146","statement":"funcion","name":"ordenar","type":[],"params":[{"linea":"131","statement":"parameter","name":"matrix1","tipo":[{"linea":"131","tipo":[{"linea":"131","tipo":"number"}],"size":[{"linea":"131","statement":"arreglo","value":[]},\n' +
-    '{"linea":"131","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"132","statement":"declaration","type":[{"linea":"132","tipo":[{"linea":"132","tipo":"let"}],"size":[]}], "values":[{"linea":"132","statement":"variable","tipoExpresion":[],"name":"aux","ValExpression":[{"linea":"132","operator":[{"linea":"132","v":"="}],"Expression":[{"linea":"132","tipo":"number", "value":"0"}]}]}]},\n' +
-    '{"linea":"145","statement":"for","ExpresionInitial":[{"linea":"133","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"133","tipo":"let"}],"name":"i","ValExpression":[{"linea":"133","operator":[{"linea":"133","v":"="}],"Expression":[{"linea":"133","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"133","statement":"Relational","Relational":"<","Expression1":[{"linea":"133","statement":"variable","value":"i"}],"Expression2":[{"linea":"133","statement":"nativeArray", "name":"matrix1" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"133","statement":"postincrement1","padre":[{"linea":"133","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"144","statement":"for","ExpresionInitial":[{"linea":"134","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"134","tipo":"let"}],"name":"j","ValExpression":[{"linea":"134","operator":[{"linea":"134","v":"="}],"Expression":[{"linea":"134","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"134","statement":"Relational","Relational":"<","Expression1":[{"linea":"134","statement":"variable","value":"j"}],"Expression2":[{"linea":"134","statement":"nativeArray", "name":"matrix1" ,"hijo":[{"linea":"134","statement":"ArrayList","value":[{"linea":"134","statement":"MatrizPosition","value":[{"linea":"134","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"134","statement":"postincrement1","padre":[{"linea":"134","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"143","statement":"for","ExpresionInitial":[{"linea":"135","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"135","tipo":"let"}],"name":"k","ValExpression":[{"linea":"135","operator":[{"linea":"135","v":"="}],"Expression":[{"linea":"135","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"135","statement":"Relational","Relational":"<=","Expression1":[{"linea":"135","statement":"variable","value":"k"}],"Expression2":[{"linea":"135","statement":"variable","value":"i"}]}],"ExpressionFinal":[{"linea":"135","statement":"postincrement1","padre":[{"linea":"135","statement":"variable","value":"k","hijo":[]}]}],"body":[{"linea":"142","statement":"for","ExpresionInitial":[{"linea":"136","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"136","tipo":"let"}],"name":"l","ValExpression":[{"linea":"136","operator":[{"linea":"136","v":"="}],"Expression":[{"linea":"136","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"136","statement":"Relational","Relational":"<=","Expression1":[{"linea":"136","statement":"variable","value":"l"}],"Expression2":[{"linea":"136","statement":"variable","value":"j"}]}],"ExpressionFinal":[{"linea":"136","statement":"postincrement1","padre":[{"linea":"136","statement":"variable","value":"l","hijo":[]}]}],"body":[{"linea":"141","statement":"if","Expression":[{"linea":"137","statement":"Relational","Relational":"<","Expression1":[{"linea":"137","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"137","statement":"ArrayList","value":[{"linea":"137","statement":"MatrizPosition","value":[{"linea":"137","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"137","statement":"MatrizPosition","value":[{"linea":"137","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"137","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"137","statement":"ArrayList","value":[{"linea":"137","statement":"MatrizPosition","value":[{"linea":"137","statement":"variable","value":"k"}]},\n' +
-    '{"linea":"137","statement":"MatrizPosition","value":[{"linea":"137","statement":"variable","value":"l"}]}]}]}]}],"body":[{"linea":"138","statement":"asignation","variable":"aux","params":[],"ValExpression":[{"linea":"138","operator":[{"linea":"138","v":"="}],"Expression":[{"linea":"138","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"138","statement":"ArrayList","value":[{"linea":"138","statement":"MatrizPosition","value":[{"linea":"138","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"138","statement":"MatrizPosition","value":[{"linea":"138","statement":"variable","value":"j"}]}]}]}]}]},\n' +
-    '{"linea":"139","statement":"asignation","variable":"matrix1","params":[{"linea":"139","statement":"ArrayList","value":[{"linea":"139","statement":"MatrizPosition","value":[{"linea":"139","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"139","statement":"MatrizPosition","value":[{"linea":"139","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"139","operator":[{"linea":"139","v":"="}],"Expression":[{"linea":"139","statement":"callAtributo", "value":"matrix1", "hijo":[{"linea":"139","statement":"ArrayList","value":[{"linea":"139","statement":"MatrizPosition","value":[{"linea":"139","statement":"variable","value":"k"}]},\n' +
-    '{"linea":"139","statement":"MatrizPosition","value":[{"linea":"139","statement":"variable","value":"l"}]}]}]}]}]},\n' +
-    '{"linea":"140","statement":"asignation","variable":"matrix1","params":[{"linea":"140","statement":"ArrayList","value":[{"linea":"140","statement":"MatrizPosition","value":[{"linea":"140","statement":"variable","value":"k"}]},\n' +
-    '{"linea":"140","statement":"MatrizPosition","value":[{"linea":"140","statement":"variable","value":"l"}]}]}],"ValExpression":[{"linea":"140","operator":[{"linea":"140","v":"="}],"Expression":[{"linea":"140","statement":"variable","value":"aux"}]}]}], "else":[]}]}]}]}]}]},\n' +
-    '{"linea":"154","statement":"funcion","name":"clearMat","type":[],"params":[{"linea":"148","statement":"parameter","name":"matrix","tipo":[{"linea":"148","tipo":[{"linea":"148","tipo":"number"}],"size":[{"linea":"148","statement":"arreglo","value":[]},\n' +
-    '{"linea":"148","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"153","statement":"for","ExpresionInitial":[{"linea":"149","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"149","tipo":"let"}],"name":"i","ValExpression":[{"linea":"149","operator":[{"linea":"149","v":"="}],"Expression":[{"linea":"149","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"149","statement":"Relational","Relational":"<","Expression1":[{"linea":"149","statement":"variable","value":"i"}],"Expression2":[{"linea":"149","statement":"nativeArray", "name":"matrix" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"149","statement":"postincrement1","padre":[{"linea":"149","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"152","statement":"for","ExpresionInitial":[{"linea":"150","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"150","tipo":"let"}],"name":"j","ValExpression":[{"linea":"150","operator":[{"linea":"150","v":"="}],"Expression":[{"linea":"150","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"150","statement":"Relational","Relational":"<","Expression1":[{"linea":"150","statement":"variable","value":"j"}],"Expression2":[{"linea":"150","statement":"nativeArray", "name":"matrix" ,"hijo":[{"linea":"150","statement":"ArrayList","value":[{"linea":"150","statement":"MatrizPosition","value":[{"linea":"150","statement":"variable","value":"i"}]}]}],"native":"length"}]}],"ExpressionFinal":[{"linea":"150","statement":"postincrement1","padre":[{"linea":"150","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"151","statement":"asignation","variable":"matrix","params":[{"linea":"151","statement":"ArrayList","value":[{"linea":"151","statement":"MatrizPosition","value":[{"linea":"151","statement":"variable","value":"i"}]},\n' +
-    '{"linea":"151","statement":"MatrizPosition","value":[{"linea":"151","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"151","operator":[{"linea":"151","v":"="}],"Expression":[{"linea":"151","tipo":"number", "value":"0"}]}]}]}]}]},\n' +
-    '{"linea":"157","statement":"CallFunction","name":"llenado", "parameters":[{"linea":"157","statement":"variable","value":"matrixA"},\n' +
-    '{"linea":"157","statement":"variable","value":"matrixB"},\n' +
-    '{"linea":"157","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"157","statement":""},\n' +
-    '{"linea":"158","statement":"console","expression":[{"linea":"158","tipo":"string1", "value":"Matrix A"}]},\n' +
-    '{"linea":"159","statement":"CallFunction","name":"print", "parameters":[{"linea":"159","statement":"variable","value":"matrixA"}]},\n' +
-    '{"linea":"159","statement":""},\n' +
-    '{"linea":"160","statement":"console","expression":[{"linea":"160","tipo":"string1", "value":"Matrix B"}]},\n' +
-    '{"linea":"161","statement":"CallFunction","name":"print", "parameters":[{"linea":"161","statement":"variable","value":"matrixB"}]},\n' +
-    '{"linea":"161","statement":""},\n' +
-    '{"linea":"163","statement":"console","expression":[{"linea":"163","tipo":"string1", "value":"MatR = MatA + MatB"}]},\n' +
-    '{"linea":"164","statement":"CallFunction","name":"suma", "parameters":[{"linea":"164","statement":"variable","value":"matrixA"},\n' +
-    '{"linea":"164","statement":"variable","value":"matrixB"},\n' +
-    '{"linea":"164","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"164","statement":""},\n' +
-    '{"linea":"165","statement":"CallFunction","name":"print", "parameters":[{"linea":"165","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"165","statement":""},\n' +
-    '{"linea":"167","statement":"console","expression":[{"linea":"167","tipo":"string1", "value":"MatR = MatA - MatB"}]},\n' +
-    '{"linea":"168","statement":"CallFunction","name":"resta", "parameters":[{"linea":"168","statement":"variable","value":"matrixA"},\n' +
-    '{"linea":"168","statement":"variable","value":"matrixB"},\n' +
-    '{"linea":"168","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"168","statement":""},\n' +
-    '{"linea":"169","statement":"CallFunction","name":"print", "parameters":[{"linea":"169","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"169","statement":""},\n' +
-    '{"linea":"171","statement":"console","expression":[{"linea":"171","tipo":"string1", "value":"Clear MatR"}]},\n' +
-    '{"linea":"172","statement":"CallFunction","name":"clearMat", "parameters":[{"linea":"172","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"172","statement":""},\n' +
-    '{"linea":"173","statement":"CallFunction","name":"print", "parameters":[{"linea":"173","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"173","statement":""},\n' +
-    '{"linea":"175","statement":"console","expression":[{"linea":"175","tipo":"string1", "value":"MatR = MatA * MatB"}]},\n' +
-    '{"linea":"176","statement":"CallFunction","name":"multiplicar", "parameters":[{"linea":"176","statement":"variable","value":"matrixA"},\n' +
-    '{"linea":"176","statement":"variable","value":"matrixB"},\n' +
-    '{"linea":"176","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"176","statement":""},\n' +
-    '{"linea":"177","statement":"CallFunction","name":"print", "parameters":[{"linea":"177","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"177","statement":""},\n' +
-    '{"linea":"179","statement":"console","expression":[{"linea":"179","tipo":"string1", "value":"Tranpose(MatA)"}]},\n' +
-    '{"linea":"180","statement":"CallFunction","name":"transpuesta", "parameters":[{"linea":"180","statement":"variable","value":"matrixA"}]},\n' +
-    '{"linea":"180","statement":""},\n' +
-    '{"linea":"181","statement":"CallFunction","name":"print", "parameters":[{"linea":"181","statement":"variable","value":"matrixA"}]},\n' +
-    '{"linea":"181","statement":""},\n' +
-    '{"linea":"183","statement":"CallFunction","name":"minValue", "parameters":[{"linea":"183","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"183","statement":""},\n' +
-    '{"linea":"184","statement":"CallFunction","name":"maxValue", "parameters":[{"linea":"184","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"184","statement":""},\n' +
-    '{"linea":"186","statement":"console","expression":[{"linea":"186","tipo":"string1", "value":"Sort MatR"}]},\n' +
-    '{"linea":"187","statement":"CallFunction","name":"ordenar", "parameters":[{"linea":"187","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"187","statement":""},\n' +
-    '{"linea":"188","statement":"CallFunction","name":"print", "parameters":[{"linea":"188","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"188","statement":""},\n' +
-    '{"linea":"190","statement":"CallFunction","name":"minValue", "parameters":[{"linea":"190","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"190","statement":""},\n' +
-    '{"linea":"191","statement":"CallFunction","name":"maxValue", "parameters":[{"linea":"191","statement":"variable","value":"matrixR"}]},\n' +
-    '{"linea":"191","statement":""},\n' +
-    '{"linea":"193","statement":"console","expression":[{"linea":"193","tipo":"string1", "value":"Suma Filas y Columnas"}]},\n' +
-    '{"linea":"194","statement":"CallFunction","name":"sumarFilas", "parameters":[{"linea":"194","statement":"variable","value":"matrixA"}]},\n' +
-    '{"linea":"194","statement":""},\n' +
-    '{"linea":"195","statement":"CallFunction","name":"sumarColumnas", "parameters":[{"linea":"195","statement":"variable","value":"matrixA"}]},\n' +
-    '{"linea":"195","statement":""},\n' +
-    '{"linea":"196","statement":""}]}';
+var jsondata2 = '{"linea":"163","S":[{"linea":"3","statement":"funcion","name":"getPivot","type":[{"linea":"1","tipo":[{"linea":"1","tipo":"number"}],"size":[]}],"params":[{"linea":"1","statement":"parameter","name":"value","tipo":[{"linea":"1","tipo":[{"linea":"1","tipo":"number"}],"size":[]}]}],"body":[{"linea":"2","statement":"return", "Expression":[{"linea":"2","statement":"ternario","valueExpression":[{"linea":"2","statement":"Relational","Relational":"==","Expression1":[{"linea":"2","statement":"Aritmetic","Aritmetic":"%","Expression1":[{"linea":"2","statement":"variable","value":"value"}],"Expression2":[{"linea":"2","tipo":"number", "value":"2"}]}],"Expression2":[{"linea":"2","tipo":"number", "value":"0"}]}],"Expression1":[{"linea":"2","statement":"variable","value":"value"}],"Expression2":[{"linea":"2","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"2","statement":"variable","value":"value"}],"Expression2":[{"linea":"2","tipo":"number", "value":"0.5"}]}]}]}]},\n' +
+    '{"linea":"9","statement":"funcion","name":"swap","type":[{"linea":"5","tipo":[{"linea":"5","tipo":"void"}],"size":[]}],"params":[{"linea":"5","statement":"parameter","name":"i","tipo":[{"linea":"5","tipo":[{"linea":"5","tipo":"number"}],"size":[]}]},\n' +
+    '{"linea":"5","statement":"parameter","name":"j","tipo":[{"linea":"5","tipo":[{"linea":"5","tipo":"number"}],"size":[]}]},\n' +
+    '{"linea":"5","statement":"parameter","name":"array","tipo":[{"linea":"5","tipo":[{"linea":"5","tipo":"number"}],"size":[{"linea":"5","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"6","statement":"declaration","type":[{"linea":"6","tipo":[{"linea":"6","tipo":"const"}],"size":[]}], "values":[{"linea":"6","statement":"variable","tipoExpresion":[],"name":"temp","ValExpression":[{"linea":"6","operator":[{"linea":"6","v":"="}],"Expression":[{"linea":"6","statement":"callAtributo", "value":"array", "hijo":[{"linea":"6","statement":"ArrayList","value":[{"linea":"6","statement":"MatrizPosition","value":[{"linea":"6","statement":"variable","value":"i"}]}]}]}]}]}]},\n' +
+    '{"linea":"7","statement":"asignation","variable":"array","params":[{"linea":"7","statement":"ArrayList","value":[{"linea":"7","statement":"MatrizPosition","value":[{"linea":"7","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"7","operator":[{"linea":"7","v":"="}],"Expression":[{"linea":"7","statement":"callAtributo", "value":"array", "hijo":[{"linea":"7","statement":"ArrayList","value":[{"linea":"7","statement":"MatrizPosition","value":[{"linea":"7","statement":"variable","value":"j"}]}]}]}]}]},\n' +
+    '{"linea":"8","statement":"asignation","variable":"array","params":[{"linea":"8","statement":"ArrayList","value":[{"linea":"8","statement":"MatrizPosition","value":[{"linea":"8","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"8","operator":[{"linea":"8","v":"="}],"Expression":[{"linea":"8","statement":"variable","value":"temp"}]}]}]},\n' +
+    '{"linea":"19","statement":"funcion","name":"bubbleSort","type":[{"linea":"11","tipo":[{"linea":"11","tipo":"void"}],"size":[]}],"params":[{"linea":"11","statement":"parameter","name":"array","tipo":[{"linea":"11","tipo":[{"linea":"11","tipo":"number"}],"size":[{"linea":"11","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"18","statement":"for","ExpresionInitial":[{"linea":"12","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"12","tipo":"let"}],"name":"i","ValExpression":[{"linea":"12","operator":[{"linea":"12","v":"="}],"Expression":[{"linea":"12","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"12","statement":"Relational","Relational":"<","Expression1":[{"linea":"12","statement":"variable","value":"i"}],"Expression2":[{"linea":"12","statement":"nativeArray", "name":"array" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"12","statement":"postincrement1","padre":[{"linea":"12","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"17","statement":"for","ExpresionInitial":[{"linea":"13","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"13","tipo":"let"}],"name":"j","ValExpression":[{"linea":"13","operator":[{"linea":"13","v":"="}],"Expression":[{"linea":"13","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"13","statement":"Relational","Relational":"<","Expression1":[{"linea":"13","statement":"variable","value":"j"}],"Expression2":[{"linea":"13","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"13","statement":"nativeArray", "name":"array" ,"hijo":[],"native":"length"}],"Expression2":[{"linea":"13","tipo":"number", "value":"1"}]}]}],"ExpressionFinal":[{"linea":"13","statement":"postincrement1","padre":[{"linea":"13","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"16","statement":"if","Expression":[{"linea":"14","statement":"Relational","Relational":">","Expression1":[{"linea":"14","statement":"callAtributo", "value":"array", "hijo":[{"linea":"14","statement":"ArrayList","value":[{"linea":"14","statement":"MatrizPosition","value":[{"linea":"14","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"14","statement":"callAtributo", "value":"array", "hijo":[{"linea":"14","statement":"ArrayList","value":[{"linea":"14","statement":"MatrizPosition","value":[{"linea":"14","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"14","statement":"variable","value":"j"}],"Expression2":[{"linea":"14","tipo":"number", "value":"1"}]}]}]}]}]}],"body":[{"linea":"15","statement":"CallFunction","name":"swap", "parameters":[{"linea":"15","statement":"variable","value":"j"},\n' +
+    '{"linea":"15","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"15","statement":"variable","value":"j"}],"Expression2":[{"linea":"15","tipo":"number", "value":"1"}]},\n' +
+    '{"linea":"15","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"15","statement":""}], "else":[]}]}]}]},\n' +
+    '{"linea":"47","statement":"funcion","name":"quickSort","type":[{"linea":"21","tipo":[{"linea":"21","tipo":"void"}],"size":[]}],"params":[{"linea":"21","statement":"parameter","name":"low","tipo":[{"linea":"21","tipo":[{"linea":"21","tipo":"number"}],"size":[]}]},\n' +
+    '{"linea":"21","statement":"parameter","name":"high","tipo":[{"linea":"21","tipo":[{"linea":"21","tipo":"number"}],"size":[]}]},\n' +
+    '{"linea":"21","statement":"parameter","name":"array","tipo":[{"linea":"21","tipo":[{"linea":"21","tipo":"number"}],"size":[{"linea":"21","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"22","statement":"declaration","type":[{"linea":"22","tipo":[{"linea":"22","tipo":"let"}],"size":[]}], "values":[{"linea":"22","statement":"variable","tipoExpresion":[],"name":"i","ValExpression":[{"linea":"22","operator":[{"linea":"22","v":"="}],"Expression":[{"linea":"22","statement":"variable","value":"low"}]}]}]},\n' +
+    '{"linea":"23","statement":"declaration","type":[{"linea":"23","tipo":[{"linea":"23","tipo":"let"}],"size":[]}], "values":[{"linea":"23","statement":"variable","tipoExpresion":[],"name":"j","ValExpression":[{"linea":"23","operator":[{"linea":"23","v":"="}],"Expression":[{"linea":"23","statement":"variable","value":"high"}]}]}]},\n' +
+    '{"linea":"24","statement":"declaration","type":[{"linea":"24","tipo":[{"linea":"24","tipo":"let"}],"size":[]}], "values":[{"linea":"24","statement":"variable","tipoExpresion":[],"name":"pivot","ValExpression":[{"linea":"24","operator":[{"linea":"24","v":"="}],"Expression":[{"linea":"24","statement":"callAtributo", "value":"array", "hijo":[{"linea":"24","statement":"ArrayList","value":[{"linea":"24","statement":"MatrizPosition","value":[{"linea":"24","statement":"callFuncion","padre":[{"linea":"24","statement":"variable","value":"getPivot"}],"argumentos":[{"linea":"24","statement":"Aritmetic","Aritmetic":"/","Expression1":[{"linea":"24","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"24","statement":"variable","value":"low"}],"Expression2":[{"linea":"24","statement":"variable","value":"high"}]}],"Expression2":[{"linea":"24","tipo":"number", "value":"2"}]}]}]}]}]}]}]}]},\n' +
+    '{"linea":"39","statement":"while","body":[{"linea":"29","statement":"while","body":[{"linea":"28","statement":"postincrement1","padre":[{"linea":"28","statement":"variable","value":"i","hijo":[]}]},\n' +
+    '{"linea":"28","statement":""}],"Expression":[{"linea":"27","statement":"Relational","Relational":"<","Expression1":[{"linea":"27","statement":"callAtributo", "value":"array", "hijo":[{"linea":"27","statement":"ArrayList","value":[{"linea":"27","statement":"MatrizPosition","value":[{"linea":"27","statement":"variable","value":"i"}]}]}]}],"Expression2":[{"linea":"27","statement":"variable","value":"pivot"}]}]},\n' +
+    '{"linea":"33","statement":"while","body":[{"linea":"32","statement":"postdecrement1","padre":[{"linea":"32","statement":"variable","value":"j","hijo":[]}]},\n' +
+    '{"linea":"32","statement":""}],"Expression":[{"linea":"31","statement":"Relational","Relational":">","Expression1":[{"linea":"31","statement":"callAtributo", "value":"array", "hijo":[{"linea":"31","statement":"ArrayList","value":[{"linea":"31","statement":"MatrizPosition","value":[{"linea":"31","statement":"variable","value":"j"}]}]}]}],"Expression2":[{"linea":"31","statement":"variable","value":"pivot"}]}]},\n' +
+    '{"linea":"38","statement":"if","Expression":[{"linea":"34","statement":"Relational","Relational":"<=","Expression1":[{"linea":"34","statement":"variable","value":"i"}],"Expression2":[{"linea":"34","statement":"variable","value":"j"}]}],"body":[{"linea":"35","statement":"CallFunction","name":"swap", "parameters":[{"linea":"35","statement":"variable","value":"i"},\n' +
+    '{"linea":"35","statement":"variable","value":"j"},\n' +
+    '{"linea":"35","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"35","statement":""},\n' +
+    '{"linea":"36","statement":"postincrement1","padre":[{"linea":"36","statement":"variable","value":"i","hijo":[]}]},\n' +
+    '{"linea":"36","statement":""},\n' +
+    '{"linea":"37","statement":"postdecrement1","padre":[{"linea":"37","statement":"variable","value":"j","hijo":[]}]},\n' +
+    '{"linea":"37","statement":""}], "else":[]}],"Expression":[{"linea":"26","statement":"Relational","Relational":"<=","Expression1":[{"linea":"26","statement":"variable","value":"i"}],"Expression2":[{"linea":"26","statement":"variable","value":"j"}]}]},\n' +
+    '{"linea":"43","statement":"if","Expression":[{"linea":"41","statement":"Relational","Relational":"<","Expression1":[{"linea":"41","statement":"variable","value":"low"}],"Expression2":[{"linea":"41","statement":"variable","value":"j"}]}],"body":[{"linea":"42","statement":"CallFunction","name":"quickSort", "parameters":[{"linea":"42","statement":"variable","value":"low"},\n' +
+    '{"linea":"42","statement":"variable","value":"j"},\n' +
+    '{"linea":"42","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"42","statement":""}], "else":[]},\n' +
+    '{"linea":"46","statement":"if","Expression":[{"linea":"44","statement":"Relational","Relational":"<","Expression1":[{"linea":"44","statement":"variable","value":"i"}],"Expression2":[{"linea":"44","statement":"variable","value":"high"}]}],"body":[{"linea":"45","statement":"CallFunction","name":"quickSort", "parameters":[{"linea":"45","statement":"variable","value":"i"},\n' +
+    '{"linea":"45","statement":"variable","value":"high"},\n' +
+    '{"linea":"45","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"45","statement":""}], "else":[]}]},\n' +
+    '{"linea":"60","statement":"funcion","name":"insertionSort","type":[{"linea":"49","tipo":[{"linea":"49","tipo":"void"}],"size":[]}],"params":[{"linea":"49","statement":"parameter","name":"array","tipo":[{"linea":"49","tipo":[{"linea":"49","tipo":"number"}],"size":[{"linea":"49","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"59","statement":"for","ExpresionInitial":[{"linea":"51","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"51","tipo":"let"}],"name":"i","ValExpression":[{"linea":"51","operator":[{"linea":"51","v":"="}],"Expression":[{"linea":"51","tipo":"number", "value":"1"}]}]}],"Expressionvalue":[{"linea":"51","statement":"Relational","Relational":"<","Expression1":[{"linea":"51","statement":"variable","value":"i"}],"Expression2":[{"linea":"51","statement":"nativeArray", "name":"array" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"51","statement":"postincrement1","padre":[{"linea":"51","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"52","statement":"declaration","type":[{"linea":"52","tipo":[{"linea":"52","tipo":"let"}],"size":[]}], "values":[{"linea":"52","statement":"variable","tipoExpresion":[],"name":"j","ValExpression":[{"linea":"52","operator":[{"linea":"52","v":"="}],"Expression":[{"linea":"52","statement":"variable","value":"i"}]}]}]},\n' +
+    '{"linea":"53","statement":"declaration","type":[{"linea":"53","tipo":[{"linea":"53","tipo":"let"}],"size":[]}], "values":[{"linea":"53","statement":"variable","tipoExpresion":[],"name":"temp","ValExpression":[{"linea":"53","operator":[{"linea":"53","v":"="}],"Expression":[{"linea":"53","statement":"callAtributo", "value":"array", "hijo":[{"linea":"53","statement":"ArrayList","value":[{"linea":"53","statement":"MatrizPosition","value":[{"linea":"53","statement":"variable","value":"i"}]}]}]}]}]}]},\n' +
+    '{"linea":"57","statement":"while","body":[{"linea":"55","statement":"asignation","variable":"array","params":[{"linea":"55","statement":"ArrayList","value":[{"linea":"55","statement":"MatrizPosition","value":[{"linea":"55","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"55","operator":[{"linea":"55","v":"="}],"Expression":[{"linea":"55","statement":"callAtributo", "value":"array", "hijo":[{"linea":"55","statement":"ArrayList","value":[{"linea":"55","statement":"MatrizPosition","value":[{"linea":"55","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"55","statement":"variable","value":"j"}],"Expression2":[{"linea":"55","tipo":"number", "value":"1"}]}]}]}]}]}]},\n' +
+    '{"linea":"56","statement":"postdecrement1","padre":[{"linea":"56","statement":"variable","value":"j","hijo":[]}]},\n' +
+    '{"linea":"56","statement":""}],"Expression":[{"linea":"54","statement":"Logical","Logical":"&&","Expression1":[{"linea":"54","statement":"Relational","Relational":">","Expression1":[{"linea":"54","statement":"variable","value":"j"}],"Expression2":[{"linea":"54","tipo":"number", "value":"0"}]}],"Expression2":[{"linea":"54","statement":"Relational","Relational":">","Expression1":[{"linea":"54","statement":"callAtributo", "value":"array", "hijo":[{"linea":"54","statement":"ArrayList","value":[{"linea":"54","statement":"MatrizPosition","value":[{"linea":"54","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"54","statement":"variable","value":"j"}],"Expression2":[{"linea":"54","tipo":"number", "value":"1"}]}]}]}]}],"Expression2":[{"linea":"54","statement":"variable","value":"temp"}]}]}]},\n' +
+    '{"linea":"58","statement":"asignation","variable":"array","params":[{"linea":"58","statement":"ArrayList","value":[{"linea":"58","statement":"MatrizPosition","value":[{"linea":"58","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"58","operator":[{"linea":"58","v":"="}],"Expression":[{"linea":"58","statement":"variable","value":"temp"}]}]}]}]},\n' +
+    '{"linea":"73","statement":"funcion","name":"selectionSort","type":[{"linea":"62","tipo":[{"linea":"62","tipo":"void"}],"size":[]}],"params":[{"linea":"62","statement":"parameter","name":"array","tipo":[{"linea":"62","tipo":[{"linea":"62","tipo":"number"}],"size":[{"linea":"62","statement":"arreglo","value":[]}]}]}],"body":[{"linea":"72","statement":"for","ExpresionInitial":[{"linea":"64","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"64","tipo":"let"}],"name":"j","ValExpression":[{"linea":"64","operator":[{"linea":"64","v":"="}],"Expression":[{"linea":"64","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"64","statement":"Relational","Relational":"<","Expression1":[{"linea":"64","statement":"variable","value":"j"}],"Expression2":[{"linea":"64","statement":"nativeArray", "name":"array" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"64","statement":"postincrement1","padre":[{"linea":"64","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"65","statement":"declaration","type":[{"linea":"65","tipo":[{"linea":"65","tipo":"let"}],"size":[]}], "values":[{"linea":"65","statement":"variable","tipoExpresion":[],"name":"iMin","ValExpression":[{"linea":"65","operator":[{"linea":"65","v":"="}],"Expression":[{"linea":"65","statement":"variable","value":"j"}]}]}]},\n' +
+    '{"linea":"70","statement":"for","ExpresionInitial":[{"linea":"66","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"66","tipo":"let"}],"name":"i","ValExpression":[{"linea":"66","operator":[{"linea":"66","v":"="}],"Expression":[{"linea":"66","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"66","statement":"variable","value":"j"}],"Expression2":[{"linea":"66","tipo":"number", "value":"1"}]}]}]}],"Expressionvalue":[{"linea":"66","statement":"Relational","Relational":"<","Expression1":[{"linea":"66","statement":"variable","value":"i"}],"Expression2":[{"linea":"66","statement":"nativeArray", "name":"array" ,"hijo":[],"native":"length"}]}],"ExpressionFinal":[{"linea":"66","statement":"postincrement1","padre":[{"linea":"66","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"69","statement":"if","Expression":[{"linea":"67","statement":"Relational","Relational":"<","Expression1":[{"linea":"67","statement":"callAtributo", "value":"array", "hijo":[{"linea":"67","statement":"ArrayList","value":[{"linea":"67","statement":"MatrizPosition","value":[{"linea":"67","statement":"variable","value":"i"}]}]}]}],"Expression2":[{"linea":"67","statement":"callAtributo", "value":"array", "hijo":[{"linea":"67","statement":"ArrayList","value":[{"linea":"67","statement":"MatrizPosition","value":[{"linea":"67","statement":"variable","value":"iMin"}]}]}]}]}],"body":[{"linea":"68","statement":"asignation","variable":"iMin","params":[],"ValExpression":[{"linea":"68","operator":[{"linea":"68","v":"="}],"Expression":[{"linea":"68","statement":"variable","value":"i"}]}]}], "else":[]}]},\n' +
+    '{"linea":"71","statement":"CallFunction","name":"swap", "parameters":[{"linea":"71","statement":"variable","value":"j"},\n' +
+    '{"linea":"71","statement":"variable","value":"iMin"},\n' +
+    '{"linea":"71","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"71","statement":""}]}]},\n' +
+    '{"linea":"84","statement":"funcion","name":"mergeSort","type":[{"linea":"75","tipo":[{"linea":"75","tipo":"void"}],"size":[]}],"params":[{"linea":"75","statement":"parameter","name":"array","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[{"linea":"75","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"75","statement":"parameter","name":"l","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[]}]},\n' +
+    '{"linea":"75","statement":"parameter","name":"r","tipo":[{"linea":"75","tipo":[{"linea":"75","tipo":"number"}],"size":[]}]}],"body":[{"linea":"78","statement":"if","Expression":[{"linea":"76","statement":"Relational","Relational":">=","Expression1":[{"linea":"76","statement":"variable","value":"l"}],"Expression2":[{"linea":"76","statement":"variable","value":"r"}]}],"body":[{"linea":"77","statement":"return", "Expression":[]}], "else":[]},\n' +
+    '{"linea":"80","statement":"declaration","type":[{"linea":"80","tipo":[{"linea":"80","tipo":"let"}],"size":[]}], "values":[{"linea":"80","statement":"variable","tipoExpresion":[],"name":"m","ValExpression":[{"linea":"80","operator":[{"linea":"80","v":"="}],"Expression":[{"linea":"80","statement":"callFuncion","padre":[{"linea":"80","statement":"variable","value":"getPivot"}],"argumentos":[{"linea":"80","statement":"Aritmetic","Aritmetic":"/","Expression1":[{"linea":"80","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"80","statement":"variable","value":"l"}],"Expression2":[{"linea":"80","statement":"variable","value":"r"}]}],"Expression2":[{"linea":"80","tipo":"number", "value":"2"}]}]}]}]}]},\n' +
+    '{"linea":"81","statement":"CallFunction","name":"mergeSort", "parameters":[{"linea":"81","statement":"variable","value":"array"},\n' +
+    '{"linea":"81","statement":"variable","value":"l"},\n' +
+    '{"linea":"81","statement":"variable","value":"m"}]},\n' +
+    '{"linea":"81","statement":""},\n' +
+    '{"linea":"82","statement":"CallFunction","name":"mergeSort", "parameters":[{"linea":"82","statement":"variable","value":"array"},\n' +
+    '{"linea":"82","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"82","statement":"variable","value":"m"}],"Expression2":[{"linea":"82","tipo":"number", "value":"1"}]},\n' +
+    '{"linea":"82","statement":"variable","value":"r"}]},\n' +
+    '{"linea":"82","statement":""},\n' +
+    '{"linea":"83","statement":"CallFunction","name":"merge", "parameters":[{"linea":"83","statement":"variable","value":"array"},\n' +
+    '{"linea":"83","statement":"variable","value":"l"},\n' +
+    '{"linea":"83","statement":"variable","value":"m"},\n' +
+    '{"linea":"83","statement":"variable","value":"r"}]},\n' +
+    '{"linea":"83","statement":""}]},\n' +
+    '{"linea":"128","statement":"funcion","name":"merge","type":[{"linea":"86","tipo":[{"linea":"86","tipo":"void"}],"size":[]}],"params":[{"linea":"86","statement":"parameter","name":"array","tipo":[{"linea":"86","tipo":[{"linea":"86","tipo":"number"}],"size":[{"linea":"86","statement":"arreglo","value":[]}]}]},\n' +
+    '{"linea":"86","statement":"parameter","name":"l","tipo":[{"linea":"86","tipo":[{"linea":"86","tipo":"number"}],"size":[]}]},\n' +
+    '{"linea":"86","statement":"parameter","name":"m","tipo":[{"linea":"86","tipo":[{"linea":"86","tipo":"number"}],"size":[]}]},\n' +
+    '{"linea":"86","statement":"parameter","name":"r","tipo":[{"linea":"86","tipo":[{"linea":"86","tipo":"number"}],"size":[]}]}],"body":[{"linea":"87","statement":"declaration","type":[{"linea":"87","tipo":[{"linea":"87","tipo":"let"}],"size":[]}], "values":[{"linea":"87","statement":"variable","tipoExpresion":[],"name":"n1","ValExpression":[{"linea":"87","operator":[{"linea":"87","v":"="}],"Expression":[{"linea":"87","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"87","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"87","statement":"variable","value":"m"}],"Expression2":[{"linea":"87","statement":"variable","value":"l"}]}],"Expression2":[{"linea":"87","tipo":"number", "value":"1"}]}]}]}]},\n' +
+    '{"linea":"88","statement":"declaration","type":[{"linea":"88","tipo":[{"linea":"88","tipo":"let"}],"size":[]}], "values":[{"linea":"88","statement":"variable","tipoExpresion":[],"name":"n2","ValExpression":[{"linea":"88","operator":[{"linea":"88","v":"="}],"Expression":[{"linea":"88","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"88","statement":"variable","value":"r"}],"Expression2":[{"linea":"88","statement":"variable","value":"m"}]}]}]}]},\n' +
+    '{"linea":"90","statement":"declaration","type":[{"linea":"90","tipo":[{"linea":"90","tipo":"let"}],"size":[]}], "values":[{"linea":"90","statement":"variable","tipoExpresion":[{"linea":"90","tipo":[{"linea":"90","tipo":"number"}],"size":[{"linea":"90","statement":"arreglo","value":[]}]}],"name":"L","ValExpression":[{"linea":"90","operator":[{"linea":"90","v":"="}],"Expression":[{"linea":"90","statement":"arreglo","value":[]}]}]}]},\n' +
+    '{"linea":"91","statement":"declaration","type":[{"linea":"91","tipo":[{"linea":"91","tipo":"let"}],"size":[]}], "values":[{"linea":"91","statement":"variable","tipoExpresion":[{"linea":"91","tipo":[{"linea":"91","tipo":"number"}],"size":[{"linea":"91","statement":"arreglo","value":[]}]}],"name":"R","ValExpression":[{"linea":"91","operator":[{"linea":"91","v":"="}],"Expression":[{"linea":"91","statement":"arreglo","value":[]}]}]}]},\n' +
+    '{"linea":"95","statement":"for","ExpresionInitial":[{"linea":"93","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"93","tipo":"let"}],"name":"i","ValExpression":[{"linea":"93","operator":[{"linea":"93","v":"="}],"Expression":[{"linea":"93","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"93","statement":"Relational","Relational":"<","Expression1":[{"linea":"93","statement":"variable","value":"i"}],"Expression2":[{"linea":"93","statement":"variable","value":"n1"}]}],"ExpressionFinal":[{"linea":"93","statement":"postincrement1","padre":[{"linea":"93","statement":"variable","value":"i","hijo":[]}]}],"body":[{"linea":"94","statement":"asignation","variable":"L","params":[{"linea":"94","statement":"ArrayList","value":[{"linea":"94","statement":"MatrizPosition","value":[{"linea":"94","statement":"variable","value":"i"}]}]}],"ValExpression":[{"linea":"94","operator":[{"linea":"94","v":"="}],"Expression":[{"linea":"94","statement":"callAtributo", "value":"array", "hijo":[{"linea":"94","statement":"ArrayList","value":[{"linea":"94","statement":"MatrizPosition","value":[{"linea":"94","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"94","statement":"variable","value":"l"}],"Expression2":[{"linea":"94","statement":"variable","value":"i"}]}]}]}]}]}]}]},\n' +
+    '{"linea":"99","statement":"for","ExpresionInitial":[{"linea":"97","statement":"variable","tipoExpresion":[],"tipo":[{"linea":"97","tipo":"let"}],"name":"j","ValExpression":[{"linea":"97","operator":[{"linea":"97","v":"="}],"Expression":[{"linea":"97","tipo":"number", "value":"0"}]}]}],"Expressionvalue":[{"linea":"97","statement":"Relational","Relational":"<","Expression1":[{"linea":"97","statement":"variable","value":"j"}],"Expression2":[{"linea":"97","statement":"variable","value":"n2"}]}],"ExpressionFinal":[{"linea":"97","statement":"postincrement1","padre":[{"linea":"97","statement":"variable","value":"j","hijo":[]}]}],"body":[{"linea":"98","statement":"asignation","variable":"R","params":[{"linea":"98","statement":"ArrayList","value":[{"linea":"98","statement":"MatrizPosition","value":[{"linea":"98","statement":"variable","value":"j"}]}]}],"ValExpression":[{"linea":"98","operator":[{"linea":"98","v":"="}],"Expression":[{"linea":"98","statement":"callAtributo", "value":"array", "hijo":[{"linea":"98","statement":"ArrayList","value":[{"linea":"98","statement":"MatrizPosition","value":[{"linea":"98","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"98","statement":"Aritmetic","Aritmetic":"+","Expression1":[{"linea":"98","statement":"variable","value":"m"}],"Expression2":[{"linea":"98","tipo":"number", "value":"1"}]}],"Expression2":[{"linea":"98","statement":"variable","value":"j"}]}]}]}]}]}]}]},\n' +
+    '{"linea":"101","statement":"declaration","type":[{"linea":"101","tipo":[{"linea":"101","tipo":"let"}],"size":[]}], "values":[{"linea":"101","statement":"variable","tipoExpresion":[],"name":"i","ValExpression":[{"linea":"101","operator":[{"linea":"101","v":"="}],"Expression":[{"linea":"101","tipo":"number", "value":"0"}]}]}]},\n' +
+    '{"linea":"102","statement":"declaration","type":[{"linea":"102","tipo":[{"linea":"102","tipo":"let"}],"size":[]}], "values":[{"linea":"102","statement":"variable","tipoExpresion":[],"name":"j","ValExpression":[{"linea":"102","operator":[{"linea":"102","v":"="}],"Expression":[{"linea":"102","tipo":"number", "value":"0"}]}]}]},\n' +
+    '{"linea":"103","statement":"declaration","type":[{"linea":"103","tipo":[{"linea":"103","tipo":"let"}],"size":[]}], "values":[{"linea":"103","statement":"variable","tipoExpresion":[],"name":"k","ValExpression":[{"linea":"103","operator":[{"linea":"103","v":"="}],"Expression":[{"linea":"103","statement":"variable","value":"l"}]}]}]},\n' +
+    '{"linea":"115","statement":"while","body":[{"linea":"113","statement":"if","Expression":[{"linea":"106","statement":"Relational","Relational":"<=","Expression1":[{"linea":"106","statement":"callAtributo", "value":"L", "hijo":[{"linea":"106","statement":"ArrayList","value":[{"linea":"106","statement":"MatrizPosition","value":[{"linea":"106","statement":"variable","value":"i"}]}]}]}],"Expression2":[{"linea":"106","statement":"callAtributo", "value":"R", "hijo":[{"linea":"106","statement":"ArrayList","value":[{"linea":"106","statement":"MatrizPosition","value":[{"linea":"106","statement":"variable","value":"j"}]}]}]}]}],"body":[{"linea":"107","statement":"asignation","variable":"array","params":[{"linea":"107","statement":"ArrayList","value":[{"linea":"107","statement":"MatrizPosition","value":[{"linea":"107","statement":"variable","value":"k"}]}]}],"ValExpression":[{"linea":"107","operator":[{"linea":"107","v":"="}],"Expression":[{"linea":"107","statement":"callAtributo", "value":"L", "hijo":[{"linea":"107","statement":"ArrayList","value":[{"linea":"107","statement":"MatrizPosition","value":[{"linea":"107","statement":"variable","value":"i"}]}]}]}]}]},\n' +
+    '{"linea":"108","statement":"postincrement1","padre":[{"linea":"108","statement":"variable","value":"i","hijo":[]}]},\n' +
+    '{"linea":"108","statement":""}], "else":[{"linea":"111","statement":"asignation","variable":"array","params":[{"linea":"111","statement":"ArrayList","value":[{"linea":"111","statement":"MatrizPosition","value":[{"linea":"111","statement":"variable","value":"k"}]}]}],"ValExpression":[{"linea":"111","operator":[{"linea":"111","v":"="}],"Expression":[{"linea":"111","statement":"callAtributo", "value":"R", "hijo":[{"linea":"111","statement":"ArrayList","value":[{"linea":"111","statement":"MatrizPosition","value":[{"linea":"111","statement":"variable","value":"j"}]}]}]}]}]},\n' +
+    '{"linea":"112","statement":"postincrement1","padre":[{"linea":"112","statement":"variable","value":"j","hijo":[]}]},\n' +
+    '{"linea":"112","statement":""}]},\n' +
+    '{"linea":"114","statement":"postincrement1","padre":[{"linea":"114","statement":"variable","value":"k","hijo":[]}]},\n' +
+    '{"linea":"114","statement":""}],"Expression":[{"linea":"105","statement":"Logical","Logical":"&&","Expression1":[{"linea":"105","statement":"Relational","Relational":"<","Expression1":[{"linea":"105","statement":"variable","value":"i"}],"Expression2":[{"linea":"105","statement":"variable","value":"n1"}]}],"Expression2":[{"linea":"105","statement":"Relational","Relational":"<","Expression1":[{"linea":"105","statement":"variable","value":"j"}],"Expression2":[{"linea":"105","statement":"variable","value":"n2"}]}]}]},\n' +
+    '{"linea":"121","statement":"while","body":[{"linea":"118","statement":"asignation","variable":"array","params":[{"linea":"118","statement":"ArrayList","value":[{"linea":"118","statement":"MatrizPosition","value":[{"linea":"118","statement":"variable","value":"k"}]}]}],"ValExpression":[{"linea":"118","operator":[{"linea":"118","v":"="}],"Expression":[{"linea":"118","statement":"callAtributo", "value":"L", "hijo":[{"linea":"118","statement":"ArrayList","value":[{"linea":"118","statement":"MatrizPosition","value":[{"linea":"118","statement":"variable","value":"i"}]}]}]}]}]},\n' +
+    '{"linea":"119","statement":"postincrement1","padre":[{"linea":"119","statement":"variable","value":"i","hijo":[]}]},\n' +
+    '{"linea":"119","statement":""},\n' +
+    '{"linea":"120","statement":"postincrement1","padre":[{"linea":"120","statement":"variable","value":"k","hijo":[]}]},\n' +
+    '{"linea":"120","statement":""}],"Expression":[{"linea":"117","statement":"Relational","Relational":"<","Expression1":[{"linea":"117","statement":"variable","value":"i"}],"Expression2":[{"linea":"117","statement":"variable","value":"n1"}]}]},\n' +
+    '{"linea":"127","statement":"while","body":[{"linea":"124","statement":"asignation","variable":"array","params":[{"linea":"124","statement":"ArrayList","value":[{"linea":"124","statement":"MatrizPosition","value":[{"linea":"124","statement":"variable","value":"k"}]}]}],"ValExpression":[{"linea":"124","operator":[{"linea":"124","v":"="}],"Expression":[{"linea":"124","statement":"callAtributo", "value":"R", "hijo":[{"linea":"124","statement":"ArrayList","value":[{"linea":"124","statement":"MatrizPosition","value":[{"linea":"124","statement":"variable","value":"j"}]}]}]}]}]},\n' +
+    '{"linea":"125","statement":"postincrement1","padre":[{"linea":"125","statement":"variable","value":"j","hijo":[]}]},\n' +
+    '{"linea":"125","statement":""},\n' +
+    '{"linea":"126","statement":"postincrement1","padre":[{"linea":"126","statement":"variable","value":"k","hijo":[]}]},\n' +
+    '{"linea":"126","statement":""}],"Expression":[{"linea":"123","statement":"Relational","Relational":"<","Expression1":[{"linea":"123","statement":"variable","value":"j"}],"Expression2":[{"linea":"123","statement":"variable","value":"n2"}]}]}]},\n' +
+    '{"linea":"160","statement":"funcion","name":"menu","type":[{"linea":"130","tipo":[{"linea":"130","tipo":"void"}],"size":[]}],"params":[],"body":[{"linea":"131","statement":"declaration","type":[{"linea":"131","tipo":[{"linea":"131","tipo":"let"}],"size":[]}], "values":[{"linea":"131","statement":"variable","tipoExpresion":[],"name":"i","ValExpression":[{"linea":"131","operator":[{"linea":"131","v":"="}],"Expression":[{"linea":"131","tipo":"number", "value":"0"}]}]}]},\n' +
+    '{"linea":"159","statement":"while","body":[{"linea":"134","statement":"declaration","type":[{"linea":"134","tipo":[{"linea":"134","tipo":"let"}],"size":[]}], "values":[{"linea":"134","statement":"variable","tipoExpresion":[],"name":"array","ValExpression":[{"linea":"134","operator":[{"linea":"134","v":"="}],"Expression":[{"linea":"134","statement":"arreglo","value":[{"linea":"134","tipo":"number", "value":"32"},\n' +
+    '{"linea":"134","tipo":"number", "value":"21"},\n' +
+    '{"linea":"134","tipo":"number", "value":"7"},\n' +
+    '{"linea":"134","tipo":"number", "value":"89"},\n' +
+    '{"linea":"134","tipo":"number", "value":"56"},\n' +
+    '{"linea":"134","tipo":"number", "value":"909"},\n' +
+    '{"linea":"134","tipo":"number", "value":"109"},\n' +
+    '{"linea":"134","tipo":"number", "value":"2"}]}]}]}]},\n' +
+    '{"linea":"157","statement":"switch","Expression":[{"linea":"135","statement":"variable","value":"i"}],"values":[{"linea":"139","statement":"case","Expression":[{"linea":"136","tipo":"number", "value":"0"}],"body":[{"linea":"137","statement":"CallFunction","name":"bubbleSort", "parameters":[{"linea":"137","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"137","statement":""},\n' +
+    '{"linea":"138","statement":"console","expression":[{"linea":"138","tipo":"string3", "value":"BubbleSort: "},\n' +
+    '{"linea":"138","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"139","statement":"break"}]},\n' +
+    '{"linea":"143","statement":"case","Expression":[{"linea":"140","tipo":"number", "value":"1"}],"body":[{"linea":"141","statement":"CallFunction","name":"quickSort", "parameters":[{"linea":"141","tipo":"number", "value":"0"},\n' +
+    '{"linea":"141","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"141","statement":"nativeArray", "name":"array" ,"hijo":[],"native":"length"}],"Expression2":[{"linea":"141","tipo":"number", "value":"1"}]},\n' +
+    '{"linea":"141","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"141","statement":""},\n' +
+    '{"linea":"142","statement":"console","expression":[{"linea":"142","tipo":"string3", "value":"QuickSort: "},\n' +
+    '{"linea":"142","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"143","statement":"break"}]},\n' +
+    '{"linea":"147","statement":"case","Expression":[{"linea":"144","tipo":"number", "value":"2"}],"body":[{"linea":"145","statement":"CallFunction","name":"insertionSort", "parameters":[{"linea":"145","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"145","statement":""},\n' +
+    '{"linea":"146","statement":"console","expression":[{"linea":"146","tipo":"string3", "value":"InsertionSort: "},\n' +
+    '{"linea":"146","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"147","statement":"break"}]},\n' +
+    '{"linea":"151","statement":"case","Expression":[{"linea":"148","tipo":"number", "value":"3"}],"body":[{"linea":"149","statement":"CallFunction","name":"selectionSort", "parameters":[{"linea":"149","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"149","statement":""},\n' +
+    '{"linea":"150","statement":"console","expression":[{"linea":"150","tipo":"string3", "value":"SelectionSort: "},\n' +
+    '{"linea":"150","statement":"variable","value":"array"}]},\n' +
+    '{"linea":"151","statement":"break"}]},\n' +
+    '{"linea":"154","statement":"case","Expression":[{"linea":"152","tipo":"number", "value":"4"}],"body":[{"linea":"153","statement":"CallFunction","name":"mergeSort", "parameters":[{"linea":"153","statement":"variable","value":"array"},\n' +
+    '{"linea":"153","tipo":"number", "value":"0"},\n' +
+    '{"linea":"153","statement":"Aritmetic","Aritmetic":"-","Expression1":[{"linea":"153","statement":"nativeArray", "name":"array" ,"hijo":[],"native":"length"}],"Expression2":[{"linea":"153","tipo":"number", "value":"1"}]}]},\n' +
+    '{"linea":"153","statement":""},\n' +
+    '{"linea":"154","statement":"console","expression":[{"linea":"154","tipo":"string3", "value":"MergeSort: "},\n' +
+    '{"linea":"154","statement":"variable","value":"array"}]}]},\n' +
+    '{"linea":"156","statement":"default","Expression":[],"body":[{"linea":"156","statement":"return", "Expression":[]}]}]},\n' +
+    '{"linea":"158","statement":"postincrement1","padre":[{"linea":"158","statement":"variable","value":"i","hijo":[]}]},\n' +
+    '{"linea":"158","statement":""}],"Expression":[{"linea":"133","tipo":"boolean", "value":"true"}]}]},\n' +
+    '{"linea":"162","statement":"CallFunction","name":"menu", "parameters":[]},\n' +
+    '{"linea":"162","statement":""},\n' +
+    '{"linea":"163","statement":""}]}';
 var instrucciones = [];
 var tablasimbolo = new tablasimbolos();
 var jsondata = '';
-var erroresSemanticos = '';
+var erroresSemanticos = [];
 var salida = '';
 var lineas = 0;
 var ts = '';
-generatinginformationExample();
+var ghs = '';
+//generatinginformationExample();
 //console.log(instrucciones)
-execute();
+//execute()
+console.log('UNIVERSIDAD DE SAN CARLOS DE GUATEMALA');
+//console.log(outs);
+function outghs() {
+    console.log('UNIVERSIDAD DE SAN CARLOS DE GUATEMALA');
+}
+function outlogs() {
+    console.log('UNIVERSIDAD DE SAN CARLOS DE GUATEMALA');
+}
 function getTs() {
     ts = '{ \"simbolos\":[';
     var m = 0;
@@ -5074,13 +5465,15 @@ function getTs() {
         ts += string;
     }
     ts += ']}';
-    console.log(ts);
+    //console.log(ts);
 }
 function execute() {
     tablasimbolo = new tablasimbolos();
     output = [];
+    outs = [];
+    ghs = '';
     salida = '{\"salida\":[\n';
-    if (erroresSemanticos == '') {
+    if (erroresSemanticos.length == 0) {
         for (var _i = 0, instrucciones_1 = instrucciones; _i < instrucciones_1.length; _i++) {
             var value = instrucciones_1[_i];
             if (value instanceof functions) {
@@ -5125,6 +5518,13 @@ function execute() {
                         console.log("finish without error...");
                     }
                     else {
+                        //console.log(output);
+                        for (var _c = 0, output_2 = output; _c < output_2.length; _c++) {
+                            var a = output_2[_c];
+                            outs.push(a);
+                            salida += a + ',\n';
+                        }
+                        outs.push('Linea: ' + value.linea + ', valor: Ocurrio un error inesperado,' + result[1]);
                         salida += '{\"valor\":\"Ocurrio un error inesperado\",\"salida\":\" Linea: ' + value.linea + ', ' + result[1] + '\"},\n';
                         console.log('finish with error...');
                         break;
@@ -5132,14 +5532,22 @@ function execute() {
                 }
             }
         }
+        for (var _d = 0, erroresSemanticos_1 = erroresSemanticos; _d < erroresSemanticos_1.length; _d++) {
+            var val = erroresSemanticos_1[_d];
+            salida += '{\"valor\":\"El codigo posee errores semanticos\", \"errores\":[' + val + ']}\n';
+        }
     }
     else {
-        salida += '{\"valor\":\"El codigo posee errores semanticos\", \"errores\":[' + erroresSemanticos + '}\n';
+        for (var _e = 0, erroresSemanticos_2 = erroresSemanticos; _e < erroresSemanticos_2.length; _e++) {
+            var val = erroresSemanticos_2[_e];
+            salida += '{\"valor\":\"El codigo posee errores semanticos\", \"errores\":[' + val + ']}\n';
+        }
     }
     salida += '{\"linea\":\"' + lineas + '\",\"valor\":\"finish executing...\"}\n]}';
     console.log(salida);
 }
 function generatinginformationExample() {
+    erroresSemanticos = [];
     var statement = JSON.parse(jsondata2);
     lineas = Number(statement.linea);
     var S = statement.S;
@@ -5152,7 +5560,7 @@ function generatinginformationExample() {
 }
 function generatinginformation(jsondata) {
     instrucciones = [];
-    erroresSemanticos = '';
+    erroresSemanticos = [];
     salida = '';
     lineas = 0;
     var statement = JSON.parse(jsondata);
@@ -5791,13 +6199,17 @@ function getArrayList(data) {
      */
     try {
         var positions = [];
+        var positionsTemp = [];
         for (var _i = 0, _a = data.value; _i < _a.length; _i++) {
             var datas = _a[_i];
             var k = getExpressiones(datas);
             if (k != null)
                 positions.push(k);
         }
-        return positions;
+        for (var a = positions.length - 1; a >= 0; a--) {
+            positionsTemp.push(positions[a]);
+        }
+        return positionsTemp;
     }
     catch (e) {
         return null;
@@ -6344,6 +6756,10 @@ function getArreglo(data) {
                     Arreglito.values.push(datitos);
             }
         }
+        else {
+            Arreglito.values = [];
+            Arreglito.niu = true;
+        }
         return Arreglito;
     }
     catch (e) {
@@ -6568,12 +6984,15 @@ function nativeMatriz(data) {
           "native": "length"
      */
     try {
+        //console.log(data)
         var mat = new expression();
+        mat.position = [];
+        mat.atributo = [];
+        mat.name = data.name;
+        mat.linea = data.linea;
         switch (data.native) {
             case "length":
-                mat.linea = data.linea;
                 mat.ArrayType = NativeArray.Length;
-                mat.name = 'a';
                 mat.position = [];
                 if (data.hijo.length > 0) {
                     if (data.hijo[0].value.length > 0) {
@@ -6587,9 +7006,7 @@ function nativeMatriz(data) {
                 }
                 break;
             case "pop":
-                mat.linea = data.linea;
                 mat.ArrayType = NativeArray.Pop;
-                mat.name = 'a';
                 mat.position = [];
                 if (data.hijo.length > 0) {
                     if (data.hijo[0].value.length > 0) {
@@ -6603,9 +7020,7 @@ function nativeMatriz(data) {
                 }
                 break;
             case "push":
-                mat.linea = data.linea;
                 mat.ArrayType = NativeArray.Push;
-                mat.name = 'a';
                 mat.position = [];
                 if (data.hijo.length > 0) {
                     if (data.hijo[0].value.length > 0) {
@@ -6623,6 +7038,7 @@ function nativeMatriz(data) {
                 }
                 break;
         }
+        //console.log(mat);
         return mat;
     }
     catch (e) {
@@ -7922,3 +8338,6 @@ function getParameter(data) {
 module.exports.generate = function (jsondata) { generatinginformation(jsondata);};
 module.exports.exec = function(){execute(); return salida;};
 module.exports.tablasimbolos = function(){ getTs(); return ts;}
+module.exports.resultado = function(){ outlogs(); return outs;}
+module.exports.Semantics = function(){ outlogs(); return erroresSemanticos;}
+module.exports.graphs = function(){ outlogs(); return ghs;}
