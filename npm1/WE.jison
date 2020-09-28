@@ -23,7 +23,7 @@
 "const"                         return 'CONST'
 "let"                           return 'LET'
 "var"                           return 'VAR'
-"number"                        return 'NUMBER'
+"number"                        return 'NUMBERS'
 "boolean"                       return 'BOOLEAN'
 "string"                        return 'STRING'
 "void"                          return 'VOID'
@@ -892,7 +892,7 @@ TypeV
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"tipo\":\"string\"}';
         }
-    | NUMBER
+    | NUMBERS
         {
             $$ = '{\"linea\":\"'+(yylineno+1)+'\",\"tipo\":\"number\"}';
         }

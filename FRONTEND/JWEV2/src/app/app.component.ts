@@ -211,8 +211,6 @@ export class AppComponent implements OnInit{
 
           }
         }
-
-
         this.obj1 = this.salida;
         this.rows1 = Core.tablasimbolos();
         const val = JSON.parse(this.rows1);
@@ -316,6 +314,7 @@ export class AppComponent implements OnInit{
           }
         }
         */
+        this.progreso = 75;
         this.salida = '';
         for (const values of Core.resultado()) {
           if (values.toString().includes('Error')) {
@@ -327,6 +326,18 @@ export class AppComponent implements OnInit{
             this.salida += '[JoWan1998][' + formatDate(new Date(), 'yyyy/MM/dd  HH:mm:ss', 'en') + '] ' + values + '\n';
 
           }
+        }
+        this.obj1 = this.salida;
+        this.rows1 = Core.tablasimbolos();
+        const val = JSON.parse(this.rows1);
+
+        let a = 1;
+        this.rows = '';
+        for (const values of val.simbolos)
+        {
+          const valor = { no: a.toString(), name: values.name, ambito: values.ambito, tipo: values.tipo, type: values.type };
+          this.simbolos.push(valor);
+          a++;
         }
         /*
         this.core = Core.exec();
